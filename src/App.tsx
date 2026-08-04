@@ -4,7 +4,9 @@ import { useAuth } from './context/AuthContext';
 import { Sidebar } from './components/layout/Sidebar';
 import { Header } from './components/layout/Header';
 import { DashboardView } from './components/dashboard/DashboardView';
+import { ResultsListView } from './components/dashboard/ResultsListView';
 import { ShelterAnimalsView } from './components/animals/ShelterAnimalsView';
+import { TriageAnimalsView } from './components/animals/TriageAnimalsView';
 import { LocationVisualizationView } from './components/animals/LocationVisualizationView';
 import { AdoptedAnimalsView } from './components/animals/AdoptedAnimalsView';
 import { DeceasedAnimalsView } from './components/animals/DeceasedAnimalsView';
@@ -25,7 +27,7 @@ import { UndoConfirmModal } from './components/modals/UndoConfirmModal';
 import { ToastContainer } from './components/common/ToastContainer';
 
 const MainAppContent: React.FC = () => {
-  const { activeTab, selectedAnimalId } = useAnimalContext();
+  const { activeTab, selectedAnimalId, resultsList } = useAnimalContext();
   const { user, profile, loading, signOut } = useAuth();
 
   React.useEffect(() => {
@@ -129,6 +131,15 @@ const MainAppContent: React.FC = () => {
       );
     }
 
+    if (resultsList && resultsList.length > 0) {
+      return (
+        <ResultsListView
+          onOpenEditModal={openEditModal}
+          onOpenChangeLocationModal={openChangeLocationModal}
+        />
+      );
+    }
+
     switch (activeTab) {
       case 'dashboard':
         return <DashboardView />;
@@ -136,6 +147,13 @@ const MainAppContent: React.FC = () => {
         return (
           <ShelterAnimalsView
             onOpenNewAnimalModal={() => setIsNewAnimalModalOpen(true)}
+            onOpenEditModal={openEditModal}
+            onOpenChangeLocationModal={openChangeLocationModal}
+          />
+        );
+      case 'triagem':
+        return (
+          <TriageAnimalsView
             onOpenEditModal={openEditModal}
             onOpenChangeLocationModal={openChangeLocationModal}
           />

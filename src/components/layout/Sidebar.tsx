@@ -10,7 +10,8 @@ import {
   LogOut, 
   X,
   ShieldCheck,
-  PawPrint
+  PawPrint,
+  ClipboardList
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -24,6 +25,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isMobileOpen, setIsMobileOpen 
   const navItems = [
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
     { id: 'no_abrigo', label: 'Animais no Abrigo', icon: Dog },
+    { id: 'triagem', label: 'Animais em Triagem', icon: ClipboardList },
     { id: 'visualizacao', label: 'Visualização', icon: MapPin },
     { id: 'adotados', label: 'Adotados', icon: HeartHandshake },
     { id: 'obito', label: 'Óbitos', icon: Bird },

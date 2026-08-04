@@ -15,15 +15,18 @@ import {
   ShieldCheck,
   Phone,
   Tag,
-  AlertCircle
+  AlertCircle,
+  Syringe
 } from 'lucide-react';
 import { 
   LOCATION_LABELS, 
   SPECIES_LABELS, 
   SEX_LABELS, 
   ORIGIN_LABELS,
+  RESCUE_ORIGIN_LABELS,
   formatWeight
 } from '../../types/animal';
+import { PhotoUploader } from '../common/PhotoUploader';
 
 interface AnimalDetailViewProps {
   animalId: string;
@@ -42,7 +45,7 @@ export const AnimalDetailView: React.FC<AnimalDetailViewProps> = ({
   onOpenDeathModal,
   onOpenUndoModal
 }) => {
-  const { getAnimalById, setSelectedAnimalId } = useAnimalContext();
+  const { getAnimalById, setSelectedAnimalId, uploadAnimalPhoto, deleteAnimalPhoto } = useAnimalContext();
 
   React.useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -100,6 +103,13 @@ export const AnimalDetailView: React.FC<AnimalDetailViewProps> = ({
           >
             <ArrowLeft className="w-5 h-5" />
           </button>
+
+          <PhotoUploader
+            avatar
+            photoPath={animal.photoUrl}
+            onUpload={(file) => uploadAnimalPhoto(animal.id, file)}
+            onDelete={() => deleteAnimalPhoto(animal.id)}
+          />
 
           <div>
             <div className="flex items-center gap-3">
@@ -217,6 +227,57 @@ export const AnimalDetailView: React.FC<AnimalDetailViewProps> = ({
             </div>
           </div>
 
+          {/* Section: Health - Castration & Vaccination */}
+          <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
+            <h2 className="text-sm font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 flex items-center gap-2">
+              <Syringe className="w-4 h-4 text-emerald-600" />
+              Castração & Vacinação
+            </h2>
+
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 text-xs">
+              <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50 col-span-2 sm:col-span-1">
+                <span className="text-[11px] font-bold text-slate-400 uppercase block">Castrado</span>
+                {animal.castrado ? (
+                  <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800 border border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-300 dark:border-emerald-800 mt-1">
+                    Sim
+                  </span>
+                ) : (
+                  <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-bold bg-rose-100 text-rose-800 border border-rose-200 dark:bg-rose-950/40 dark:text-rose-300 dark:border-rose-800 mt-1">
+                    Não
+                  </span>
+                )}
+              </div>
+
+              <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50">
+                <span className="text-[11px] font-bold text-slate-400 uppercase block">Data da Castração</span>
+                <span className="font-semibold text-slate-800 dark:text-slate-200">
+                  {animal.castrationDate || 'Não informada'}
+                </span>
+              </div>
+
+              <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50">
+                <span className="text-[11px] font-bold text-slate-400 uppercase block">Castração Agendada</span>
+                <span className="font-semibold text-slate-800 dark:text-slate-200">
+                  {animal.castrationScheduledDate || 'Sem agendamento'}
+                </span>
+              </div>
+
+              <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50">
+                <span className="text-[11px] font-bold text-slate-400 uppercase block">Última Vacina</span>
+                <span className="font-semibold text-slate-800 dark:text-slate-200">
+                  {animal.vaccinationDate || 'Não informada'}
+                </span>
+              </div>
+
+              <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50">
+                <span className="text-[11px] font-bold text-slate-400 uppercase block">Próxima Vacina</span>
+                <span className="font-semibold text-slate-800 dark:text-slate-200">
+                  {animal.vaccinationDueDate || 'Não informada'}
+                </span>
+              </div>
+            </div>
+          </div>
+
           {/* Section: Entry Origin & Tutor */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
             {/* Entry Info */}
@@ -274,6 +335,35 @@ export const AnimalDetailView: React.FC<AnimalDetailViewProps> = ({
                     {animal.originTutorContact || 'Contato não informado'}
                   </span>
                 </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Section: Rescue Information */}
+          <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-3">
+            <h2 className="text-sm font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 flex items-center gap-2">
+              <ShieldCheck className="w-4 h-4 text-emerald-600" />
+              Informações do Resgate
+            </h2>
+
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+              <div>
+                <span className="text-slate-400 font-medium block">Origem do Resgate:</span>
+                <span className="font-bold text-slate-900 dark:text-white text-sm">
+                  {animal.rescueOrigin ? (RESCUE_ORIGIN_LABELS[animal.rescueOrigin] || animal.rescueOrigin) : 'Não informado'}
+                </span>
+              </div>
+              <div>
+                <span className="text-slate-400 font-medium block">Endereço do Resgate:</span>
+                <span className="font-semibold text-slate-800 dark:text-slate-200">
+                  {animal.rescueAddress || 'Não informado'}
+                </span>
+              </div>
+              <div>
+                <span className="text-slate-400 font-medium block">Observação de Entrada:</span>
+                <span className="font-semibold text-slate-800 dark:text-slate-200">
+                  {animal.entryNotes || 'Não informado'}
+                </span>
               </div>
             </div>
           </div>

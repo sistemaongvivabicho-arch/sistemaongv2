@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAnimalContext } from '../../context/AnimalContext';
 import { 
   X, 
@@ -6,16 +6,18 @@ import {
   User, 
   ShieldAlert, 
   MapPin, 
+  ClipboardList, 
   FileText, 
   Check, 
-  AlertCircle 
+  AlertCircle,
+  Camera,
+  UploadCloud
 } from 'lucide-react';
 import { 
   SpeciesType, 
   SexType, 
-  LocationType, 
-  EntryOrigin, 
-  LOCATION_LABELS 
+  EntryOrigin,
+  RESCUE_ORIGIN_OPTIONS
 } from '../../types/animal';
 
 interface NewAnimalModalProps {
@@ -24,7 +26,7 @@ interface NewAnimalModalProps {
 }
 
 export const NewAnimalModal: React.FC<NewAnimalModalProps> = ({ isOpen, onClose }) => {
-  const { addAnimal, navigateToAnimal } = useAnimalContext();
+  const { addAnimal, navigateToAnimal, uploadAnimalPhoto } = useAnimalContext();
 
   const todayStr = new Date().toISOString().split('T')[0];
 
@@ -35,7 +37,6 @@ export const NewAnimalModal: React.FC<NewAnimalModalProps> = ({ isOpen, onClose 
   const [entryDate, setEntryDate] = useState(
     `${new Date().getDate().toString().padStart(2, '0')}/${(new Date().getMonth() + 1).toString().padStart(2, '0')}/${new Date().getFullYear()}`
   );
-  const [currentLocation, setCurrentLocation] = useState<LocationType>('area_caes');
 
   // Optional fields
   const [microchip, setMicrochip] = useState('');
@@ -51,10 +52,34 @@ export const NewAnimalModal: React.FC<NewAnimalModalProps> = ({ isOpen, onClose 
   const [originProtocol, setOriginProtocol] = useState('');
   const [originNotes, setOriginNotes] = useState('');
 
+  // Rescue information
+  const [rescueOrigin, setRescueOrigin] = useState('');
+  const [rescueAddress, setRescueAddress] = useState('');
+  const [entryNotes, setEntryNotes] = useState('');
+
   // Current observation
   const [currentObservation, setCurrentObservation] = useState('');
 
+  // Health: castration & vaccination
+  const [castrado, setCastrado] = useState(false);
+  const [castrationDate, setCastrationDate] = useState('');
+  const [castrationScheduledDate, setCastrationScheduledDate] = useState('');
+  const [vaccinationDate, setVaccinationDate] = useState('');
+  const [vaccinationDueDate, setVaccinationDueDate] = useState('');
+
+  const [photoFile, setPhotoFile] = useState<File | null>(null);
+  const [photoPreview, setPhotoPreview] = useState('');
+
   const [submitting, setSubmitting] = useState(false);
+
+  useEffect(() => {
+    if (photoFile) {
+      const url = URL.createObjectURL(photoFile);
+      setPhotoPreview(url);
+      return () => URL.revokeObjectURL(url);
+    }
+    setPhotoPreview('');
+  }, [photoFile]);
 
   if (!isOpen) return null;
 
@@ -76,16 +101,27 @@ export const NewAnimalModal: React.FC<NewAnimalModalProps> = ({ isOpen, onClose 
         age: age.trim() || undefined,
         weight: weight.trim() ? (weight.trim().toLowerCase().endsWith('kg') ? weight.trim() : `${weight.trim()} kg`) : undefined,
         entryDate: entryDate || '26/07/2026',
-        currentLocation,
+        currentLocation: 'triagem',
         origin,
         originProtocol: originProtocol.trim() || undefined,
         originNotes: originNotes.trim() || undefined,
+        rescueOrigin: rescueOrigin || undefined,
+        rescueAddress: rescueAddress.trim() || undefined,
+        entryNotes: entryNotes.trim() || undefined,
         originTutorName: originTutorName.trim() || undefined,
         originTutorContact: originTutorContact.trim() || undefined,
-        currentObservation: currentObservation.trim() || undefined
+        currentObservation: currentObservation.trim() || undefined,
+        castrado,
+        castrationDate: castrationDate.trim() || undefined,
+        castrationScheduledDate: castrationScheduledDate.trim() || undefined,
+        vaccinationDate: vaccinationDate.trim() || undefined,
+        vaccinationDueDate: vaccinationDueDate.trim() || undefined
       });
 
       if (createdId) {
+        if (photoFile) {
+          await uploadAnimalPhoto(createdId, photoFile);
+        }
         onClose();
         navigateToAnimal(createdId);
       }
@@ -346,30 +382,163 @@ export const NewAnimalModal: React.FC<NewAnimalModalProps> = ({ isOpen, onClose 
             </div>
           </div>
 
-          {/* SEÇÃO 4: LOCALIZAÇÃO INICIAL */}
+          {/* SEÇÃO 4: INFORMAÇÕES DO RESGATE */}
+          <div className="space-y-4 pt-2 border-t border-slate-100 dark:border-slate-800">
+            <h3 className="text-xs font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400 flex items-center gap-2">
+              <ShieldAlert className="w-4 h-4" />
+              4. Informações do Resgate
+            </h3>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="sm:col-span-2">
+                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+                  Origem do Resgate
+                </label>
+                <select
+                  value={rescueOrigin}
+                  onChange={(e) => setRescueOrigin(e.target.value)}
+                  className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                >
+                  <option value="">Selecione a origem do resgate</option>
+                  {RESCUE_ORIGIN_OPTIONS.map((opt) => (
+                    <option key={opt.value} value={opt.value}>
+                      {opt.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="sm:col-span-2">
+                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+                  Endereço do Resgate
+                </label>
+                <input
+                  type="text"
+                  value={rescueAddress}
+                  onChange={(e) => setRescueAddress(e.target.value)}
+                  placeholder="Informe onde o animal foi encontrado"
+                  className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                />
+              </div>
+
+              <div className="sm:col-span-2">
+                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+                  Observação de Entrada
+                </label>
+                <textarea
+                  rows={2}
+                  value={entryNotes}
+                  onChange={(e) => setEntryNotes(e.target.value)}
+                  placeholder="Descreva as condições em que o animal foi encontrado..."
+                  className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* SEÇÃO 5: LOCALIZAÇÃO INICIAL */}
           <div className="space-y-3 pt-2 border-t border-slate-100 dark:border-slate-800">
             <h3 className="text-xs font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400 flex items-center gap-2">
               <MapPin className="w-4 h-4" />
-              4. Localização Inicial no Abrigo <span className="text-rose-500">*</span>
+              5. Localização Inicial no Abrigo <span className="text-rose-500">*</span>
             </h3>
 
-            <select
-              value={currentLocation}
-              onChange={(e) => setCurrentLocation(e.target.value as LocationType)}
-              className="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-xs font-bold focus:outline-none focus:ring-2 focus:ring-emerald-500"
-            >
-              <option value="internacao_gatos">Internação Felina</option>
-              <option value="internacao_caes">Internação Canina</option>
-              <option value="gatil">Gatil</option>
-              <option value="area_caes">Área de Cães</option>
-            </select>
+            <div className="p-3.5 rounded-xl bg-sky-500/10 border border-sky-500/20 flex items-center gap-3">
+              <div className="w-9 h-9 rounded-xl bg-sky-600 text-white flex items-center justify-center shrink-0">
+                <ClipboardList className="w-5 h-5" />
+              </div>
+              <div>
+                <p className="text-xs font-extrabold text-slate-900 dark:text-white">
+                  Triagem <span className="text-sky-700 dark:text-sky-300 font-bold">(EM TRIAGEM)</span>
+                </p>
+                <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed">
+                  Todo animal cadastrado entra automaticamente em triagem. A localização definitiva será definida após o término da triagem.
+                </p>
+              </div>
+            </div>
           </div>
 
-          {/* SEÇÃO 5: OBSERVAÇÕES ATUAIS */}
+          {/* SEÇÃO 6: CASTRAÇÃO E VACINAÇÃO */}
+          <div className="space-y-4 pt-2 border-t border-slate-100 dark:border-slate-800">
+            <h3 className="text-xs font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400 flex items-center gap-2">
+              <ShieldAlert className="w-4 h-4" />
+              6. Castração e Vacinação
+            </h3>
+
+            <label className="flex items-center gap-3 p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 cursor-pointer select-none">
+              <input
+                type="checkbox"
+                checked={castrado}
+                onChange={(e) => setCastrado(e.target.checked)}
+                className="w-5 h-5 rounded-md accent-emerald-600"
+              />
+              <span className="text-xs font-bold text-slate-800 dark:text-slate-200">
+                Animal castrado
+              </span>
+            </label>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+                  Data da Castração <span className="text-slate-400 font-normal">(opcional)</span>
+                </label>
+                <input
+                  type="text"
+                  value={castrationDate}
+                  onChange={(e) => setCastrationDate(e.target.value)}
+                  placeholder="DD/MM/AAAA"
+                  disabled={!castrado}
+                  className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:opacity-50 disabled:pointer-events-none"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+                  Castração Agendada <span className="text-slate-400 font-normal">(opcional)</span>
+                </label>
+                <input
+                  type="text"
+                  value={castrationScheduledDate}
+                  onChange={(e) => setCastrationScheduledDate(e.target.value)}
+                  placeholder="DD/MM/AAAA"
+                  disabled={castrado}
+                  className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:opacity-50 disabled:pointer-events-none"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+                  Última Vacina <span className="text-slate-400 font-normal">(opcional)</span>
+                </label>
+                <input
+                  type="text"
+                  value={vaccinationDate}
+                  onChange={(e) => setVaccinationDate(e.target.value)}
+                  placeholder="DD/MM/AAAA"
+                  className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+                  Próxima Vacina <span className="text-slate-400 font-normal">(opcional)</span>
+                </label>
+                <input
+                  type="text"
+                  value={vaccinationDueDate}
+                  onChange={(e) => setVaccinationDueDate(e.target.value)}
+                  placeholder="DD/MM/AAAA"
+                  className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* SEÇÃO 7: OBSERVAÇÕES ATUAIS */}
           <div className="space-y-3 pt-2 border-t border-slate-100 dark:border-slate-800">
             <h3 className="text-xs font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400 flex items-center gap-2">
               <FileText className="w-4 h-4" />
-              5. Observações Atuais / Estado de Saúde
+              7. Observações Atuais / Estado de Saúde
             </h3>
 
             <textarea
@@ -379,6 +548,70 @@ export const NewAnimalModal: React.FC<NewAnimalModalProps> = ({ isOpen, onClose 
               placeholder="Ex: Animal tranquilo e alimentando-se normalmente. Aguardando triagem..."
               className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500"
             />
+          </div>
+
+          {/* SEÇÃO 7: FOTO DO ANIMAL (Opcional) */}
+          <div className="space-y-3 pt-2 border-t border-slate-100 dark:border-slate-800">
+            <h3 className="text-xs font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400 flex items-center gap-2">
+              <Camera className="w-4 h-4" />
+              8. Foto do Animal (Opcional)
+            </h3>
+
+            <div className="flex items-center gap-4">
+              {photoPreview ? (
+                <div className="relative w-24 h-24 rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 shrink-0">
+                  <img src={photoPreview} alt="Prévia da foto" className="w-full h-full object-cover" />
+                </div>
+              ) : (
+                <div className="w-24 h-24 rounded-2xl border-2 border-dashed border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-800 flex items-center justify-center text-slate-400 shrink-0">
+                  <Camera className="w-8 h-8" />
+                </div>
+              )}
+
+              <div className="space-y-2">
+                <input
+                  id="new-animal-photo-input"
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    e.target.value = '';
+                    if (!file) return;
+                    if (!file.type.startsWith('image/')) {
+                      alert('Selecione um arquivo de imagem (JPG, PNG, WEBP ou GIF).');
+                      return;
+                    }
+                    if (file.size > 5 * 1024 * 1024) {
+                      alert('A imagem deve ter no máximo 5 MB.');
+                      return;
+                    }
+                    setPhotoFile(file);
+                  }}
+                />
+                <label
+                  htmlFor="new-animal-photo-input"
+                  className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 hover:bg-emerald-100 dark:hover:bg-emerald-900/60 text-xs font-bold transition-colors cursor-pointer"
+                >
+                  <UploadCloud className="w-4 h-4" />
+                  {photoFile ? 'Trocar foto' : 'Adicionar foto'}
+                </label>
+
+                {photoFile && (
+                  <button
+                    type="button"
+                    onClick={() => setPhotoFile(null)}
+                    className="block text-[11px] font-bold text-rose-600 dark:text-rose-400 hover:underline"
+                  >
+                    Remover seleção
+                  </button>
+                )}
+              </div>
+            </div>
+
+            <p className="text-[11px] text-slate-400">
+              A foto será enviada logo após o cadastro do animal. Máximo 5 MB.
+            </p>
           </div>
 
           {/* Buttons Footer */}

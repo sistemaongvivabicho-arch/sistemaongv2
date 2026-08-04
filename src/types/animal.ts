@@ -1,4 +1,26 @@
-export type LocationType = 'internacao_gatos' | 'internacao_caes' | 'gatil' | 'area_caes';
+export type LocationType = 
+  | 'triagem' 
+  | 'internacao_gatos' 
+  | 'internacao_caes' 
+  | 'gatil' 
+  | 'area_caes' 
+  | 'lar_temporario' 
+  | 'guarda_compartilhada' 
+  | 'clinica_parceira';
+
+export const TRIAGE_LOCATION: LocationType = 'triagem';
+
+export const FINAL_LOCATIONS: LocationType[] = [
+  'internacao_gatos',
+  'internacao_caes',
+  'gatil',
+  'area_caes',
+  'lar_temporario',
+  'guarda_compartilhada',
+  'clinica_parceira'
+];
+
+export const ALL_LOCATIONS: LocationType[] = ['triagem', ...FINAL_LOCATIONS];
 
 export type SpeciesType = 'cachorro' | 'gato' | 'outro';
 
@@ -14,6 +36,29 @@ export type EntryOrigin =
   | 'terceiros' 
   | 'nao_informado' 
   | 'outro';
+
+export type RescueOriginType =
+  | 'guarda_municipal'
+  | 'departamento_protecao_animal'
+  | 'diretoria'
+  | 'deixado_no_portao'
+  | 'judice';
+
+export const RESCUE_ORIGIN_OPTIONS: { value: RescueOriginType; label: string }[] = [
+  { value: 'guarda_municipal', label: 'Guarda Municipal (GM)' },
+  { value: 'departamento_protecao_animal', label: 'Departamento de Proteção Animal' },
+  { value: 'diretoria', label: 'Diretoria' },
+  { value: 'deixado_no_portao', label: 'Deixado no portão' },
+  { value: 'judice', label: 'Júdice' }
+];
+
+export const RESCUE_ORIGIN_LABELS: Record<string, string> = {
+  guarda_municipal: 'Guarda Municipal (GM)',
+  departamento_protecao_animal: 'Departamento de Proteção Animal',
+  diretoria: 'Diretoria',
+  deixado_no_portao: 'Deixado no portão',
+  judice: 'Júdice'
+};
 
 export interface HistoryEntry {
   id: string;
@@ -53,6 +98,9 @@ export interface Animal {
   origin: EntryOrigin;
   originProtocol?: string;
   originNotes?: string;
+  rescueOrigin?: string;
+  rescueAddress?: string;
+  entryNotes?: string;
   originTutorName?: string; // Optional, "Não identificado" if empty
   originTutorContact?: string; // Optional, "Contato não informado" if empty
   currentObservation?: string;
@@ -60,9 +108,23 @@ export interface Animal {
   adoptionDetails?: AdoptionDetails;
   deathDetails?: DeathDetails;
   photoUrl?: string;
+
+  // Fase 13 — Saúde & Castração (dashboard gerencial)
+  castrado?: boolean;                 // false por padrão
+  castrationDate?: string;            // DD/MM/AAAA — data em que a castração foi realizada
+  castrationScheduledDate?: string;   // DD/MM/AAAA — data agendada para a castração
+  vaccinationDate?: string;           // DD/MM/AAAA — última vacina aplicada
+  vaccinationDueDate?: string;        // DD/MM/AAAA — próxima vacina / revacinação
 }
 
 export const LOCATION_LABELS: Record<LocationType, { label: string; icon: string; bg: string; text: string; badge: string }> = {
+  triagem: {
+    label: 'Triagem',
+    icon: '',
+    bg: 'bg-sky-500/10 dark:bg-sky-500/20',
+    text: 'text-sky-700 dark:text-sky-300',
+    badge: 'bg-sky-100 text-sky-800 border-sky-200'
+  },
   internacao_gatos: {
     label: 'Internação Felina',
     icon: '',
@@ -90,6 +152,27 @@ export const LOCATION_LABELS: Record<LocationType, { label: string; icon: string
     bg: 'bg-emerald-500/10 dark:bg-emerald-500/20',
     text: 'text-emerald-700 dark:text-emerald-300',
     badge: 'bg-emerald-100 text-emerald-800 border-emerald-200'
+  },
+  lar_temporario: {
+    label: 'Lar Temporário',
+    icon: '',
+    bg: 'bg-violet-500/10 dark:bg-violet-500/20',
+    text: 'text-violet-700 dark:text-violet-300',
+    badge: 'bg-violet-100 text-violet-800 border-violet-200'
+  },
+  guarda_compartilhada: {
+    label: 'Guarda Compartilhada',
+    icon: '',
+    bg: 'bg-teal-500/10 dark:bg-teal-500/20',
+    text: 'text-teal-700 dark:text-teal-300',
+    badge: 'bg-teal-100 text-teal-800 border-teal-200'
+  },
+  clinica_parceira: {
+    label: 'Clínica Parceira',
+    icon: '',
+    bg: 'bg-orange-500/10 dark:bg-orange-500/20',
+    text: 'text-orange-700 dark:text-orange-300',
+    badge: 'bg-orange-100 text-orange-800 border-orange-200'
   }
 };
 

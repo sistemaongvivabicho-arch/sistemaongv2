@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAnimalContext } from '../../context/AnimalContext';
 import { X, MapPin, Check } from 'lucide-react';
-import { LocationType, LOCATION_LABELS } from '../../types/animal';
+import { LocationType, LOCATION_LABELS, FINAL_LOCATIONS } from '../../types/animal';
 
 interface ChangeLocationModalProps {
   isOpen: boolean;
@@ -24,7 +24,7 @@ export const ChangeLocationModal: React.FC<ChangeLocationModalProps> = ({
 
   useEffect(() => {
     if (animal) {
-      setNewLocation(animal.currentLocation);
+      setNewLocation(animal.currentLocation === 'triagem' ? FINAL_LOCATIONS[0] : animal.currentLocation);
       setObservation(animal.currentObservation || '');
     }
   }, [animalId, animal]);
@@ -89,10 +89,11 @@ export const ChangeLocationModal: React.FC<ChangeLocationModalProps> = ({
               onChange={(e) => setNewLocation(e.target.value as LocationType)}
               className="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-xs font-bold focus:outline-none focus:ring-2 focus:ring-indigo-500"
             >
-              <option value="internacao_gatos">Internação Felina</option>
-              <option value="internacao_caes">Internação Canina</option>
-              <option value="gatil">Gatil</option>
-              <option value="area_caes">Área de Cães</option>
+              {FINAL_LOCATIONS.map((loc) => (
+                <option key={loc} value={loc}>
+                  {LOCATION_LABELS[loc].label}
+                </option>
+              ))}
             </select>
           </div>
 

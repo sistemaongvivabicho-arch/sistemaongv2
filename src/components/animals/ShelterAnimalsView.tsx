@@ -2,28 +2,16 @@ import React, { useState } from 'react';
 import { useAnimalContext } from '../../context/AnimalContext';
 import { 
   Search, 
-  Filter, 
   Plus, 
-  Eye, 
-  Edit3, 
-  MapPin, 
   Dog, 
-  Calendar, 
-  Tag, 
-  User,
   XCircle,
   RotateCcw
 } from 'lucide-react';
 import { 
-  LOCATION_LABELS, 
-  LocationType, 
-  SPECIES_LABELS, 
-  SpeciesType, 
-  SEX_LABELS, 
-  SexType, 
-  ORIGIN_LABELS, 
-  EntryOrigin 
+  ALL_LOCATIONS,
+  LOCATION_LABELS
 } from '../../types/animal';
+import { AnimalTable } from './AnimalTable';
 
 interface ShelterAnimalsViewProps {
   onOpenNewAnimalModal: () => void;
@@ -159,10 +147,11 @@ export const ShelterAnimalsView: React.FC<ShelterAnimalsViewProps> = ({
               className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-emerald-500"
             >
               <option value="all">Todas as localizações</option>
-              <option value="internacao_gatos">Internação de Gatos</option>
-              <option value="internacao_caes">Internação Canina</option>
-              <option value="gatil">Gatil</option>
-              <option value="area_caes">Área de Cães</option>
+              {ALL_LOCATIONS.map((loc) => (
+                <option key={loc} value={loc}>
+                  {LOCATION_LABELS[loc].label}
+                </option>
+              ))}
             </select>
           </div>
 
@@ -239,104 +228,12 @@ export const ShelterAnimalsView: React.FC<ShelterAnimalsViewProps> = ({
             )}
           </div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-sm">
-              <thead>
-                <tr className="bg-slate-50 dark:bg-slate-800/60 border-b border-slate-200 dark:border-slate-800 text-xs font-bold uppercase text-slate-500 dark:text-slate-400 tracking-wider">
-                  <th className="py-4 px-4">Nome</th>
-                  <th className="py-4 px-4">Microchip</th>
-                  <th className="py-4 px-4">Espécie</th>
-                  <th className="py-4 px-4">Sexo</th>
-                  <th className="py-4 px-4">Data de Entrada</th>
-                  <th className="py-4 px-4">Localização</th>
-                  <th className="py-4 px-4 text-right">Ações</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
-                {filteredAnimals.map((animal) => {
-                  const loc = LOCATION_LABELS[animal.currentLocation];
-                  return (
-                    <tr
-                      key={animal.id}
-                      className="hover:bg-slate-50/80 dark:hover:bg-slate-800/50 transition-colors group"
-                    >
-                      {/* Name - CLICKABLE to open full animal sheet */}
-                      <td className="py-4 px-4 font-extrabold text-slate-900 dark:text-white">
-                        <button
-                          onClick={() => navigateToAnimal(animal.id)}
-                          className="hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors text-left flex items-center gap-2"
-                        >
-                          <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
-                          <span>{animal.name}</span>
-                        </button>
-                      </td>
-
-                      {/* Microchip */}
-                      <td className="py-4 px-4 text-xs font-mono">
-                        {animal.microchip ? (
-                          <span className="px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold border border-slate-200 dark:border-slate-700">
-                            {animal.microchip}
-                          </span>
-                        ) : (
-                          <span className="text-slate-400 italic">Não informado</span>
-                        )}
-                      </td>
-
-                      {/* Species */}
-                      <td className="py-4 px-4 font-semibold text-slate-700 dark:text-slate-300">
-                        {SPECIES_LABELS[animal.species]}
-                      </td>
-
-                      {/* Sex */}
-                      <td className="py-4 px-4 text-slate-600 dark:text-slate-300">
-                        {SEX_LABELS[animal.sex]}
-                      </td>
-
-                      {/* Entry Date */}
-                      <td className="py-4 px-4 text-xs text-slate-500 dark:text-slate-400">
-                        {animal.entryDate}
-                      </td>
-
-                      {/* Location Badge */}
-                      <td className="py-4 px-4">
-                        <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-bold border ${loc.badge}`}>
-                          <MapPin className="w-3 h-3" />
-                          {loc.label}
-                        </span>
-                      </td>
-
-                      {/* Actions */}
-                      <td className="py-4 px-4 text-right whitespace-nowrap">
-                        <div className="flex items-center justify-end gap-1.5">
-                          <button
-                            onClick={() => navigateToAnimal(animal.id)}
-                            title="Visualizar ficha completa"
-                            className="p-2 rounded-lg text-slate-600 hover:text-emerald-600 hover:bg-emerald-50 dark:text-slate-300 dark:hover:bg-emerald-950/40 transition-colors"
-                          >
-                            <Eye className="w-4 h-4" />
-                          </button>
-                          <button
-                            onClick={() => onOpenChangeLocationModal(animal.id)}
-                            title="Alterar localização"
-                            className="p-2 rounded-lg text-slate-600 hover:text-indigo-600 hover:bg-indigo-50 dark:text-slate-300 dark:hover:bg-indigo-950/40 transition-colors"
-                          >
-                            <MapPin className="w-4 h-4" />
-                          </button>
-                          <button
-                            onClick={() => onOpenEditModal(animal.id)}
-                            title="Editar cadastro"
-                            className="p-2 rounded-lg text-slate-600 hover:text-blue-600 hover:bg-blue-50 dark:text-slate-300 dark:hover:bg-blue-950/40 transition-colors"
-                          >
-                            <Edit3 className="w-4 h-4" />
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
+          <AnimalTable
+            animals={filteredAnimals}
+            onView={(id) => navigateToAnimal(id)}
+            onChangeLocation={onOpenChangeLocationModal}
+            onEdit={onOpenEditModal}
+          />
         )}
       </div>
     </div>

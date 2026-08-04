@@ -23,6 +23,10 @@ export const Header: React.FC<HeaderProps> = ({ onOpenMobileMenu, onOpenNewAnima
       title: 'Animais no Abrigo',
       subtitle: 'Listagem e controle dos animais atualmente acolhidos'
     },
+    triagem: {
+      title: 'Animais em Triagem',
+      subtitle: 'Animais recém-cadastrados aguardando avaliação de triagem'
+    },
     visualizacao: {
       title: 'Visualização por Localização',
       subtitle: 'Acompanhe os animais organizados pelo seu espaço físico atual'

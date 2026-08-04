@@ -67,7 +67,7 @@ export const LoginView: React.FC = () => {
               Acesso ao Sistema
             </h1>
             <p className="text-xs text-slate-500 dark:text-slate-400 mt-1.5">
-              Gestão de Entrada e Acolhimento • Yasmin Mesquita
+              Gestão de Entrada e Acolhimento • ONG Viva Bicho - Sistema Interno
             </p>
           </div>
         </div>

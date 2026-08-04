@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useAnimalContext } from '../../context/AnimalContext';
-import { X, Edit3, Check } from 'lucide-react';
-import { SpeciesType, SexType, EntryOrigin } from '../../types/animal';
+import { X, Edit3, Check, ShieldAlert } from 'lucide-react';
+import { SpeciesType, SexType, EntryOrigin, RESCUE_ORIGIN_OPTIONS } from '../../types/animal';
+import { PhotoUploader } from '../common/PhotoUploader';
 
 interface EditAnimalModalProps {
   isOpen: boolean;
@@ -14,7 +15,7 @@ export const EditAnimalModal: React.FC<EditAnimalModalProps> = ({
   animalId,
   onClose
 }) => {
-  const { getAnimalById, updateAnimal } = useAnimalContext();
+  const { getAnimalById, updateAnimal, uploadAnimalPhoto, deleteAnimalPhoto } = useAnimalContext();
 
   const animal = animalId ? getAnimalById(animalId) : null;
 
@@ -27,9 +28,17 @@ export const EditAnimalModal: React.FC<EditAnimalModalProps> = ({
   const [origin, setOrigin] = useState<EntryOrigin>('resgate_ong');
   const [originProtocol, setOriginProtocol] = useState('');
   const [originNotes, setOriginNotes] = useState('');
+  const [rescueOrigin, setRescueOrigin] = useState('');
+  const [rescueAddress, setRescueAddress] = useState('');
+  const [entryNotes, setEntryNotes] = useState('');
   const [originTutorName, setOriginTutorName] = useState('');
   const [originTutorContact, setOriginTutorContact] = useState('');
   const [currentObservation, setCurrentObservation] = useState('');
+  const [castrado, setCastrado] = useState(false);
+  const [castrationDate, setCastrationDate] = useState('');
+  const [castrationScheduledDate, setCastrationScheduledDate] = useState('');
+  const [vaccinationDate, setVaccinationDate] = useState('');
+  const [vaccinationDueDate, setVaccinationDueDate] = useState('');
 
   useEffect(() => {
     if (animal) {
@@ -42,9 +51,17 @@ export const EditAnimalModal: React.FC<EditAnimalModalProps> = ({
       setOrigin(animal.origin);
       setOriginProtocol(animal.originProtocol || '');
       setOriginNotes(animal.originNotes || '');
+      setRescueOrigin(animal.rescueOrigin || '');
+      setRescueAddress(animal.rescueAddress || '');
+      setEntryNotes(animal.entryNotes || '');
       setOriginTutorName(animal.originTutorName || '');
       setOriginTutorContact(animal.originTutorContact || '');
       setCurrentObservation(animal.currentObservation || '');
+      setCastrado(animal.castrado);
+      setCastrationDate(animal.castrationDate || '');
+      setCastrationScheduledDate(animal.castrationScheduledDate || '');
+      setVaccinationDate(animal.vaccinationDate || '');
+      setVaccinationDueDate(animal.vaccinationDueDate || '');
     }
   }, [animalId, animal]);
 
@@ -72,9 +89,17 @@ if (!isOpen || !animal) return null;
         origin,
         originProtocol: originProtocol.trim() || undefined,
         originNotes: originNotes.trim() || undefined,
+        rescueOrigin: rescueOrigin || undefined,
+        rescueAddress: rescueAddress.trim() || undefined,
+        entryNotes: entryNotes.trim() || undefined,
         originTutorName: originTutorName.trim() || undefined,
         originTutorContact: originTutorContact.trim() || undefined,
-        currentObservation: currentObservation.trim() || undefined
+        currentObservation: currentObservation.trim() || undefined,
+        castrado,
+        castrationDate: castrationDate.trim() || undefined,
+        castrationScheduledDate: castrationScheduledDate.trim() || undefined,
+        vaccinationDate: vaccinationDate.trim() || undefined,
+        vaccinationDueDate: vaccinationDueDate.trim() || undefined
       });
 
       if (success) {
@@ -116,6 +141,17 @@ if (!isOpen || !animal) return null;
         {/* Form */}
         <form onSubmit={handleSubmit} className="p-6 space-y-4 max-h-[75vh] overflow-y-auto">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="sm:col-span-2">
+              <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+                Foto do Animal
+              </label>
+              <PhotoUploader
+                photoPath={animal.photoUrl}
+                onUpload={(file) => uploadAnimalPhoto(animal.id, file)}
+                onDelete={() => deleteAnimalPhoto(animal.id)}
+              />
+            </div>
+
             <div className="sm:col-span-2">
               <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
                 Nome do Animal <span className="text-rose-500">*</span>
@@ -225,6 +261,134 @@ if (!isOpen || !animal) return null;
                 onChange={(e) => setOriginTutorContact(e.target.value)}
                 className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-xs"
               />
+            </div>
+
+            <div className="sm:col-span-2 pt-3 border-t border-slate-100 dark:border-slate-800">
+              <h3 className="text-xs font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400 flex items-center gap-2 mb-3">
+                <ShieldAlert className="w-4 h-4" />
+                Informações do Resgate
+              </h3>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="sm:col-span-2">
+                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+                    Origem do Resgate
+                  </label>
+                  <select
+                    value={rescueOrigin}
+                    onChange={(e) => setRescueOrigin(e.target.value)}
+                    className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-xs font-bold"
+                  >
+                    <option value="">Não informado</option>
+                    {RESCUE_ORIGIN_OPTIONS.map((opt) => (
+                      <option key={opt.value} value={opt.value}>
+                        {opt.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="sm:col-span-2">
+                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+                    Endereço do Resgate
+                  </label>
+                  <input
+                    type="text"
+                    value={rescueAddress}
+                    onChange={(e) => setRescueAddress(e.target.value)}
+                    placeholder="Informe onde o animal foi encontrado"
+                    className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-xs"
+                  />
+                </div>
+
+                <div className="sm:col-span-2">
+                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+                    Observação de Entrada
+                  </label>
+                  <textarea
+                    rows={2}
+                    value={entryNotes}
+                    onChange={(e) => setEntryNotes(e.target.value)}
+                    placeholder="Descreva as condições em que o animal foi encontrado..."
+                    className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-xs"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div className="sm:col-span-2 pt-3 border-t border-slate-100 dark:border-slate-800">
+              <h3 className="text-xs font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400 flex items-center gap-2 mb-3">
+                <ShieldAlert className="w-4 h-4" />
+                Castração e Vacinação
+              </h3>
+
+              <label className="flex items-center gap-3 p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 cursor-pointer select-none mb-3">
+                <input
+                  type="checkbox"
+                  checked={castrado}
+                  onChange={(e) => setCastrado(e.target.checked)}
+                  className="w-5 h-5 rounded-md accent-emerald-600"
+                />
+                <span className="text-xs font-bold text-slate-800 dark:text-slate-200">
+                  Animal castrado
+                </span>
+              </label>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+                    Data da Castração
+                  </label>
+                  <input
+                    type="text"
+                    value={castrationDate}
+                    onChange={(e) => setCastrationDate(e.target.value)}
+                    placeholder="DD/MM/AAAA"
+                    disabled={!castrado}
+                    className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-xs disabled:opacity-50 disabled:pointer-events-none"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+                    Castração Agendada
+                  </label>
+                  <input
+                    type="text"
+                    value={castrationScheduledDate}
+                    onChange={(e) => setCastrationScheduledDate(e.target.value)}
+                    placeholder="DD/MM/AAAA"
+                    disabled={castrado}
+                    className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-xs disabled:opacity-50 disabled:pointer-events-none"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+                    Última Vacina
+                  </label>
+                  <input
+                    type="text"
+                    value={vaccinationDate}
+                    onChange={(e) => setVaccinationDate(e.target.value)}
+                    placeholder="DD/MM/AAAA"
+                    className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-xs"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+                    Próxima Vacina
+                  </label>
+                  <input
+                    type="text"
+                    value={vaccinationDueDate}
+                    onChange={(e) => setVaccinationDueDate(e.target.value)}
+                    placeholder="DD/MM/AAAA"
+                    className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-xs"
+                  />
+                </div>
+              </div>
             </div>
 
             <div className="sm:col-span-2">
