@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { useAnimalContext } from '../../context/AnimalContext';
+import React, { useState, useEffect, useCallback } from 'react';
+import { useAuditActions } from '../../context/useAuditActions';
 import { 
   X, 
   Dog, 
@@ -9,16 +9,88 @@ import {
   ClipboardList, 
   FileText, 
   Check, 
-  AlertCircle,
-  Camera,
-  UploadCloud
+  Camera
 } from 'lucide-react';
 import { 
   SpeciesType, 
   SexType, 
+  PorteType,
   EntryOrigin,
   RESCUE_ORIGIN_OPTIONS
 } from '../../types/animal';
+import { InstagramPhotoUploader } from '../common/InstagramPhotoUploader';
+
+const STORAGE_KEY = 'new_animal_form_data';
+
+interface FormData {
+  name: string;
+  species: SpeciesType;
+  sex: SexType;
+  porte: PorteType | '';
+  raca: string;
+  cor: string;
+  entryDate: string;
+  microchip: string;
+  age: string;
+  weight: string;
+  originTutorName: string;
+  originTutorContact: string;
+  origin: EntryOrigin;
+  originNotes: string;
+  rescueOrigin: string;
+  rescueAddress: string;
+  entryNotes: string;
+  currentObservation: string;
+  castrado: boolean;
+  castrationDate: string;
+  castrationScheduledDate: string;
+  vaccinationDate: string;
+  vaccinationDueDate: string;
+}
+
+const getTodayStr = () => {
+  const now = new Date();
+  return `${now.getDate().toString().padStart(2, '0')}/${(now.getMonth() + 1).toString().padStart(2, '0')}/${now.getFullYear()}`;
+};
+
+const getInitialFormData = (): FormData => {
+  const saved = localStorage.getItem(STORAGE_KEY);
+  if (saved) {
+    try {
+      const parsed = JSON.parse(saved);
+      return { ...getDefaultFormData(), ...parsed };
+    } catch {
+      return getDefaultFormData();
+    }
+  }
+  return getDefaultFormData();
+};
+
+const getDefaultFormData = (): FormData => ({
+  name: '',
+  species: 'cachorro',
+  sex: 'macho',
+  porte: '',
+  raca: '',
+  cor: '',
+  entryDate: getTodayStr(),
+  microchip: '',
+  age: '',
+  weight: '',
+  originTutorName: '',
+  originTutorContact: '',
+  origin: 'resgate_ong',
+  originNotes: '',
+  rescueOrigin: '',
+  rescueAddress: '',
+  entryNotes: '',
+  currentObservation: '',
+  castrado: false,
+  castrationDate: '',
+  castrationScheduledDate: '',
+  vaccinationDate: '',
+  vaccinationDueDate: ''
+});
 
 interface NewAnimalModalProps {
   isOpen: boolean;
@@ -26,52 +98,21 @@ interface NewAnimalModalProps {
 }
 
 export const NewAnimalModal: React.FC<NewAnimalModalProps> = ({ isOpen, onClose }) => {
-  const { addAnimal, navigateToAnimal, uploadAnimalPhoto } = useAnimalContext();
+  const { addAnimal, navigateToAnimal, uploadAnimalPhoto } = useAuditActions();
 
-  const todayStr = new Date().toISOString().split('T')[0];
-
-  // Essential required fields
-  const [name, setName] = useState('');
-  const [species, setSpecies] = useState<SpeciesType>('cachorro');
-  const [sex, setSex] = useState<SexType>('macho');
-  const [entryDate, setEntryDate] = useState(
-    `${new Date().getDate().toString().padStart(2, '0')}/${(new Date().getMonth() + 1).toString().padStart(2, '0')}/${new Date().getFullYear()}`
-  );
-
-  // Optional fields
-  const [microchip, setMicrochip] = useState('');
-  const [age, setAge] = useState('');
-  const [weight, setWeight] = useState('');
-
-  // Origin tutor
-  const [originTutorName, setOriginTutorName] = useState('');
-  const [originTutorContact, setOriginTutorContact] = useState('');
-
-  // Entry origin details
-  const [origin, setOrigin] = useState<EntryOrigin>('resgate_ong');
-  const [originProtocol, setOriginProtocol] = useState('');
-  const [originNotes, setOriginNotes] = useState('');
-
-  // Rescue information
-  const [rescueOrigin, setRescueOrigin] = useState('');
-  const [rescueAddress, setRescueAddress] = useState('');
-  const [entryNotes, setEntryNotes] = useState('');
-
-  // Current observation
-  const [currentObservation, setCurrentObservation] = useState('');
-
-  // Health: castration & vaccination
-  const [castrado, setCastrado] = useState(false);
-  const [castrationDate, setCastrationDate] = useState('');
-  const [castrationScheduledDate, setCastrationScheduledDate] = useState('');
-  const [vaccinationDate, setVaccinationDate] = useState('');
-  const [vaccinationDueDate, setVaccinationDueDate] = useState('');
-
+  const [formData, setFormData] = useState<FormData>(getInitialFormData);
   const [photoFile, setPhotoFile] = useState<File | null>(null);
   const [photoPreview, setPhotoPreview] = useState('');
-
   const [submitting, setSubmitting] = useState(false);
 
+  // Persistir formulário em localStorage
+  useEffect(() => {
+    if (isOpen) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(formData));
+    }
+  }, [formData, isOpen]);
+
+  // Limpar preview quando foto mudar
   useEffect(() => {
     if (photoFile) {
       const url = URL.createObjectURL(photoFile);
@@ -81,12 +122,23 @@ export const NewAnimalModal: React.FC<NewAnimalModalProps> = ({ isOpen, onClose 
     setPhotoPreview('');
   }, [photoFile]);
 
-  if (!isOpen) return null;
+  // Resetar formulário quando fechar
+  const handleClose = useCallback(() => {
+    setFormData(getDefaultFormData());
+    setPhotoFile(null);
+    setPhotoPreview('');
+    localStorage.removeItem(STORAGE_KEY);
+    onClose();
+  }, [onClose]);
+
+  const updateField = <K extends keyof FormData>(field: K, value: FormData[K]) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!name.trim()) {
+    if (!formData.name.trim()) {
       alert('Por favor, informe o nome do animal.');
       return;
     }
@@ -94,35 +146,38 @@ export const NewAnimalModal: React.FC<NewAnimalModalProps> = ({ isOpen, onClose 
     setSubmitting(true);
     try {
       const createdId = await addAnimal({
-        name: name.trim(),
-        microchip: microchip.trim() || undefined,
-        species,
-        sex,
-        age: age.trim() || undefined,
-        weight: weight.trim() ? (weight.trim().toLowerCase().endsWith('kg') ? weight.trim() : `${weight.trim()} kg`) : undefined,
-        entryDate: entryDate || '26/07/2026',
+        name: formData.name.trim(),
+        microchip: formData.microchip.trim() || undefined,
+        species: formData.species,
+        sex: formData.sex,
+        porte: formData.porte || undefined,
+        raca: formData.raca.trim() || undefined,
+        cor: formData.cor.trim() || undefined,
+        age: formData.age.trim() || undefined,
+        weight: formData.weight.trim() ? (formData.weight.trim().toLowerCase().endsWith('kg') ? formData.weight.trim() : `${formData.weight.trim()} kg`) : undefined,
+        entryDate: formData.entryDate || getTodayStr(),
         currentLocation: 'triagem',
-        origin,
-        originProtocol: originProtocol.trim() || undefined,
-        originNotes: originNotes.trim() || undefined,
-        rescueOrigin: rescueOrigin || undefined,
-        rescueAddress: rescueAddress.trim() || undefined,
-        entryNotes: entryNotes.trim() || undefined,
-        originTutorName: originTutorName.trim() || undefined,
-        originTutorContact: originTutorContact.trim() || undefined,
-        currentObservation: currentObservation.trim() || undefined,
-        castrado,
-        castrationDate: castrationDate.trim() || undefined,
-        castrationScheduledDate: castrationScheduledDate.trim() || undefined,
-        vaccinationDate: vaccinationDate.trim() || undefined,
-        vaccinationDueDate: vaccinationDueDate.trim() || undefined
+        origin: formData.origin,
+        originNotes: formData.originNotes.trim() || undefined,
+        rescueOrigin: formData.rescueOrigin || undefined,
+        rescueAddress: formData.rescueAddress.trim() || undefined,
+        entryNotes: formData.entryNotes.trim() || undefined,
+        originTutorName: formData.originTutorName.trim() || undefined,
+        originTutorContact: formData.originTutorContact.trim() || undefined,
+        currentObservation: formData.currentObservation.trim() || undefined,
+        castrado: formData.castrado,
+        castrationDate: formData.castrationDate.trim() || undefined,
+        castrationScheduledDate: formData.castrationScheduledDate.trim() || undefined,
+        vaccinationDate: formData.vaccinationDate.trim() || undefined,
+        vaccinationDueDate: formData.vaccinationDueDate.trim() || undefined
       });
 
       if (createdId) {
         if (photoFile) {
           await uploadAnimalPhoto(createdId, photoFile);
         }
-        onClose();
+        localStorage.removeItem(STORAGE_KEY);
+        handleClose();
         navigateToAnimal(createdId);
       }
     } catch (err) {
@@ -132,13 +187,15 @@ export const NewAnimalModal: React.FC<NewAnimalModalProps> = ({ isOpen, onClose 
     }
   };
 
+  if (!isOpen) return null;
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-sm overflow-y-auto">
       <div className="relative w-full max-w-2xl bg-white dark:bg-slate-900 rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-800 my-8 overflow-hidden">
         {/* Modal Header */}
-        <div className="flex items-center justify-between p-6 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/40">
+        <div className="flex items-center justify-between p-5 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/40">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-emerald-600 text-white flex items-center justify-center font-bold">
+            <div className="w-10 h-10 rounded-xl bg-emerald-600 text-white flex items-center justify-center font-bold text-lg">
               🐾
             </div>
             <div>
@@ -152,7 +209,7 @@ export const NewAnimalModal: React.FC<NewAnimalModalProps> = ({ isOpen, onClose 
           </div>
 
           <button
-            onClick={onClose}
+            onClick={handleClose}
             className="p-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
           >
             <X className="w-5 h-5" />
@@ -160,15 +217,24 @@ export const NewAnimalModal: React.FC<NewAnimalModalProps> = ({ isOpen, onClose 
         </div>
 
         {/* Modal Form */}
-        <form onSubmit={handleSubmit} className="p-6 space-y-6 max-h-[75vh] overflow-y-auto">
-          {/* SEÇÃO 1: INFORMAÇÕES DO ANIMAL */}
+        <form onSubmit={handleSubmit} className="p-5 space-y-5 max-h-[75vh] overflow-y-auto">
+          {/* SEÇÃO 1: FOTO DO ANIMAL */}
+          <div className="flex justify-center">
+            <InstagramPhotoUploader
+              photoPreview={photoPreview}
+              onPhotoSelect={(file) => setPhotoFile(file)}
+              onPhotoRemove={() => setPhotoFile(null)}
+            />
+          </div>
+
+          {/* SEÇÃO 2: IDENTIFICAÇÃO DO ANIMAL */}
           <div className="space-y-4">
             <h3 className="text-xs font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400 flex items-center gap-2 border-b border-slate-100 dark:border-slate-800 pb-2">
               <Dog className="w-4 h-4" />
-              1. Informações do Animal
+              Identificação do Animal
             </h3>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {/* Nome (Obrigatório) */}
               <div className="sm:col-span-2">
                 <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
@@ -177,28 +243,11 @@ export const NewAnimalModal: React.FC<NewAnimalModalProps> = ({ isOpen, onClose 
                 <input
                   type="text"
                   required
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
+                  value={formData.name}
+                  onChange={(e) => updateField('name', e.target.value)}
                   placeholder="Ex: Thor, Luna, Bob..."
-                  className="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 font-semibold"
+                  className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 font-semibold"
                 />
-              </div>
-
-              {/* Microchip (Opcional) */}
-              <div>
-                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
-                  Microchip <span className="text-slate-400 font-normal">(opcional)</span>
-                </label>
-                <input
-                  type="text"
-                  value={microchip}
-                  onChange={(e) => setMicrochip(e.target.value)}
-                  placeholder="Ex: 982000123456789"
-                  className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-xs font-mono focus:outline-none focus:ring-2 focus:ring-emerald-500"
-                />
-                <span className="text-[10px] text-slate-400 block mt-1">
-                  Se em branco: exibirá "Não informado"
-                </span>
               </div>
 
               {/* Espécie (Obrigatório) */}
@@ -207,8 +256,8 @@ export const NewAnimalModal: React.FC<NewAnimalModalProps> = ({ isOpen, onClose 
                   Espécie <span className="text-rose-500">*</span>
                 </label>
                 <select
-                  value={species}
-                  onChange={(e) => setSpecies(e.target.value as SpeciesType)}
+                  value={formData.species}
+                  onChange={(e) => updateField('species', e.target.value as SpeciesType)}
                   className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-emerald-500"
                 >
                   <option value="cachorro">Cachorro</option>
@@ -223,13 +272,58 @@ export const NewAnimalModal: React.FC<NewAnimalModalProps> = ({ isOpen, onClose 
                   Sexo <span className="text-rose-500">*</span>
                 </label>
                 <select
-                  value={sex}
-                  onChange={(e) => setSex(e.target.value as SexType)}
+                  value={formData.sex}
+                  onChange={(e) => updateField('sex', e.target.value as SexType)}
                   className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-emerald-500"
                 >
                   <option value="macho">Macho</option>
                   <option value="femea">Fêmea</option>
                 </select>
+              </div>
+
+              {/* Porte (Opcional) */}
+              <div>
+                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+                  Porte <span className="text-slate-400 font-normal">(opcional)</span>
+                </label>
+                <select
+                  value={formData.porte}
+                  onChange={(e) => updateField('porte', e.target.value as PorteType | '')}
+                  className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                >
+                  <option value="">Não informado</option>
+                  <option value="pequeno">Pequeno</option>
+                  <option value="medio">Médio</option>
+                  <option value="grande">Grande</option>
+                </select>
+              </div>
+
+              {/* Raça (Opcional) */}
+              <div>
+                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+                  Raça <span className="text-slate-400 font-normal">(opcional)</span>
+                </label>
+                <input
+                  type="text"
+                  value={formData.raca}
+                  onChange={(e) => updateField('raca', e.target.value)}
+                  placeholder="Ex: Vira-lata, Persa..."
+                  className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                />
+              </div>
+
+              {/* Cor (Opcional) */}
+              <div>
+                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+                  Cor <span className="text-slate-400 font-normal">(opcional)</span>
+                </label>
+                <input
+                  type="text"
+                  value={formData.cor}
+                  onChange={(e) => updateField('cor', e.target.value)}
+                  placeholder="Ex: Caramelo, Preto..."
+                  className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                />
               </div>
 
               {/* Data de Entrada (Obrigatório) */}
@@ -240,8 +334,8 @@ export const NewAnimalModal: React.FC<NewAnimalModalProps> = ({ isOpen, onClose 
                 <input
                   type="text"
                   required
-                  value={entryDate}
-                  onChange={(e) => setEntryDate(e.target.value)}
+                  value={formData.entryDate}
+                  onChange={(e) => updateField('entryDate', e.target.value)}
                   placeholder="DD/MM/AAAA"
                   className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-emerald-500"
                 />
@@ -254,59 +348,67 @@ export const NewAnimalModal: React.FC<NewAnimalModalProps> = ({ isOpen, onClose 
                 </label>
                 <input
                   type="text"
-                  value={age}
-                  onChange={(e) => setAge(e.target.value)}
+                  value={formData.age}
+                  onChange={(e) => updateField('age', e.target.value)}
                   placeholder="Ex: 2 anos, 5 meses..."
                   className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500"
                 />
-                <span className="text-[10px] text-slate-400 block mt-1">
-                  Se em branco: exibirá "Não identificada"
-                </span>
               </div>
 
               {/* Peso (Opcional) */}
               <div>
                 <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
-                  Peso <span className="text-emerald-600 dark:text-emerald-400 font-bold">(em kg)</span> <span className="text-slate-400 font-normal">(opcional)</span>
+                  Peso (kg) <span className="text-slate-400 font-normal">(opcional)</span>
                 </label>
                 <div className="relative">
                   <input
                     type="text"
-                    value={weight}
-                    onChange={(e) => setWeight(e.target.value)}
+                    value={formData.weight}
+                    onChange={(e) => updateField('weight', e.target.value)}
                     placeholder="Ex: 25"
-                    className="w-full p-2.5 pr-12 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                    className="w-full p-2.5 pr-10 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-emerald-500"
                   />
-                  <span className="absolute right-3.5 top-1/2 -translate-y-1/2 text-xs font-bold text-slate-400 pointer-events-none">
+                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-bold text-slate-400 pointer-events-none">
                     kg
                   </span>
                 </div>
-                <span className="text-[10px] text-slate-400 block mt-1">
-                  Se em branco: exibirá "Não informado"
-                </span>
+              </div>
+
+              {/* Microchip (Opcional) */}
+              <div>
+                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+                  Microchip <span className="text-slate-400 font-normal">(opcional)</span>
+                </label>
+                <input
+                  type="text"
+                  value={formData.microchip}
+                  onChange={(e) => updateField('microchip', e.target.value)}
+                  placeholder="Ex: 982000123456789"
+                  className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-xs font-mono focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                />
               </div>
             </div>
           </div>
 
-          {/* SEÇÃO 2: TUTOR DE ORIGEM (Opcional) */}
-          <div className="space-y-4 pt-2 border-t border-slate-100 dark:border-slate-800">
+          {/* SEÇÃO 3: TUTOR DE ORIGEM (Opcional) */}
+          <div className="space-y-4 pt-4 border-t border-slate-100 dark:border-slate-800">
             <h3 className="text-xs font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400 flex items-center gap-2">
               <User className="w-4 h-4" />
-              2. Tutor de Origem (Opcional)
+              Tutor de Origem (Opcional)
             </h3>
             <p className="text-xs text-slate-500">
               Caso o animal seja de resgate sem tutor conhecido, pode deixar estes campos em branco.
             </p>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
                 <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
                   Nome do Tutor
                 </label>
                 <input
                   type="text"
-                  value={originTutorName}
-                  onChange={(e) => setOriginTutorName(e.target.value)}
+                  value={formData.originTutorName}
+                  onChange={(e) => updateField('originTutorName', e.target.value)}
                   placeholder="Deixe em branco se não identificado"
                   className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500"
                 />
@@ -318,8 +420,8 @@ export const NewAnimalModal: React.FC<NewAnimalModalProps> = ({ isOpen, onClose 
                 </label>
                 <input
                   type="text"
-                  value={originTutorContact}
-                  onChange={(e) => setOriginTutorContact(e.target.value)}
+                  value={formData.originTutorContact}
+                  onChange={(e) => updateField('originTutorContact', e.target.value)}
                   placeholder="Telefone / Celular"
                   className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500"
                 />
@@ -327,21 +429,21 @@ export const NewAnimalModal: React.FC<NewAnimalModalProps> = ({ isOpen, onClose 
             </div>
           </div>
 
-          {/* SEÇÃO 3: ORIGEM DA ENTRADA */}
-          <div className="space-y-4 pt-2 border-t border-slate-100 dark:border-slate-800">
+          {/* SEÇÃO 4: ORIGEM DA ENTRADA */}
+          <div className="space-y-4 pt-4 border-t border-slate-100 dark:border-slate-800">
             <h3 className="text-xs font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400 flex items-center gap-2">
               <ShieldAlert className="w-4 h-4" />
-              3. Origem da Entrada
+              Origem da Entrada
             </h3>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div className="sm:col-span-2">
                 <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
                   Origem do Resgate <span className="text-rose-500">*</span>
                 </label>
                 <select
-                  value={origin}
-                  onChange={(e) => setOrigin(e.target.value as EntryOrigin)}
+                  value={formData.origin}
+                  onChange={(e) => updateField('origin', e.target.value as EntryOrigin)}
                   className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-emerald-500"
                 >
                   <option value="guarda_municipal">Guarda Municipal</option>
@@ -354,27 +456,14 @@ export const NewAnimalModal: React.FC<NewAnimalModalProps> = ({ isOpen, onClose 
                 </select>
               </div>
 
-              <div>
-                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
-                  Nº do Registro / Protocolo
-                </label>
-                <input
-                  type="text"
-                  value={originProtocol}
-                  onChange={(e) => setOriginProtocol(e.target.value)}
-                  placeholder="Ex: GM-2026-0841"
-                  className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500"
-                />
-              </div>
-
               <div className="sm:col-span-2">
                 <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
                   Observações da Entrada
                 </label>
                 <textarea
                   rows={2}
-                  value={originNotes}
-                  onChange={(e) => setOriginNotes(e.target.value)}
+                  value={formData.originNotes}
+                  onChange={(e) => updateField('originNotes', e.target.value)}
                   placeholder="Ex: Animal resgatado pela Guarda Municipal após denúncia de maus-tratos..."
                   className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500"
                 />
@@ -382,21 +471,21 @@ export const NewAnimalModal: React.FC<NewAnimalModalProps> = ({ isOpen, onClose 
             </div>
           </div>
 
-          {/* SEÇÃO 4: INFORMAÇÕES DO RESGATE */}
-          <div className="space-y-4 pt-2 border-t border-slate-100 dark:border-slate-800">
+          {/* SEÇÃO 5: INFORMAÇÕES DO RESGATE */}
+          <div className="space-y-4 pt-4 border-t border-slate-100 dark:border-slate-800">
             <h3 className="text-xs font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400 flex items-center gap-2">
               <ShieldAlert className="w-4 h-4" />
-              4. Informações do Resgate
+              Informações do Resgate
             </h3>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div className="sm:col-span-2">
                 <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
                   Origem do Resgate
                 </label>
                 <select
-                  value={rescueOrigin}
-                  onChange={(e) => setRescueOrigin(e.target.value)}
+                  value={formData.rescueOrigin}
+                  onChange={(e) => updateField('rescueOrigin', e.target.value)}
                   className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-emerald-500"
                 >
                   <option value="">Selecione a origem do resgate</option>
@@ -414,8 +503,8 @@ export const NewAnimalModal: React.FC<NewAnimalModalProps> = ({ isOpen, onClose 
                 </label>
                 <input
                   type="text"
-                  value={rescueAddress}
-                  onChange={(e) => setRescueAddress(e.target.value)}
+                  value={formData.rescueAddress}
+                  onChange={(e) => updateField('rescueAddress', e.target.value)}
                   placeholder="Informe onde o animal foi encontrado"
                   className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500"
                 />
@@ -427,8 +516,8 @@ export const NewAnimalModal: React.FC<NewAnimalModalProps> = ({ isOpen, onClose 
                 </label>
                 <textarea
                   rows={2}
-                  value={entryNotes}
-                  onChange={(e) => setEntryNotes(e.target.value)}
+                  value={formData.entryNotes}
+                  onChange={(e) => updateField('entryNotes', e.target.value)}
                   placeholder="Descreva as condições em que o animal foi encontrado..."
                   className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500"
                 />
@@ -436,16 +525,16 @@ export const NewAnimalModal: React.FC<NewAnimalModalProps> = ({ isOpen, onClose 
             </div>
           </div>
 
-          {/* SEÇÃO 5: LOCALIZAÇÃO INICIAL */}
-          <div className="space-y-3 pt-2 border-t border-slate-100 dark:border-slate-800">
+          {/* SEÇÃO 6: LOCALIZAÇÃO INICIAL */}
+          <div className="space-y-3 pt-4 border-t border-slate-100 dark:border-slate-800">
             <h3 className="text-xs font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400 flex items-center gap-2">
               <MapPin className="w-4 h-4" />
-              5. Localização Inicial no Abrigo <span className="text-rose-500">*</span>
+              Localização Inicial no Abrigo <span className="text-rose-500">*</span>
             </h3>
 
-            <div className="p-3.5 rounded-xl bg-sky-500/10 border border-sky-500/20 flex items-center gap-3">
-              <div className="w-9 h-9 rounded-xl bg-sky-600 text-white flex items-center justify-center shrink-0">
-                <ClipboardList className="w-5 h-5" />
+            <div className="p-3 rounded-xl bg-sky-500/10 border border-sky-500/20 flex items-center gap-3">
+              <div className="w-8 h-8 rounded-lg bg-sky-600 text-white flex items-center justify-center shrink-0">
+                <ClipboardList className="w-4 h-4" />
               </div>
               <div>
                 <p className="text-xs font-extrabold text-slate-900 dark:text-white">
@@ -458,18 +547,18 @@ export const NewAnimalModal: React.FC<NewAnimalModalProps> = ({ isOpen, onClose 
             </div>
           </div>
 
-          {/* SEÇÃO 6: CASTRAÇÃO E VACINAÇÃO */}
-          <div className="space-y-4 pt-2 border-t border-slate-100 dark:border-slate-800">
+          {/* SEÇÃO 7: CASTRAÇÃO E VACINAÇÃO */}
+          <div className="space-y-4 pt-4 border-t border-slate-100 dark:border-slate-800">
             <h3 className="text-xs font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400 flex items-center gap-2">
               <ShieldAlert className="w-4 h-4" />
-              6. Castração e Vacinação
+              Castração e Vacinação
             </h3>
 
-            <label className="flex items-center gap-3 p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 cursor-pointer select-none">
+            <label className="flex items-center gap-3 p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 cursor-pointer select-none">
               <input
                 type="checkbox"
-                checked={castrado}
-                onChange={(e) => setCastrado(e.target.checked)}
+                checked={formData.castrado}
+                onChange={(e) => updateField('castrado', e.target.checked)}
                 className="w-5 h-5 rounded-md accent-emerald-600"
               />
               <span className="text-xs font-bold text-slate-800 dark:text-slate-200">
@@ -477,17 +566,17 @@ export const NewAnimalModal: React.FC<NewAnimalModalProps> = ({ isOpen, onClose 
               </span>
             </label>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
                 <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
                   Data da Castração <span className="text-slate-400 font-normal">(opcional)</span>
                 </label>
                 <input
                   type="text"
-                  value={castrationDate}
-                  onChange={(e) => setCastrationDate(e.target.value)}
+                  value={formData.castrationDate}
+                  onChange={(e) => updateField('castrationDate', e.target.value)}
                   placeholder="DD/MM/AAAA"
-                  disabled={!castrado}
+                  disabled={!formData.castrado}
                   className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:opacity-50 disabled:pointer-events-none"
                 />
               </div>
@@ -498,10 +587,10 @@ export const NewAnimalModal: React.FC<NewAnimalModalProps> = ({ isOpen, onClose 
                 </label>
                 <input
                   type="text"
-                  value={castrationScheduledDate}
-                  onChange={(e) => setCastrationScheduledDate(e.target.value)}
+                  value={formData.castrationScheduledDate}
+                  onChange={(e) => updateField('castrationScheduledDate', e.target.value)}
                   placeholder="DD/MM/AAAA"
-                  disabled={castrado}
+                  disabled={formData.castrado}
                   className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:opacity-50 disabled:pointer-events-none"
                 />
               </div>
@@ -512,8 +601,8 @@ export const NewAnimalModal: React.FC<NewAnimalModalProps> = ({ isOpen, onClose 
                 </label>
                 <input
                   type="text"
-                  value={vaccinationDate}
-                  onChange={(e) => setVaccinationDate(e.target.value)}
+                  value={formData.vaccinationDate}
+                  onChange={(e) => updateField('vaccinationDate', e.target.value)}
                   placeholder="DD/MM/AAAA"
                   className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-emerald-500"
                 />
@@ -525,8 +614,8 @@ export const NewAnimalModal: React.FC<NewAnimalModalProps> = ({ isOpen, onClose 
                 </label>
                 <input
                   type="text"
-                  value={vaccinationDueDate}
-                  onChange={(e) => setVaccinationDueDate(e.target.value)}
+                  value={formData.vaccinationDueDate}
+                  onChange={(e) => updateField('vaccinationDueDate', e.target.value)}
                   placeholder="DD/MM/AAAA"
                   className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-emerald-500"
                 />
@@ -534,91 +623,27 @@ export const NewAnimalModal: React.FC<NewAnimalModalProps> = ({ isOpen, onClose 
             </div>
           </div>
 
-          {/* SEÇÃO 7: OBSERVAÇÕES ATUAIS */}
-          <div className="space-y-3 pt-2 border-t border-slate-100 dark:border-slate-800">
+          {/* SEÇÃO 8: OBSERVAÇÕES ATUAIS */}
+          <div className="space-y-3 pt-4 border-t border-slate-100 dark:border-slate-800">
             <h3 className="text-xs font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400 flex items-center gap-2">
               <FileText className="w-4 h-4" />
-              7. Observações Atuais / Estado de Saúde
+              Observações Atuais / Estado de Saúde
             </h3>
 
             <textarea
               rows={2}
-              value={currentObservation}
-              onChange={(e) => setCurrentObservation(e.target.value)}
+              value={formData.currentObservation}
+              onChange={(e) => updateField('currentObservation', e.target.value)}
               placeholder="Ex: Animal tranquilo e alimentando-se normalmente. Aguardando triagem..."
               className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500"
             />
-          </div>
-
-          {/* SEÇÃO 7: FOTO DO ANIMAL (Opcional) */}
-          <div className="space-y-3 pt-2 border-t border-slate-100 dark:border-slate-800">
-            <h3 className="text-xs font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400 flex items-center gap-2">
-              <Camera className="w-4 h-4" />
-              8. Foto do Animal (Opcional)
-            </h3>
-
-            <div className="flex items-center gap-4">
-              {photoPreview ? (
-                <div className="relative w-24 h-24 rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 shrink-0">
-                  <img src={photoPreview} alt="Prévia da foto" className="w-full h-full object-cover" />
-                </div>
-              ) : (
-                <div className="w-24 h-24 rounded-2xl border-2 border-dashed border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-800 flex items-center justify-center text-slate-400 shrink-0">
-                  <Camera className="w-8 h-8" />
-                </div>
-              )}
-
-              <div className="space-y-2">
-                <input
-                  id="new-animal-photo-input"
-                  type="file"
-                  accept="image/*"
-                  className="hidden"
-                  onChange={(e) => {
-                    const file = e.target.files?.[0];
-                    e.target.value = '';
-                    if (!file) return;
-                    if (!file.type.startsWith('image/')) {
-                      alert('Selecione um arquivo de imagem (JPG, PNG, WEBP ou GIF).');
-                      return;
-                    }
-                    if (file.size > 5 * 1024 * 1024) {
-                      alert('A imagem deve ter no máximo 5 MB.');
-                      return;
-                    }
-                    setPhotoFile(file);
-                  }}
-                />
-                <label
-                  htmlFor="new-animal-photo-input"
-                  className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 hover:bg-emerald-100 dark:hover:bg-emerald-900/60 text-xs font-bold transition-colors cursor-pointer"
-                >
-                  <UploadCloud className="w-4 h-4" />
-                  {photoFile ? 'Trocar foto' : 'Adicionar foto'}
-                </label>
-
-                {photoFile && (
-                  <button
-                    type="button"
-                    onClick={() => setPhotoFile(null)}
-                    className="block text-[11px] font-bold text-rose-600 dark:text-rose-400 hover:underline"
-                  >
-                    Remover seleção
-                  </button>
-                )}
-              </div>
-            </div>
-
-            <p className="text-[11px] text-slate-400">
-              A foto será enviada logo após o cadastro do animal. Máximo 5 MB.
-            </p>
           </div>
 
           {/* Buttons Footer */}
           <div className="pt-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-end gap-3">
             <button
               type="button"
-              onClick={onClose}
+              onClick={handleClose}
               className="px-5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 font-bold text-xs transition-colors"
             >
               Cancelar

@@ -1,18 +1,52 @@
-import React from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useAnimalContext } from '../../context/AnimalContext';
 import { useAuth } from '../../context/AuthContext';
-import { Menu, Plus, Bell, ChevronRight, Dog } from 'lucide-react';
+import { useAlerts } from '../../context/AlertContext';
+import { Menu, Plus, Bell, ChevronRight, X, Clock, User } from 'lucide-react';
+import { PRIORITY_COLORS, RECIPIENT_LABELS } from '../../types/alerts';
 
 interface HeaderProps {
   onOpenMobileMenu: () => void;
   onOpenNewAnimalModal: () => void;
+  onOpenNewAlertModal?: () => void;
 }
 
-export const Header: React.FC<HeaderProps> = ({ onOpenMobileMenu, onOpenNewAnimalModal }) => {
-  const { activeTab, selectedAnimalId, getAnimalById, setSelectedAnimalId } = useAnimalContext();
+function formatTimestamp(ts: string): string {
+  try {
+    const d = new Date(ts);
+    return d.toLocaleString('pt-BR', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  } catch {
+    return ts;
+  }
+}
+
+export const Header: React.FC<HeaderProps> = ({ onOpenMobileMenu, onOpenNewAnimalModal, onOpenNewAlertModal }) => {
+  const { activeTab, selectedAnimalId, getAnimalById, setSelectedAnimalId, setActiveTab } = useAnimalContext();
   const { profile } = useAuth();
+  const { alerts, unreadCount, markAsRead, markAllAsRead } = useAlerts();
+  const [panelOpen, setPanelOpen] = useState(false);
+  const panelRef = useRef<HTMLDivElement>(null);
 
   const selectedAnimal = selectedAnimalId ? getAnimalById(selectedAnimalId) : null;
+
+  // Fechar painel ao clicar fora
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (panelRef.current && !panelRef.current.contains(e.target as Node)) {
+        setPanelOpen(false);
+      }
+    };
+    if (panelOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [panelOpen]);
 
   const tabTitles: Record<string, { title: string; subtitle: string }> = {
     entrada: {
@@ -20,36 +54,40 @@ export const Header: React.FC<HeaderProps> = ({ onOpenMobileMenu, onOpenNewAnima
       subtitle: 'Pesquise animais ou cadastre uma nova entrada'
     },
     triagem: {
-      title: 'Triagem',
-      subtitle: 'Animais recem-cadastrados aguardando avaliacao de triagem'
+      title: 'Animais em Triagem',
+      subtitle: 'Animais recém-cadastrados aguardando avaliação de triagem'
     },
     no_abrigo: {
       title: 'Animais no Abrigo',
       subtitle: 'Listagem e controle dos animais atualmente acolhidos'
     },
     castracoes: {
-      title: 'Castracoes',
-      subtitle: 'Agenda de castracoes, agendamentos e registros do mes'
+      title: 'Castrações',
+      subtitle: 'Agenda de castrações, agendamentos e registros do mês'
     },
     visualizacao: {
-      title: 'Localizacoes',
-      subtitle: 'Acompanhe os animais organizados pelo seu espaco fisico atual'
+      title: 'Localizações',
+      subtitle: 'Acompanhe os animais organizados pelo seu espaço físico atual'
     },
     adotados: {
-      title: 'Adocoes',
-      subtitle: 'Historico e registro de adocoes concluidas'
+      title: 'Adoções',
+      subtitle: 'Histórico e registro de adoções concluídas'
     },
     obito: {
-      title: 'Obitos',
-      subtitle: 'Registro e historico respeitoso de animais falecidos'
+      title: 'Óbitos',
+      subtitle: 'Registro e histórico respeitoso de animais falecidos'
     },
     relatorios: {
-      title: 'Relatorios',
-      subtitle: 'Dashboard gerencial com indicadores, graficos e alertas'
+      title: 'Relatórios',
+      subtitle: 'Dashboard gerencial com indicadores, gráficos e alertas'
+    },
+    avisos: {
+      title: 'Avisos',
+      subtitle: 'Central de comunicação interna da ONG'
     },
     configuracoes: {
-      title: 'Configuracoes',
-      subtitle: 'Informacoes do perfil e preferencias do sistema'
+      title: 'Configurações',
+      subtitle: 'Informações do perfil e preferências do sistema'
     }
   };
 
@@ -57,6 +95,8 @@ export const Header: React.FC<HeaderProps> = ({ onOpenMobileMenu, onOpenNewAnima
     title: 'Sistema de Animais',
     subtitle: 'Gestão da ONG'
   };
+
+  const recentAlerts = alerts.filter((a) => a.status === 'ativo').slice(0, 8);
 
   return (
     <header className="sticky top-0 z-30 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 px-4 sm:px-6 py-4">
@@ -96,23 +136,136 @@ export const Header: React.FC<HeaderProps> = ({ onOpenMobileMenu, onOpenNewAnima
 
         {/* Right Actions & User Profile */}
         <div className="flex items-center gap-2 sm:gap-3">
-          {/* Quick Add Animal Button */}
-          <button
-            onClick={onOpenNewAnimalModal}
-            className="flex items-center gap-2 px-3.5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-sm shadow-sm transition-all duration-150 active:scale-95 shrink-0"
-          >
-            <Plus className="w-4 h-4 stroke-[2.5]" />
-            <span className="hidden sm:inline">Nova Entrada</span>
-          </button>
+          {/* Contextual Action Button */}
+          {activeTab === 'entrada' && (
+            <button
+              onClick={onOpenNewAnimalModal}
+              className="flex items-center gap-2 px-3.5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-sm shadow-sm transition-all duration-150 active:scale-95 shrink-0"
+            >
+              <Plus className="w-4 h-4 stroke-[2.5]" />
+              <span className="hidden sm:inline">Nova Entrada</span>
+            </button>
+          )}
+          {activeTab === 'avisos' && (
+            <button
+              onClick={onOpenNewAlertModal}
+              className="flex items-center gap-2 px-3.5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-sm shadow-sm transition-all duration-150 active:scale-95 shrink-0"
+            >
+              <Plus className="w-4 h-4 stroke-[2.5]" />
+              <span className="hidden sm:inline">Novo Aviso</span>
+            </button>
+          )}
 
-          {/* Notification bell mock */}
-          <button
-            title="Notificações"
-            className="relative p-2.5 rounded-xl text-slate-500 hover:text-slate-700 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800 transition-colors"
-          >
-            <Bell className="w-5 h-5" />
-            <span className="absolute top-2 right-2 w-2 h-2 rounded-full bg-emerald-500 ring-2 ring-white dark:ring-slate-900"></span>
-          </button>
+          {/* Notification bell with counter */}
+          <div className="relative" ref={panelRef}>
+            <button
+              onClick={() => setPanelOpen((v) => !v)}
+              title="Notificações"
+              className="relative p-2.5 rounded-xl text-slate-500 hover:text-slate-700 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800 transition-colors"
+            >
+              <Bell className="w-5 h-5" />
+              {unreadCount > 0 && (
+                <span className="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] flex items-center justify-center px-1 rounded-full bg-rose-500 text-white text-[10px] font-bold ring-2 ring-white dark:ring-slate-900">
+                  {unreadCount > 99 ? '99+' : unreadCount}
+                </span>
+              )}
+            </button>
+
+            {/* Side Panel */}
+            {panelOpen && (
+              <div className="absolute right-0 top-full mt-2 z-50 w-80 sm:w-96 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-2xl overflow-hidden">
+                <div className="flex items-center justify-between p-4 border-b border-slate-100 dark:border-slate-800">
+                  <div className="flex items-center gap-2">
+                    <Bell className="w-4 h-4 text-emerald-600" />
+                    <h3 className="text-sm font-bold text-slate-900 dark:text-white">Notificações</h3>
+                    {unreadCount > 0 && (
+                      <span className="inline-flex items-center justify-center min-w-[18px] h-[18px] px-1 rounded-full bg-rose-500 text-white text-[10px] font-bold">
+                        {unreadCount}
+                      </span>
+                    )}
+                  </div>
+                  <div className="flex items-center gap-1">
+                    {unreadCount > 0 && (
+                      <button
+                        onClick={markAllAsRead}
+                        className="text-[10px] font-bold text-emerald-600 hover:text-emerald-700 dark:text-emerald-400 px-2 py-1 rounded-lg hover:bg-emerald-50 dark:hover:bg-emerald-950/30 transition-colors"
+                      >
+                        Marcar tudo lido
+                      </button>
+                    )}
+                    <button
+                      onClick={() => setPanelOpen(false)}
+                      className="p-1.5 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
+
+                <div className="max-h-80 overflow-y-auto">
+                  {recentAlerts.length === 0 ? (
+                    <div className="p-8 text-center">
+                      <Bell className="w-8 h-8 text-slate-300 dark:text-slate-600 mx-auto mb-2" />
+                      <p className="text-xs text-slate-500">Nenhuma notificação</p>
+                    </div>
+                  ) : (
+                    recentAlerts.map((alert) => {
+                      const colors = PRIORITY_COLORS[alert.priority];
+                      return (
+                        <button
+                          key={alert.id}
+                          onClick={() => {
+                            markAsRead(alert.id);
+                            setPanelOpen(false);
+                            setActiveTab('avisos');
+                          }}
+                          className={`w-full text-left p-4 border-b border-slate-50 dark:border-slate-800/60 hover:bg-slate-50 dark:hover:bg-slate-800/40 transition-colors ${
+                            !alert.is_read ? 'bg-slate-50/50 dark:bg-slate-800/20' : ''
+                          }`}
+                        >
+                          <div className="flex items-start gap-3">
+                            <div className={`w-2 h-2 rounded-full mt-1.5 shrink-0 ${colors.dot}`} />
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center gap-2 mb-0.5">
+                                <p className={`text-xs font-bold truncate ${!alert.is_read ? 'text-slate-900 dark:text-white' : 'text-slate-600 dark:text-slate-400'}`}>
+                                  {alert.title}
+                                </p>
+                                {!alert.is_read && (
+                                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0" />
+                                )}
+                              </div>
+                              <p className="text-[11px] text-slate-500 dark:text-slate-400 line-clamp-2">
+                                {alert.message}
+                              </p>
+                              <div className="flex items-center gap-2 mt-1 text-[10px] text-slate-400">
+                                <span>{alert.author_name}</span>
+                                <span>·</span>
+                                <span>{formatTimestamp(alert.created_at)}</span>
+                              </div>
+                            </div>
+                          </div>
+                        </button>
+                      );
+                    })
+                  )}
+                </div>
+
+                {alerts.length > 0 && (
+                  <div className="p-3 border-t border-slate-100 dark:border-slate-800">
+                    <button
+                      onClick={() => {
+                        setPanelOpen(false);
+                        setActiveTab('avisos');
+                      }}
+                      className="w-full py-2 rounded-xl bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-xs font-bold text-slate-600 dark:text-slate-400 transition-colors"
+                    >
+                      Ver todos os avisos
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
 
           {/* User Avatar with ONG Logo */}
           <div className="hidden md:flex items-center gap-3 pl-2 border-l border-slate-200 dark:border-slate-800">

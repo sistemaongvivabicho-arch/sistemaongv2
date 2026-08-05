@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useAnimalContext } from '../../context/AnimalContext';
+import { useAuditActions } from '../../context/useAuditActions';
 import { X, Heart, Check } from 'lucide-react';
 
 interface RegisterAdoptionModalProps {
@@ -13,7 +13,7 @@ export const RegisterAdoptionModal: React.FC<RegisterAdoptionModalProps> = ({
   animalId,
   onClose
 }) => {
-  const { getAnimalById, registerAdoption, setActiveTab } = useAnimalContext();
+  const { getAnimalById, registerAdoption, setActiveTab } = useAuditActions();
 
   const animal = animalId ? getAnimalById(animalId) : null;
 

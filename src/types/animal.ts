@@ -26,6 +26,14 @@ export type SpeciesType = 'cachorro' | 'gato' | 'outro';
 
 export type SexType = 'macho' | 'femea';
 
+export type PorteType = 'pequeno' | 'medio' | 'grande';
+
+export const PORTE_LABELS: Record<PorteType, string> = {
+  pequeno: 'Pequeno',
+  medio: 'Médio',
+  grande: 'Grande'
+};
+
 export type AnimalStatus = 'no_abrigo' | 'adotado' | 'obito';
 
 export type EntryOrigin = 
@@ -90,6 +98,9 @@ export interface Animal {
   microchip?: string; // Optional, "Não informado" if empty
   species: SpeciesType;
   sex: SexType;
+  porte?: PorteType; // Optional, "Não informado" if empty
+  raca?: string; // Optional, "Não informado" if empty
+  cor?: string; // Optional, "Não informado" if empty
   age?: string; // Optional, "Não identificada" if empty
   weight?: string; // Optional, "Não informado" if empty
   entryDate: string; // DD/MM/YYYY

@@ -74,7 +74,7 @@ export const LocationVisualizationView: React.FC = () => {
         </div>
 
         {/* Selected Sector Screen Header */}
-        <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
+        <div className="bg-white dark:bg-slate-900 p-5 sm:p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 dark:border-slate-800 pb-5">
             <div className="space-y-1">
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-700 dark:text-emerald-400 text-xs font-bold">
@@ -84,7 +84,7 @@ export const LocationVisualizationView: React.FC = () => {
               <h1 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-tight">
                 {activeLoc.label}
               </h1>
-              <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400">
+              <p className="text-sm text-slate-500 dark:text-slate-400">
                 Listagem individual dos animais alocados neste setor do abrigo.
               </p>
             </div>
@@ -98,13 +98,13 @@ export const LocationVisualizationView: React.FC = () => {
 
           {/* Search Bar inside Sector */}
           <div className="relative">
-            <Search className="w-5 h-5 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+            <Search className="w-4.5 h-4.5 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
             <input
               type="text"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              placeholder={`🔍 Pesquisar por nome ou microchip em ${activeLoc.label}...`}
-              className="w-full pl-11 pr-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm font-medium transition-all"
+              placeholder={`Pesquisar por nome ou microchip em ${activeLoc.label}...`}
+              className="w-full pl-11 pr-4 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-sm font-medium transition-all"
             />
             {searchTerm && (
               <button
@@ -124,7 +124,7 @@ export const LocationVisualizationView: React.FC = () => {
             <p className="text-base font-bold text-slate-800 dark:text-slate-200">
               Nenhum animal localizado neste setor
             </p>
-            <p className="text-xs text-slate-500 max-w-sm mx-auto">
+            <p className="text-sm text-slate-500 max-w-sm mx-auto">
               {searchTerm 
                 ? 'Nenhum resultado encontrado para o termo pesquisado neste setor.' 
                 : 'Não há animais registrados nesta área do abrigo no momento.'}
@@ -205,16 +205,16 @@ export const LocationVisualizationView: React.FC = () => {
   return (
     <div className="space-y-8">
       {/* Title Header */}
-      <div className="bg-white dark:bg-slate-900 p-6 sm:p-8 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-3">
+      <div className="bg-white dark:bg-slate-900 p-5 sm:p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-3">
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-700 dark:text-emerald-400 text-xs font-bold">
           <Layers className="w-3.5 h-3.5" />
           <span>Gestão por Espaço Físico</span>
         </div>
         <h1 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white flex items-center gap-3">
-          <MapPin className="w-7 h-7 text-emerald-600 dark:text-emerald-400" />
+          <MapPin className="w-6 h-6 text-emerald-600 dark:text-emerald-400" />
           Visualização por Localização
         </h1>
-        <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 max-w-2xl">
+        <p className="text-sm text-slate-500 dark:text-slate-400 max-w-2xl">
           Selecione uma das áreas abaixo para abrir a tela exclusiva com a relação detalhada de animais alocados no setor.
         </p>
       </div>

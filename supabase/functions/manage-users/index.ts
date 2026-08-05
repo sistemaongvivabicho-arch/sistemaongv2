@@ -17,16 +17,31 @@ serve(async (req) => {
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
     const serviceRoleKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
 
-    // 1. Get client JWT token
-    const authHeader = req.headers.get('Authorization')!;
-    if (!authHeader) {
-      return new Response(JSON.stringify({ error: 'Autorização necessária.' }), {
+    // 1. Validate Authorization header - Step 1: Check existence
+    const authorization = req.headers.get('Authorization');
+    if (!authorization) {
+      return new Response(JSON.stringify({ error: 'Authorization header não informado.' }), {
         status: 401,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' }
       });
     }
 
-    const token = authHeader.replace('Bearer ', '');
+    // 1. Validate Authorization header - Step 2: Check Bearer prefix
+    if (!authorization.startsWith('Bearer ')) {
+      return new Response(JSON.stringify({ error: 'Bearer token inválido.' }), {
+        status: 401,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      });
+    }
+
+    // 1. Validate Authorization header - Step 3: Extract and check token
+    const token = authorization.replace('Bearer ', '').trim();
+    if (!token) {
+      return new Response(JSON.stringify({ error: 'Token vazio.' }), {
+        status: 401,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      });
+    }
     const userClient = createClient(supabaseUrl, token, {
       auth: { persistSession: false }
     });

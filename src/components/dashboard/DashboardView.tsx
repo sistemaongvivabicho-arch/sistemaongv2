@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { useAnimalContext } from '../../context/AnimalContext';
+import { useAuth } from '../../context/AuthContext';
 import {
   ClipboardList,
   TrendingUp,
@@ -14,7 +15,8 @@ import {
   Syringe,
   XCircle,
   LayoutDashboard,
-  ArrowRight
+  ArrowRight,
+  History
 } from 'lucide-react';
 import { Animal } from '../../types/animal';
 import { MONTH_NAMES } from '../../types/dashboard';
@@ -22,7 +24,6 @@ import { FiltersPanel } from './FiltersPanel';
 import { DashboardCards, DashboardCardConfig } from './DashboardCards';
 import { MonthlySummary } from './MonthlySummary';
 import { AlertsPanel } from './AlertsPanel';
-import { CastrationAgenda } from './CastrationAgenda';
 import { GlobalSearch } from './GlobalSearch';
 import { ExportReport } from './ExportReport';
 import {
@@ -52,8 +53,10 @@ export const DashboardView: React.FC = () => {
     animals,
     dashboardFilters: filters,
     setDashboardFilters,
-    navigateToAnimal
+    navigateToAnimal,
+    setActiveTab
   } = useAnimalContext();
+  const { isAdmin } = useAuth();
 
   const [filtersOpen, setFiltersOpen] = useState(true);
 
@@ -247,10 +250,10 @@ export const DashboardView: React.FC = () => {
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
           <div>
             <h1 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white flex items-center gap-2.5">
-              <LayoutDashboard className="w-7 h-7 text-emerald-600 dark:text-emerald-400" />
-              Relatorios
+              <LayoutDashboard className="w-6 h-6 text-emerald-600 dark:text-emerald-400" />
+              Relatórios
             </h1>
-            <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">
+            <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
               Central de gestão da ONG · Período: <span className="font-bold text-emerald-600 dark:text-emerald-400">{period}</span>
               {activeFilterCount > 0 && (
                 <span className="ml-2 px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-700 dark:text-emerald-300 text-[10px] font-bold">
@@ -303,6 +306,34 @@ export const DashboardView: React.FC = () => {
           {/* Cards de indicadores */}
           <DashboardCards cards={cards} />
 
+          {/* Registro de Alterações — somente administradores */}
+          {isAdmin && (
+            <div>
+              <h2 className="text-xs font-bold tracking-wider text-slate-500 dark:text-slate-400 uppercase mb-3">
+                Relatórios
+              </h2>
+              <button
+                onClick={() => setActiveTab('auditoria')}
+                className="w-full flex items-center justify-between p-4 rounded-2xl border bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 hover:border-emerald-500 dark:hover:border-emerald-500 hover:shadow-md transition-all duration-200 hover:-translate-y-0.5 text-left group"
+              >
+                <div className="flex items-center gap-4">
+                  <div className="p-3 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 text-white shadow-sm">
+                    <History className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-bold text-slate-900 dark:text-white">
+                      Registro de Alterações
+                    </p>
+                    <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
+                      Histórico permanente de todas as ações do sistema
+                    </p>
+                  </div>
+                </div>
+                <ArrowRight className="w-4 h-4 text-slate-300 dark:text-slate-600 group-hover:text-emerald-500 group-hover:translate-x-0.5 transition-all" />
+              </button>
+            </div>
+          )}
+
           {/* Gráficos */}
           <MovementsBarChart animals={baseFiltered} year={filters.year} />
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
@@ -320,13 +351,6 @@ export const DashboardView: React.FC = () => {
             />
             <AlertsPanel groups={alerts} />
           </div>
-
-          {/* Agenda de castração */}
-          <CastrationAgenda
-            animals={baseFiltered}
-            filters={filters}
-            onMonthChange={(m) => setDashboardFilters({ ...filters, month: m })}
-          />
 
           {/* Entradas recentes (funcionalidade existente preservada) */}
           <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm p-5 space-y-3">

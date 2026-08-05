@@ -1,5 +1,5 @@
 import React from 'react';
-import { useAnimalContext } from '../../context/AnimalContext';
+import { useAuditActions } from '../../context/useAuditActions';
 import { 
   ArrowLeft, 
   Dog, 
@@ -22,6 +22,7 @@ import {
   LOCATION_LABELS, 
   SPECIES_LABELS, 
   SEX_LABELS, 
+  PORTE_LABELS,
   ORIGIN_LABELS,
   RESCUE_ORIGIN_LABELS,
   formatWeight
@@ -45,7 +46,7 @@ export const AnimalDetailView: React.FC<AnimalDetailViewProps> = ({
   onOpenDeathModal,
   onOpenUndoModal
 }) => {
-  const { getAnimalById, setSelectedAnimalId, uploadAnimalPhoto, deleteAnimalPhoto } = useAnimalContext();
+  const { getAnimalById, setSelectedAnimalId, uploadAnimalPhoto, deleteAnimalPhoto } = useAuditActions();
 
   React.useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -208,6 +209,27 @@ export const AnimalDetailView: React.FC<AnimalDetailViewProps> = ({
                 <span className="text-[11px] font-bold text-slate-400 uppercase block">Sexo</span>
                 <span className="font-semibold text-slate-800 dark:text-slate-200">
                   {SEX_LABELS[animal.sex]}
+                </span>
+              </div>
+
+              <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50">
+                <span className="text-[11px] font-bold text-slate-400 uppercase block">Porte</span>
+                <span className="font-semibold text-slate-800 dark:text-slate-200">
+                  {animal.porte ? PORTE_LABELS[animal.porte] : 'Não informado'}
+                </span>
+              </div>
+
+              <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50">
+                <span className="text-[11px] font-bold text-slate-400 uppercase block">Raça</span>
+                <span className="font-semibold text-slate-800 dark:text-slate-200">
+                  {animal.raca || 'Não informado'}
+                </span>
+              </div>
+
+              <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50">
+                <span className="text-[11px] font-bold text-slate-400 uppercase block">Cor</span>
+                <span className="font-semibold text-slate-800 dark:text-slate-200">
+                  {animal.cor || 'Não informado'}
                 </span>
               </div>
 

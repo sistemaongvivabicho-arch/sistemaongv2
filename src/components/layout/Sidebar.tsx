@@ -1,6 +1,7 @@
 import React from 'react';
 import { useAnimalContext } from '../../context/AnimalContext';
 import { useAuth } from '../../context/AuthContext';
+import { useAlerts } from '../../context/AlertContext';
 import {
   ClipboardList,
   Dog,
@@ -11,7 +12,10 @@ import {
   X,
   Scissors,
   BarChart3,
-  ClipboardCheck
+  ClipboardCheck,
+  Settings,
+  Bell,
+  Cloud
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -22,16 +26,20 @@ interface SidebarProps {
 export const Sidebar: React.FC<SidebarProps> = ({ isMobileOpen, setIsMobileOpen }) => {
   const { activeTab, setActiveTab, setSelectedAnimalId } = useAnimalContext();
   const { profile, signOut } = useAuth();
+  const { unreadCount } = useAlerts();
 
   const navItems = [
+    { id: 'avisos', label: 'Avisos', icon: Bell, isStandalone: true },
     { id: 'entrada', label: 'Cadastro de Entrada', icon: ClipboardList },
-    { id: 'triagem', label: 'Triagem', icon: ClipboardCheck },
+    { id: 'triagem', label: 'Animais em Triagem', icon: ClipboardCheck },
     { id: 'no_abrigo', label: 'Animais no Abrigo', icon: Dog },
-    { id: 'castracoes', label: 'Castracoes', icon: Scissors },
-    { id: 'visualizacao', label: 'Localizacoes', icon: MapPin },
-    { id: 'adotados', label: 'Adocoes', icon: HeartHandshake },
-    { id: 'obito', label: 'Obitos', icon: Bird },
-    { id: 'relatorios', label: 'Relatorios', icon: BarChart3 }
+    { id: 'castracoes', label: 'Castrações', icon: Scissors },
+    { id: 'visualizacao', label: 'Localizações', icon: MapPin },
+    { id: 'adotados', label: 'Adoções', icon: HeartHandshake },
+    { id: 'obito', label: 'Óbitos', icon: Bird },
+    { id: 'relatorios', label: 'Relatórios', icon: BarChart3 },
+    { id: 'backup', label: 'Backup', icon: Cloud },
+    { id: 'configuracoes', label: 'Configurações', icon: Settings }
   ];
 
   const handleNavClick = (id: string) => {
@@ -79,22 +87,31 @@ export const Sidebar: React.FC<SidebarProps> = ({ isMobileOpen, setIsMobileOpen 
         <div className="px-3 pb-2 text-[11px] font-semibold tracking-wider text-slate-400 uppercase">
           Menu Principal
         </div>
-        {navItems.map((item) => {
+        {navItems.map((item, index) => {
           const Icon = item.icon;
           const isActive = activeTab === item.id;
           return (
-            <button
-              key={item.id}
-              onClick={() => handleNavClick(item.id)}
-              className={`w-full flex items-center gap-3 px-3.5 py-3 rounded-xl text-sm font-medium transition-all duration-150 ${
-                isActive
-                  ? 'bg-emerald-600/20 text-emerald-300 font-semibold border border-emerald-500/30 shadow-sm'
-                  : 'text-slate-300 hover:bg-slate-800/70 hover:text-white'
-              }`}
-            >
-              <Icon className={`w-5 h-5 shrink-0 ${isActive ? 'text-emerald-400' : 'text-slate-400'}`} />
-              <span>{item.label}</span>
-            </button>
+            <React.Fragment key={item.id}>
+              <button
+                onClick={() => handleNavClick(item.id)}
+                className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all duration-150 ${
+                  isActive
+                    ? 'bg-emerald-600/20 text-emerald-300 font-semibold border border-emerald-500/30'
+                    : 'text-slate-300 hover:bg-slate-800/70 hover:text-white'
+                }`}
+              >
+                <Icon className={`w-4.5 h-4.5 shrink-0 ${isActive ? 'text-emerald-400' : 'text-slate-400'}`} />
+                <span>{item.label}</span>
+                {item.id === 'avisos' && unreadCount > 0 && (
+                  <span className="ml-auto inline-flex items-center justify-center min-w-[18px] h-[18px] px-1 rounded-full bg-rose-500 text-white text-[10px] font-bold">
+                    {unreadCount > 99 ? '99+' : unreadCount}
+                  </span>
+                )}
+              </button>
+              {item.isStandalone && (
+                <div className="my-3 border-t border-slate-700/50" />
+              )}
+            </React.Fragment>
           );
         })}
       </nav>

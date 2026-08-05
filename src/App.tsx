@@ -1,5 +1,8 @@
 import React, { useState } from 'react';
 import { AnimalProvider, useAnimalContext } from './context/AnimalContext';
+import { AuditProvider } from './context/AuditContext';
+import { AlertProvider } from './context/AlertContext';
+import { CastrationsProvider } from './context/CastrationsContext';
 import { useAuth } from './context/AuthContext';
 import { Sidebar } from './components/layout/Sidebar';
 import { Header } from './components/layout/Header';
@@ -12,7 +15,10 @@ import { AdoptedAnimalsView } from './components/animals/AdoptedAnimalsView';
 import { DeceasedAnimalsView } from './components/animals/DeceasedAnimalsView';
 import { CadastroEntradaView } from './components/animals/CadastroEntradaView';
 import { CastracoesView } from './components/animals/CastracoesView';
+import { AuditLogView } from './components/animals/AuditLogView';
+import { AlertsView } from './components/alerts/AlertsView';
 import { SettingsView } from './components/settings/SettingsView';
+import { BackupView } from './components/backup/BackupView';
 import { AnimalDetailView } from './components/animals/AnimalDetailView';
 
 // Auth Views
@@ -47,6 +53,7 @@ const MainAppContent: React.FC = () => {
   const [isAdoptionModalOpen, setIsAdoptionModalOpen] = useState(false);
   const [isDeathModalOpen, setIsDeathModalOpen] = useState(false);
   const [isUndoModalOpen, setIsUndoModalOpen] = useState(false);
+  const [isAlertModalOpen, setIsAlertModalOpen] = useState(false);
 
   const openEditModal = (id: string) => {
     setTargetedAnimalId(id);
@@ -159,7 +166,6 @@ const MainAppContent: React.FC = () => {
       case 'no_abrigo':
         return (
           <ShelterAnimalsView
-            onOpenNewAnimalModal={() => setIsNewAnimalModalOpen(true)}
             onOpenEditModal={openEditModal}
             onOpenChangeLocationModal={openChangeLocationModal}
           />
@@ -174,8 +180,19 @@ const MainAppContent: React.FC = () => {
         return <DeceasedAnimalsView />;
       case 'relatorios':
         return <DashboardView />;
+      case 'auditoria':
+        return <AuditLogView />;
+      case 'avisos':
+        return (
+          <AlertsView
+            isModalOpen={isAlertModalOpen}
+            onModalClose={() => setIsAlertModalOpen(false)}
+          />
+        );
       case 'configuracoes':
         return <SettingsView />;
+      case 'backup':
+        return <BackupView />;
       default:
         return (
           <CadastroEntradaView
@@ -198,6 +215,7 @@ const MainAppContent: React.FC = () => {
         <Header
           onOpenMobileMenu={() => setIsMobileMenuOpen(true)}
           onOpenNewAnimalModal={() => setIsNewAnimalModalOpen(true)}
+          onOpenNewAlertModal={() => setIsAlertModalOpen(true)}
         />
 
         <main className="flex-1 p-4 sm:p-6 lg:p-8 max-w-7xl w-full mx-auto">
@@ -250,7 +268,13 @@ const MainAppContent: React.FC = () => {
 export default function App() {
   return (
     <AnimalProvider>
-      <MainAppContent />
+      <AuditProvider>
+        <AlertProvider>
+          <CastrationsProvider>
+            <MainAppContent />
+          </CastrationsProvider>
+        </AlertProvider>
+      </AuditProvider>
     </AnimalProvider>
   );
 }

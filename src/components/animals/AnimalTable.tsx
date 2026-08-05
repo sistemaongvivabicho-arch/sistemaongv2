@@ -20,7 +20,7 @@ const AnimalTableRow: React.FC<AnimalTableRowProps> = ({
   return (
     <tr className="hover:bg-slate-50/80 dark:hover:bg-slate-800/50 transition-colors group">
       {/* Name - CLICKABLE to open full animal sheet */}
-      <td className="py-4 px-4 font-extrabold text-slate-900 dark:text-white">
+      <td className="py-3 px-4 font-extrabold text-slate-900 dark:text-white">
         <button
           onClick={() => onView(animal.id)}
           className="hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors text-left flex items-center gap-2"
@@ -31,7 +31,7 @@ const AnimalTableRow: React.FC<AnimalTableRowProps> = ({
       </td>
 
       {/* Microchip */}
-      <td className="py-4 px-4 text-xs font-mono">
+      <td className="py-3 px-4 text-xs font-mono">
         {animal.microchip ? (
           <span className="px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold border border-slate-200 dark:border-slate-700">
             {animal.microchip}
@@ -42,22 +42,22 @@ const AnimalTableRow: React.FC<AnimalTableRowProps> = ({
       </td>
 
       {/* Species */}
-      <td className="py-4 px-4 font-semibold text-slate-700 dark:text-slate-300">
+      <td className="py-3 px-4 font-semibold text-slate-700 dark:text-slate-300">
         {SPECIES_LABELS[animal.species]}
       </td>
 
       {/* Sex */}
-      <td className="py-4 px-4 text-slate-600 dark:text-slate-300">
+      <td className="py-3 px-4 text-slate-600 dark:text-slate-300">
         {SEX_LABELS[animal.sex]}
       </td>
 
       {/* Entry Date */}
-      <td className="py-4 px-4 text-xs text-slate-500 dark:text-slate-400">
+      <td className="py-3 px-4 text-xs text-slate-500 dark:text-slate-400">
         {animal.entryDate}
       </td>
 
       {/* Location Badge */}
-      <td className="py-4 px-4">
+      <td className="py-3 px-4">
         <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-bold border ${loc.badge}`}>
           <MapPin className="w-3 h-3" />
           {loc.label}
@@ -65,7 +65,7 @@ const AnimalTableRow: React.FC<AnimalTableRowProps> = ({
       </td>
 
       {/* Actions */}
-      <td className="py-4 px-4 text-right whitespace-nowrap">
+      <td className="py-3 px-4 text-right whitespace-nowrap">
         <div className="flex items-center justify-end gap-1.5">
           <button
             onClick={() => onView(animal.id)}
@@ -116,13 +116,13 @@ export const AnimalTable: React.FC<AnimalTableProps> = ({
       <table className="w-full text-left text-sm">
         <thead>
           <tr className="bg-slate-50 dark:bg-slate-800/60 border-b border-slate-200 dark:border-slate-800 text-xs font-bold uppercase text-slate-500 dark:text-slate-400 tracking-wider">
-            <th className="py-4 px-4">Nome</th>
-            <th className="py-4 px-4">Microchip</th>
-            <th className="py-4 px-4">Espécie</th>
-            <th className="py-4 px-4">Sexo</th>
-            <th className="py-4 px-4">Data de Entrada</th>
-            <th className="py-4 px-4">Localização</th>
-            <th className="py-4 px-4 text-right">Ações</th>
+            <th className="py-3 px-4">Nome</th>
+            <th className="py-3 px-4">Microchip</th>
+            <th className="py-3 px-4">Espécie</th>
+            <th className="py-3 px-4">Sexo</th>
+            <th className="py-3 px-4">Data de Entrada</th>
+            <th className="py-3 px-4">Localização</th>
+            <th className="py-3 px-4 text-right">Ações</th>
           </tr>
         </thead>
         <tbody className="divide-y divide-slate-100 dark:divide-slate-800">

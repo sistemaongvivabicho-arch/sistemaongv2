@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useAnimalContext } from '../../context/AnimalContext';
+import { useAuditActions } from '../../context/useAuditActions';
 import { X, Bird, Check } from 'lucide-react';
 
 interface RegisterDeathModalProps {
@@ -13,7 +13,7 @@ export const RegisterDeathModal: React.FC<RegisterDeathModalProps> = ({
   animalId,
   onClose
 }) => {
-  const { getAnimalById, registerDeath, setActiveTab } = useAnimalContext();
+  const { getAnimalById, registerDeath, setActiveTab } = useAuditActions();
 
   const animal = animalId ? getAnimalById(animalId) : null;
 

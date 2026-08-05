@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useAnimalContext } from '../../context/AnimalContext';
+import { useAuditActions } from '../../context/useAuditActions';
 import { X, MapPin, Check } from 'lucide-react';
 import { LocationType, LOCATION_LABELS, FINAL_LOCATIONS } from '../../types/animal';
 
@@ -14,7 +14,7 @@ export const ChangeLocationModal: React.FC<ChangeLocationModalProps> = ({
   animalId,
   onClose
 }) => {
-  const { getAnimalById, changeLocation } = useAnimalContext();
+  const { getAnimalById, changeLocation } = useAuditActions();
 
   const animal = animalId ? getAnimalById(animalId) : null;
 

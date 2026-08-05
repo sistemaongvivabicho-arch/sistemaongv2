@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth, Profile } from '../../context/AuthContext';
 import { supabase } from '../../context/lib/supabase';
+import { auditService } from '../../context/lib/auditService';
 import { 
   User, 
   Shield, 
@@ -104,6 +105,15 @@ export const SettingsView: React.FC = () => {
       setPasswordSuccess(true);
       setNewPassword('');
       setConfirmPassword('');
+
+      if (profile) {
+        await auditService.log(
+          'alteracao_senha',
+          `${profile.name} alterou a própria senha.`,
+          profile.name,
+          profile.role
+        );
+      }
     } catch (err: any) {
       setPasswordError(err.message || 'Erro ao alterar senha.');
     } finally {
@@ -134,7 +144,17 @@ export const SettingsView: React.FC = () => {
 
     try {
       // Call the secure Supabase Edge Function to create user & profile
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session?.access_token) {
+        setCreateError('Sessão expirada. Faça login novamente.');
+        setCreateLoading(false);
+        return;
+      }
+
       const { data, error } = await supabase.functions.invoke('manage-users', {
+        headers: {
+          Authorization: `Bearer ${session.access_token}`,
+        },
         body: {
           action: 'create_user',
           email: cleanEmail,
@@ -152,7 +172,16 @@ export const SettingsView: React.FC = () => {
       setNewUserEmail('');
       setNewUserCpf('');
       setNewUserRole('common');
-      fetchUsers(); // reload list
+      fetchUsers();
+
+      if (profile) {
+        await auditService.log(
+          'criacao_usuario',
+          `${profile.name} criou o usuário "${newUserName.trim()}" (${cleanEmail}).`,
+          profile.name,
+          profile.role
+        );
+      }
     } catch (err: any) {
       setCreateError(err.message || 'Falha ao registrar usuário.');
     } finally {
@@ -177,6 +206,15 @@ export const SettingsView: React.FC = () => {
       if (error) throw new Error(error.message);
       
       fetchUsers();
+
+      if (profile) {
+        await auditService.log(
+          'desativacao_usuario',
+          `${profile.name} ${nextStatus === 'active' ? 'ativou' : 'desativou'} o usuário "${targetUser.name}".`,
+          profile.name,
+          profile.role
+        );
+      }
     } catch (err: any) {
       alert('Erro ao atualizar status: ' + err.message);
     }
@@ -188,7 +226,16 @@ export const SettingsView: React.FC = () => {
     if (!confirmReset) return;
 
     try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session?.access_token) {
+        alert('Sessão expirada. Faça login novamente.');
+        return;
+      }
+
       const { data, error } = await supabase.functions.invoke('manage-users', {
+        headers: {
+          Authorization: `Bearer ${session.access_token}`,
+        },
         body: {
           action: 'reset_password',
           target_uid: targetUser.id
@@ -200,6 +247,15 @@ export const SettingsView: React.FC = () => {
 
       alert(`Senha de ${targetUser.name} resetada com sucesso para "1234".`);
       fetchUsers();
+
+      if (profile) {
+        await auditService.log(
+          'reset_senha',
+          `${profile.name} resetou a senha do usuário "${targetUser.name}".`,
+          profile.name,
+          profile.role
+        );
+      }
     } catch (err: any) {
       alert('Erro ao resetar senha: ' + err.message);
     }
@@ -217,7 +273,7 @@ export const SettingsView: React.FC = () => {
       <div className="lg:col-span-1 space-y-6">
         
         {/* Profile Card */}
-        <div className="bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-6">
+        <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-6">
           <div className="flex items-center gap-4 border-b border-slate-100 dark:border-slate-800 pb-5">
             <div className="w-14 h-14 rounded-2xl bg-emerald-500/10 dark:bg-emerald-500/20 border border-emerald-500/20 p-1.5 flex items-center justify-center shadow-sm shrink-0">
               <img 
@@ -270,7 +326,7 @@ export const SettingsView: React.FC = () => {
         </div>
 
         {/* Change Password Card */}
-        <div className="bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
+        <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
           <h2 className="text-sm font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 flex items-center gap-2 pb-1 border-b border-slate-100 dark:border-slate-800">
             <KeyRound className="w-4 h-4 text-emerald-600" />
             Alterar Senha
@@ -330,12 +386,39 @@ export const SettingsView: React.FC = () => {
         </div>
       </div>
 
-      {/* COLUMN 2 & 3: Admin User Management Panel */}
+      {/* COLUMN 2 & 3: ONG Data + Admin User Management Panel */}
       <div className="lg:col-span-2 space-y-6">
-        {profile?.role === 'admin' ? (
+        {/* ONG Data Section - visible to all users */}
+        <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
+          <h2 className="text-sm font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 flex items-center gap-2 pb-1 border-b border-slate-100 dark:border-slate-800">
+            <Building2 className="w-4.5 h-4.5 text-emerald-600" />
+            Dados da ONG
+          </h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+            <div className="p-3 bg-slate-50 dark:bg-slate-800 rounded-xl">
+              <span className="text-[10px] text-slate-400 font-bold block">Razao Social</span>
+              <p className="font-semibold text-slate-800 dark:text-slate-200 mt-1">ONG Associacao Viva Bicho</p>
+            </div>
+            <div className="p-3 bg-slate-50 dark:bg-slate-800 rounded-xl">
+              <span className="text-[10px] text-slate-400 font-bold block">CNPJ</span>
+              <p className="font-semibold text-slate-800 dark:text-slate-200 mt-1">12.345.678/0001-90</p>
+            </div>
+          </div>
+          <div className="p-4 rounded-2xl bg-slate-900 text-slate-300 border border-slate-800 flex items-start gap-3">
+            <Database className="w-5 h-5 text-emerald-400 shrink-0 mt-0.5" />
+            <div className="space-y-1">
+              <span className="font-bold text-xs text-white block">Persistencia Ativa (Supabase)</span>
+              <p className="text-[10px] leading-relaxed">
+                O sistema esta totalmente conectado ao banco de dados relacional Supabase. Todas as operacoes de cadastros de animais, movimentacoes de setores e alteracoes de fichas estao sendo salvas de forma segura e compartilhadas em tempo real.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {profile?.role === 'admin' && (
           <>
             {/* Create User Section */}
-            <div className="bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
+            <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
               <h2 className="text-sm font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 flex items-center gap-2 pb-1 border-b border-slate-100 dark:border-slate-800">
                 <UserPlus className="w-4.5 h-4.5 text-emerald-600" />
                 Cadastrar Colaborador (Admin Only)
@@ -423,7 +506,7 @@ export const SettingsView: React.FC = () => {
             </div>
 
             {/* Users List Section */}
-            <div className="bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
+            <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 dark:border-slate-800 pb-3">
                 <h2 className="text-sm font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 flex items-center gap-2">
                   <Users className="w-4.5 h-4.5 text-emerald-600" />
@@ -514,32 +597,6 @@ export const SettingsView: React.FC = () => {
               )}
             </div>
           </>
-        ) : (
-          <div className="bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-3">
-            <h2 className="text-sm font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 flex items-center gap-2 pb-1 border-b border-slate-100 dark:border-slate-800">
-              <Building2 className="w-4.5 h-4.5 text-emerald-600" />
-              Associação Viva Bicho
-            </h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
-              <div className="p-3 bg-slate-50 dark:bg-slate-800 rounded-xl">
-                <span className="text-[10px] text-slate-400 font-bold block">Razão Social</span>
-                <p className="font-semibold text-slate-800 dark:text-slate-200 mt-1">ONG Associação Viva Bicho</p>
-              </div>
-              <div className="p-3 bg-slate-50 dark:bg-slate-800 rounded-xl">
-                <span className="text-[10px] text-slate-400 font-bold block">CNPJ</span>
-                <p className="font-semibold text-slate-800 dark:text-slate-200 mt-1">12.345.678/0001-90</p>
-              </div>
-            </div>
-            <div className="p-4 rounded-2xl bg-slate-900 text-slate-300 border border-slate-800 flex items-start gap-3">
-              <Database className="w-5 h-5 text-emerald-400 shrink-0 mt-0.5" />
-              <div className="space-y-1">
-                <span className="font-bold text-xs text-white block">Persistência Ativa (Supabase)</span>
-                <p className="text-[10px] leading-relaxed">
-                  O sistema está totalmente conectado ao banco de dados relacional Supabase. Todas as operações de cadastros de animais, movimentações de setores e alterações de fichas estão sendo salvas de forma segura e compartilhadas em tempo real.
-                </p>
-              </div>
-            </div>
-          </div>
         )}
       </div>
 

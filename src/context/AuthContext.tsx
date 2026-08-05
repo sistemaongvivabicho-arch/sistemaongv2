@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { User } from '@supabase/supabase-js';
 import { supabase } from './lib/supabase';
+import { auditService } from './lib/auditService';
 
 export interface Profile {
   id: string;
@@ -137,15 +138,37 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       password,
     });
 
+    if (!error && data.user) {
+      const prof = await fetchProfile(data.user.id);
+      if (prof) {
+        await auditService.log(
+          'login',
+          `${prof.name} realizou login no sistema.`,
+          prof.name,
+          prof.role
+        );
+      }
+    }
+
     return { error };
   };
 
   const signOut = async () => {
+    const currentProfile = profile;
     setLoading(true);
     await supabase.auth.signOut();
     setUser(null);
     setProfile(null);
     setLoading(false);
+
+    if (currentProfile) {
+      await auditService.log(
+        'logout',
+        `${currentProfile.name} realizou logout do sistema.`,
+        currentProfile.name,
+        currentProfile.role
+      );
+    }
   };
 
   const isAdmin = profile?.role === 'admin';

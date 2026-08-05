@@ -4,7 +4,8 @@ import {
   LocationType, 
   AdoptionDetails, 
   DeathDetails,
-  LOCATION_LABELS 
+  LOCATION_LABELS,
+  PorteType
 } from '../types/animal';
 import {
   DashboardFilters,
@@ -104,6 +105,9 @@ const mapFromDb = (db: any): Animal => {
     microchip: db.microchip || '',
     species: db.species || 'outro',
     sex: db.sex || 'macho',
+    porte: db.porte || '',
+    raca: db.raca || '',
+    cor: db.cor || '',
     age: db.age || '',
     weight: db.weight ? `${db.weight} kg` : '',
     entryDate,
@@ -177,6 +181,9 @@ const mapToDb = (animal: Animal): any => {
     microchip: animal.microchip || null,
     species: animal.species,
     sex: animal.sex,
+    porte: animal.porte || null,
+    raca: animal.raca || null,
+    cor: animal.cor || null,
     age: animal.age || null,
     weight: weightNum,
     entry_date,

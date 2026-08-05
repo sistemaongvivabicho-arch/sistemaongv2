@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { useAnimalContext } from '../../context/AnimalContext';
+import { useAuditActions } from '../../context/useAuditActions';
 import { X, Edit3, Check, ShieldAlert } from 'lucide-react';
-import { SpeciesType, SexType, EntryOrigin, RESCUE_ORIGIN_OPTIONS } from '../../types/animal';
+import { SpeciesType, SexType, PorteType, EntryOrigin, RESCUE_ORIGIN_OPTIONS } from '../../types/animal';
 import { PhotoUploader } from '../common/PhotoUploader';
 
 interface EditAnimalModalProps {
@@ -15,7 +15,7 @@ export const EditAnimalModal: React.FC<EditAnimalModalProps> = ({
   animalId,
   onClose
 }) => {
-  const { getAnimalById, updateAnimal, uploadAnimalPhoto, deleteAnimalPhoto } = useAnimalContext();
+  const { getAnimalById, updateAnimal, uploadAnimalPhoto, deleteAnimalPhoto } = useAuditActions();
 
   const animal = animalId ? getAnimalById(animalId) : null;
 
@@ -23,6 +23,9 @@ export const EditAnimalModal: React.FC<EditAnimalModalProps> = ({
   const [microchip, setMicrochip] = useState('');
   const [species, setSpecies] = useState<SpeciesType>('cachorro');
   const [sex, setSex] = useState<SexType>('macho');
+  const [porte, setPorte] = useState<PorteType | ''>('');
+  const [raca, setRaca] = useState('');
+  const [cor, setCor] = useState('');
   const [age, setAge] = useState('');
   const [weight, setWeight] = useState('');
   const [origin, setOrigin] = useState<EntryOrigin>('resgate_ong');
@@ -46,6 +49,9 @@ export const EditAnimalModal: React.FC<EditAnimalModalProps> = ({
       setMicrochip(animal.microchip || '');
       setSpecies(animal.species);
       setSex(animal.sex);
+      setPorte(animal.porte || '');
+      setRaca(animal.raca || '');
+      setCor(animal.cor || '');
       setAge(animal.age || '');
       setWeight(animal.weight || '');
       setOrigin(animal.origin);
@@ -84,6 +90,9 @@ if (!isOpen || !animal) return null;
         microchip: microchip.trim() || undefined,
         species,
         sex,
+        porte: porte || undefined,
+        raca: raca.trim() || undefined,
+        cor: cor.trim() || undefined,
         age: age.trim() || undefined,
         weight: weight.trim() ? (weight.trim().toLowerCase().endsWith('kg') ? weight.trim() : `${weight.trim()} kg`) : undefined,
         origin,
@@ -205,6 +214,48 @@ if (!isOpen || !animal) return null;
                 <option value="macho">Macho</option>
                 <option value="femea">Fêmea</option>
               </select>
+            </div>
+
+            <div>
+              <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+                Porte
+              </label>
+              <select
+                value={porte}
+                onChange={(e) => setPorte(e.target.value as PorteType | '')}
+                className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-xs font-bold"
+              >
+                <option value="">Não informado</option>
+                <option value="pequeno">Pequeno</option>
+                <option value="medio">Médio</option>
+                <option value="grande">Grande</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+                Raça
+              </label>
+              <input
+                type="text"
+                value={raca}
+                onChange={(e) => setRaca(e.target.value)}
+                placeholder="Ex: Vira-lata, Persa..."
+                className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-xs"
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+                Cor
+              </label>
+              <input
+                type="text"
+                value={cor}
+                onChange={(e) => setCor(e.target.value)}
+                placeholder="Ex: Caramelo, Preto..."
+                className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-xs"
+              />
             </div>
 
             <div>
