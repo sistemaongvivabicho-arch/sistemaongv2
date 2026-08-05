@@ -1,17 +1,17 @@
 import React from 'react';
 import { useAnimalContext } from '../../context/AnimalContext';
-import { 
-  LayoutDashboard, 
-  Dog, 
-  MapPin, 
-  HeartHandshake, 
-  Bird, 
-  Settings, 
-  LogOut, 
+import { useAuth } from '../../context/AuthContext';
+import {
+  ClipboardList,
+  Dog,
+  MapPin,
+  HeartHandshake,
+  Bird,
+  LogOut,
   X,
-  ShieldCheck,
-  PawPrint,
-  ClipboardList
+  Scissors,
+  BarChart3,
+  ClipboardCheck
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -20,16 +20,18 @@ interface SidebarProps {
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({ isMobileOpen, setIsMobileOpen }) => {
-  const { activeTab, setActiveTab, setSelectedAnimalId, showToast } = useAnimalContext();
+  const { activeTab, setActiveTab, setSelectedAnimalId } = useAnimalContext();
+  const { profile, signOut } = useAuth();
 
   const navItems = [
-    { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
+    { id: 'entrada', label: 'Cadastro de Entrada', icon: ClipboardList },
+    { id: 'triagem', label: 'Triagem', icon: ClipboardCheck },
     { id: 'no_abrigo', label: 'Animais no Abrigo', icon: Dog },
-    { id: 'triagem', label: 'Animais em Triagem', icon: ClipboardList },
-    { id: 'visualizacao', label: 'Visualização', icon: MapPin },
-    { id: 'adotados', label: 'Adotados', icon: HeartHandshake },
-    { id: 'obito', label: 'Óbitos', icon: Bird },
-    { id: 'configuracoes', label: 'Configurações', icon: Settings }
+    { id: 'castracoes', label: 'Castracoes', icon: Scissors },
+    { id: 'visualizacao', label: 'Localizacoes', icon: MapPin },
+    { id: 'adotados', label: 'Adocoes', icon: HeartHandshake },
+    { id: 'obito', label: 'Obitos', icon: Bird },
+    { id: 'relatorios', label: 'Relatorios', icon: BarChart3 }
   ];
 
   const handleNavClick = (id: string) => {
@@ -39,8 +41,11 @@ export const Sidebar: React.FC<SidebarProps> = ({ isMobileOpen, setIsMobileOpen 
   };
 
   const handleLogout = () => {
-    showToast('Sessão encerrada com sucesso (demonstração).', 'info');
+    signOut();
   };
+
+  const userName = profile?.name || 'Colaborador';
+  const userRole = profile?.role === 'admin' ? 'Administrador' : 'Colaborador';
 
   const sidebarContent = (
     <div className="flex flex-col h-full bg-slate-900 text-slate-100 border-r border-slate-800 w-64 shrink-0 select-none">
@@ -48,9 +53,9 @@ export const Sidebar: React.FC<SidebarProps> = ({ isMobileOpen, setIsMobileOpen 
       <div className="p-5 flex items-center justify-between border-b border-slate-800/80">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-xl bg-slate-800 border border-slate-700/80 flex items-center justify-center p-1 shadow-md shrink-0">
-            <img 
-              src="https://i.imgur.com/O6TcG0n.png" 
-              alt="Logo ONG Viva Bicho" 
+            <img
+              src="https://i.imgur.com/O6TcG0n.png"
+              alt="Logo ONG Viva Bicho"
               className="w-full h-full object-contain rounded-lg"
               referrerPolicy="no-referrer"
             />
@@ -60,7 +65,6 @@ export const Sidebar: React.FC<SidebarProps> = ({ isMobileOpen, setIsMobileOpen 
             <p className="text-xs text-emerald-400 font-medium">Controle de Animais</p>
           </div>
         </div>
-        {/* Mobile close button */}
         <button
           onClick={() => setIsMobileOpen(false)}
           className="lg:hidden p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800"
@@ -95,33 +99,21 @@ export const Sidebar: React.FC<SidebarProps> = ({ isMobileOpen, setIsMobileOpen 
         })}
       </nav>
 
-      {/* Status indicator badge */}
-      <div className="mx-3 mb-3 p-3 rounded-xl bg-slate-800/50 border border-slate-700/50 text-xs text-slate-400">
-        <div className="flex items-center gap-2 font-medium text-emerald-400 mb-1">
-          <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-          Sistema Operacional
-        </div>
-        <p className="text-[11px] text-slate-400">Versão da Interface v1.0 (Modo ONG)</p>
-      </div>
-
       {/* User Footer */}
       <div className="p-3 border-t border-slate-800 bg-slate-900/80">
         <div className="flex items-center justify-between p-2 rounded-xl bg-slate-800/60 border border-slate-700/40">
           <div className="flex items-center gap-3 min-w-0">
             <div className="w-9 h-9 rounded-xl bg-slate-800 border border-slate-700 p-0.5 flex items-center justify-center shrink-0 overflow-hidden">
-              <img 
-                src="https://i.imgur.com/O6TcG0n.png" 
-                alt="Logo ONG" 
+              <img
+                src="https://i.imgur.com/O6TcG0n.png"
+                alt="Logo ONG"
                 className="w-full h-full object-contain rounded-lg"
                 referrerPolicy="no-referrer"
               />
             </div>
             <div className="min-w-0">
-              <p className="text-xs font-semibold text-white truncate">Maria Silva</p>
-              <p className="text-[11px] text-slate-400 truncate flex items-center gap-1">
-                <ShieldCheck className="w-3 h-3 text-emerald-400 shrink-0" />
-                Coordenadora
-              </p>
+              <p className="text-xs font-semibold text-white truncate">{userName}</p>
+              <p className="text-[11px] text-slate-400 truncate">{userRole}</p>
             </div>
           </div>
           <button
@@ -138,16 +130,14 @@ export const Sidebar: React.FC<SidebarProps> = ({ isMobileOpen, setIsMobileOpen 
 
   return (
     <>
-      {/* Desktop Sidebar */}
       <aside className="hidden lg:block h-screen sticky top-0">
         {sidebarContent}
       </aside>
 
-      {/* Mobile Drawer Overlay */}
       {isMobileOpen && (
         <div className="fixed inset-0 z-40 lg:hidden flex">
-          <div 
-            className="fixed inset-0 bg-slate-950/60 backdrop-blur-sm transition-opacity" 
+          <div
+            className="fixed inset-0 bg-slate-950/60 backdrop-blur-sm transition-opacity"
             onClick={() => setIsMobileOpen(false)}
           />
           <div className="relative z-50 h-full max-w-xs w-full">

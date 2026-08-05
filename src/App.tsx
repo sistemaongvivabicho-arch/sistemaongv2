@@ -10,6 +10,8 @@ import { TriageAnimalsView } from './components/animals/TriageAnimalsView';
 import { LocationVisualizationView } from './components/animals/LocationVisualizationView';
 import { AdoptedAnimalsView } from './components/animals/AdoptedAnimalsView';
 import { DeceasedAnimalsView } from './components/animals/DeceasedAnimalsView';
+import { CadastroEntradaView } from './components/animals/CadastroEntradaView';
+import { CastracoesView } from './components/animals/CastracoesView';
 import { SettingsView } from './components/settings/SettingsView';
 import { AnimalDetailView } from './components/animals/AnimalDetailView';
 
@@ -141,14 +143,10 @@ const MainAppContent: React.FC = () => {
     }
 
     switch (activeTab) {
-      case 'dashboard':
-        return <DashboardView />;
-      case 'no_abrigo':
+      case 'entrada':
         return (
-          <ShelterAnimalsView
+          <CadastroEntradaView
             onOpenNewAnimalModal={() => setIsNewAnimalModalOpen(true)}
-            onOpenEditModal={openEditModal}
-            onOpenChangeLocationModal={openChangeLocationModal}
           />
         );
       case 'triagem':
@@ -158,16 +156,32 @@ const MainAppContent: React.FC = () => {
             onOpenChangeLocationModal={openChangeLocationModal}
           />
         );
+      case 'no_abrigo':
+        return (
+          <ShelterAnimalsView
+            onOpenNewAnimalModal={() => setIsNewAnimalModalOpen(true)}
+            onOpenEditModal={openEditModal}
+            onOpenChangeLocationModal={openChangeLocationModal}
+          />
+        );
+      case 'castracoes':
+        return <CastracoesView />;
       case 'visualizacao':
         return <LocationVisualizationView />;
       case 'adotados':
         return <AdoptedAnimalsView />;
       case 'obito':
         return <DeceasedAnimalsView />;
+      case 'relatorios':
+        return <DashboardView />;
       case 'configuracoes':
         return <SettingsView />;
       default:
-        return <DashboardView />;
+        return (
+          <CadastroEntradaView
+            onOpenNewAnimalModal={() => setIsNewAnimalModalOpen(true)}
+          />
+        );
     }
   };
 

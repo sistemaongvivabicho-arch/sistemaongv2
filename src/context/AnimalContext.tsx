@@ -213,7 +213,7 @@ export const AnimalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const [loading, setLoading] = useState<boolean>(true);
   const [undoStack, setUndoStack] = useState<Record<string, Animal[]>>({});
 
-  const [activeTab, setActiveTab] = useState<string>('dashboard');
+  const [activeTab, setActiveTab] = useState<string>('entrada');
   const [selectedAnimalId, setSelectedAnimalId] = useState<string | null>(null);
   const [locationFilter, setLocationFilter] = useState<LocationType | null>(null);
   const [toasts, setToasts] = useState<ToastInfo[]>([]);

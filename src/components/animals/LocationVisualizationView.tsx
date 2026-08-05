@@ -27,7 +27,10 @@ export const LocationVisualizationView: React.FC = () => {
     'internacao_gatos',
     'internacao_caes',
     'gatil',
-    'area_caes'
+    'area_caes',
+    'lar_temporario',
+    'guarda_compartilhada',
+    'clinica_parceira'
   ];
 
   // Filter animals if in a selected sector and optional search

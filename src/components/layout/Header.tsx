@@ -15,33 +15,41 @@ export const Header: React.FC<HeaderProps> = ({ onOpenMobileMenu, onOpenNewAnima
   const selectedAnimal = selectedAnimalId ? getAnimalById(selectedAnimalId) : null;
 
   const tabTitles: Record<string, { title: string; subtitle: string }> = {
-    dashboard: {
-      title: 'Dashboard',
-      subtitle: 'Visão geral dos animais e movimentações da ONG'
+    entrada: {
+      title: 'Cadastro de Entrada',
+      subtitle: 'Pesquise animais ou cadastre uma nova entrada'
+    },
+    triagem: {
+      title: 'Triagem',
+      subtitle: 'Animais recem-cadastrados aguardando avaliacao de triagem'
     },
     no_abrigo: {
       title: 'Animais no Abrigo',
       subtitle: 'Listagem e controle dos animais atualmente acolhidos'
     },
-    triagem: {
-      title: 'Animais em Triagem',
-      subtitle: 'Animais recém-cadastrados aguardando avaliação de triagem'
+    castracoes: {
+      title: 'Castracoes',
+      subtitle: 'Agenda de castracoes, agendamentos e registros do mes'
     },
     visualizacao: {
-      title: 'Visualização por Localização',
-      subtitle: 'Acompanhe os animais organizados pelo seu espaço físico atual'
+      title: 'Localizacoes',
+      subtitle: 'Acompanhe os animais organizados pelo seu espaco fisico atual'
     },
     adotados: {
-      title: 'Animais Adotados',
-      subtitle: 'Histórico e registro de adoções concluídas'
+      title: 'Adocoes',
+      subtitle: 'Historico e registro de adocoes concluidas'
     },
     obito: {
-      title: 'Óbitos Registrados',
-      subtitle: 'Registro e histórico respeitoso de animais falecidos'
+      title: 'Obitos',
+      subtitle: 'Registro e historico respeitoso de animais falecidos'
+    },
+    relatorios: {
+      title: 'Relatorios',
+      subtitle: 'Dashboard gerencial com indicadores, graficos e alertas'
     },
     configuracoes: {
-      title: 'Configurações',
-      subtitle: 'Informações do perfil e preferências do sistema'
+      title: 'Configuracoes',
+      subtitle: 'Informacoes do perfil e preferencias do sistema'
     }
   };
 

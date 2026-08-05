@@ -248,7 +248,7 @@ export const DashboardView: React.FC = () => {
           <div>
             <h1 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white flex items-center gap-2.5">
               <LayoutDashboard className="w-7 h-7 text-emerald-600 dark:text-emerald-400" />
-              Dashboard Gerencial
+              Relatorios
             </h1>
             <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">
               Central de gestão da ONG · Período: <span className="font-bold text-emerald-600 dark:text-emerald-400">{period}</span>
