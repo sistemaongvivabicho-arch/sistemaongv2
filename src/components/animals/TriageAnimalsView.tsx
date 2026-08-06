@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useAnimalContext } from '../../context/AnimalContext';
+import { useAuditActions } from '../../context/useAuditActions';
 import { 
   Search, 
   Eye, 
@@ -8,25 +9,42 @@ import {
   ClipboardList, 
   Calendar, 
   XCircle,
-  RotateCcw
+  RotateCcw,
+  CheckCircle,
+  X
 } from 'lucide-react';
 import { 
   LOCATION_LABELS, 
   SPECIES_LABELS, 
   SEX_LABELS, 
-  ORIGIN_LABELS 
+  ORIGIN_LABELS,
+  LocationType
 } from '../../types/animal';
 
 interface TriageAnimalsViewProps {
   onOpenEditModal: (animalId: string) => void;
-  onOpenChangeLocationModal: (animalId: string) => void;
 }
 
+const DESTINO_OPTIONS: { value: LocationType; label: string }[] = [
+  { value: 'internacao_caes', label: 'Canil' },
+  { value: 'internacao_gatos', label: 'Gatil' },
+  { value: 'lar_temporario', label: 'Lar Temporário' },
+  { value: 'area_caes', label: 'Área de Cães' },
+  { value: 'gatil', label: 'Gatil' },
+  { value: 'guarda_compartilhada', label: 'Guarda Compartilhada' },
+  { value: 'clinica_parceira', label: 'Clínica Parceira' }
+];
+
 export const TriageAnimalsView: React.FC<TriageAnimalsViewProps> = ({
-  onOpenEditModal,
-  onOpenChangeLocationModal
+  onOpenEditModal
 }) => {
   const { animals, navigateToAnimal } = useAnimalContext();
+  const { updateAnimal } = useAuditActions();
+
+  const [finalizeModalOpen, setFinalizeModalOpen] = useState(false);
+  const [finalizeAnimal, setFinalizeAnimal] = useState<{ id: string; name: string } | null>(null);
+  const [finalizeDestino, setFinalizeDestino] = useState<LocationType>('internacao_caes');
+  const [finalizeLoading, setFinalizeLoading] = useState(false);
 
   const triageAnimals = animals.filter(
     (a) => a.status === 'no_abrigo' && a.currentLocation === 'triagem'
@@ -71,6 +89,20 @@ export const TriageAnimalsView: React.FC<TriageAnimalsViewProps> = ({
     selectedEntryDate !== '';
 
   const triageLabel = LOCATION_LABELS.triagem;
+
+  const handleFinalize = async () => {
+    if (!finalizeAnimal) return;
+    setFinalizeLoading(true);
+    try {
+      await updateAnimal(finalizeAnimal.id, { currentLocation: finalizeDestino });
+      setFinalizeModalOpen(false);
+      setFinalizeAnimal(null);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setFinalizeLoading(false);
+    }
+  };
 
   return (
     <div className="space-y-6">
@@ -290,24 +322,28 @@ export const TriageAnimalsView: React.FC<TriageAnimalsViewProps> = ({
                       <div className="flex items-center justify-end gap-1.5">
                         <button
                           onClick={() => navigateToAnimal(animal.id)}
-                          title="Visualizar ficha completa"
+                          title="Ver Ficha"
                           className="p-2 rounded-lg text-slate-600 hover:text-sky-600 hover:bg-sky-50 dark:text-slate-300 dark:hover:bg-sky-950/40 transition-colors"
                         >
                           <Eye className="w-4 h-4" />
                         </button>
                         <button
-                          onClick={() => onOpenChangeLocationModal(animal.id)}
-                          title="Mover localização (finalizar triagem)"
-                          className="p-2 rounded-lg text-slate-600 hover:text-indigo-600 hover:bg-indigo-50 dark:text-slate-300 dark:hover:bg-indigo-950/40 transition-colors"
-                        >
-                          <MapPin className="w-4 h-4" />
-                        </button>
-                        <button
                           onClick={() => onOpenEditModal(animal.id)}
-                          title="Editar cadastro"
+                          title="Editar Cadastro"
                           className="p-2 rounded-lg text-slate-600 hover:text-blue-600 hover:bg-blue-50 dark:text-slate-300 dark:hover:bg-blue-950/40 transition-colors"
                         >
                           <Edit3 className="w-4 h-4" />
+                        </button>
+                        <button
+                          onClick={() => {
+                            setFinalizeAnimal({ id: animal.id, name: animal.name });
+                            setFinalizeDestino('internacao_caes');
+                            setFinalizeModalOpen(true);
+                          }}
+                          title="Finalizar Triagem"
+                          className="p-2 rounded-lg text-slate-600 hover:text-emerald-600 hover:bg-emerald-50 dark:text-slate-300 dark:hover:bg-emerald-950/40 transition-colors"
+                        >
+                          <CheckCircle className="w-4 h-4" />
                         </button>
                       </div>
                     </td>
@@ -318,6 +354,65 @@ export const TriageAnimalsView: React.FC<TriageAnimalsViewProps> = ({
           </div>
         )}
       </div>
+
+      {/* Finalize Triage Modal */}
+      {finalizeModalOpen && finalizeAnimal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+          <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-2xl w-full max-w-md">
+            <div className="flex items-center justify-between p-5 border-b border-slate-100 dark:border-slate-800">
+              <div>
+                <h3 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                  <CheckCircle className="w-5 h-5 text-emerald-600" />
+                  Finalizar Triagem
+                </h3>
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                  {finalizeAnimal.name}
+                </p>
+              </div>
+              <button onClick={() => setFinalizeModalOpen(false)} className="p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+                <X className="w-5 h-5 text-slate-500" />
+              </button>
+            </div>
+
+            <div className="p-5 space-y-4">
+              <p className="text-sm text-slate-700 dark:text-slate-300">
+                Deseja finalizar a triagem deste animal?
+              </p>
+
+              <div>
+                <label className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase mb-1.5 block">
+                  Destino
+                </label>
+                <select
+                  value={finalizeDestino}
+                  onChange={(e) => setFinalizeDestino(e.target.value as LocationType)}
+                  className="w-full px-3 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm font-medium text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                >
+                  {DESTINO_OPTIONS.map(opt => (
+                    <option key={opt.value} value={opt.value}>{opt.label}</option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-end gap-2 p-5 border-t border-slate-100 dark:border-slate-800">
+              <button
+                onClick={() => setFinalizeModalOpen(false)}
+                className="px-4 py-2 rounded-xl text-xs font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={handleFinalize}
+                disabled={finalizeLoading}
+                className="px-5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-sm shadow-emerald-600/25 transition-colors disabled:opacity-50"
+              >
+                {finalizeLoading ? 'Finalizando...' : 'Confirmar'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

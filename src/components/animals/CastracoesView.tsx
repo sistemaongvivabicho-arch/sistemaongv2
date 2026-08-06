@@ -1,41 +1,26 @@
 import React, { useState, useMemo, useCallback } from 'react';
 import {
   Scissors, Plus, Edit3, Clock, CheckCircle2, XCircle, RefreshCw, Trash2,
-  Filter, User, FileText, AlertTriangle, PawPrint, Lock, Search, Check,
-  CalendarDays, ChevronDown, ChevronUp, FileDown, Eye
+  Filter, FileText, AlertTriangle, Lock, Search, Check,
+  ChevronDown, ChevronUp, FileDown, CalendarDays
 } from 'lucide-react';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
-import { useCastrations, CastrationResult } from '../../context/CastrationsContext';
+import { useAnimalContext } from '../../context/AnimalContext';
+import { useAuditActions } from '../../context/useAuditActions';
+import { Animal } from '../../types/animal';
 import {
-  CastrationSchedule, CastrationStatus, CASTRATION_STATUS_LABELS,
+  CastrationStatus, CASTRATION_STATUS_LABELS,
   CASTRATION_STATUS_COLORS, SPECIES_LABELS_CASTRATION
 } from '../../types/castrations';
-import { useAnimalContext } from '../../context/AnimalContext';
+import { DatePicker } from '../common/DatePicker';
+import { AutoComplete } from '../common/AutoComplete';
+import { getSuggestions, addSuggestion } from '../../utils/autocompleteStorage';
+import { getTodayBR, getMonthNames, getYearOptions, parseBRDate } from '../../utils/dateUtils';
 import { useAuth } from '../../context/AuthContext';
 
-const MONTH_NAMES = [
-  'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
-  'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'
-];
-
-const CURRENT_YEAR = new Date().getFullYear();
-const YEAR_OPTIONS = Array.from({ length: 5 }, (_, i) => CURRENT_YEAR - 2 + i);
-
-function parseDateBR(dateStr: string): Date | null {
-  if (!dateStr) return null;
-  const parts = dateStr.split('/');
-  if (parts.length !== 3) return null;
-  const d = parseInt(parts[0], 10);
-  const m = parseInt(parts[1], 10);
-  const y = parseInt(parts[2], 10);
-  if (isNaN(d) || isNaN(m) || isNaN(y)) return null;
-  return new Date(y, m - 1, d);
-}
-
-function formatDateBR(d: Date): string {
-  return `${d.getDate().toString().padStart(2, '0')}/${(d.getMonth() + 1).toString().padStart(2, '0')}/${d.getFullYear()}`;
-}
+const MONTH_NAMES = getMonthNames();
+const YEAR_OPTIONS = getYearOptions();
 
 const Toast: React.FC<{ message: string; type: 'success' | 'error'; onClose: () => void }> = ({ message, type, onClose }) => (
   <div className="fixed top-4 right-4 z-[60] max-w-sm animate-in slide-in-from-top-2 fade-in duration-300">
@@ -53,160 +38,297 @@ const Toast: React.FC<{ message: string; type: 'success' | 'error'; onClose: () 
   </div>
 );
 
+function mapAnimalToSchedule(a: Animal): {
+  id: string;
+  animalId: string;
+  animalName: string;
+  animalSpecies: string;
+  scheduledDate: string;
+  performedDate: string;
+  veterinarian: string;
+  notes: string;
+  status: CastrationStatus;
+} {
+  return {
+    id: a.id,
+    animalId: a.id,
+    animalName: a.name,
+    animalSpecies: a.species,
+    scheduledDate: a.castrationScheduledDate || '',
+    performedDate: a.castrationDate || '',
+    veterinarian: a.castrationVeterinarian || '',
+    notes: a.castrationNotes || '',
+    status: (a.castrationStatus as CastrationStatus) || 'agendada'
+  };
+}
+
 export const CastracoesView: React.FC = () => {
-  const { schedules, loading, createSchedule, updateSchedule, reschedule, cancelSchedule, confirmSchedule, completeSchedule, deleteSchedule } = useCastrations();
-  const { animals, navigateToAnimal } = useAnimalContext();
+  const { animals, loading, updateAnimal, navigateToAnimal } = useAnimalContext();
+  const { updateAnimal: auditUpdateAnimal } = useAuditActions();
   const { isAdmin } = useAuth();
 
   const [filterMonth, setFilterMonth] = useState<number>(new Date().getMonth() + 1);
-  const [filterYear, setFilterYear] = useState<number>(CURRENT_YEAR);
+  const [filterYear, setFilterYear] = useState<number>(new Date().getFullYear());
   const [filterStatus, setFilterStatus] = useState<CastrationStatus | 'all'>('all');
   const [filterSpecies, setFilterSpecies] = useState<string>('all');
   const [searchTerm, setSearchTerm] = useState('');
   const [showFilters, setShowFilters] = useState(true);
   const [showNewModal, setShowNewModal] = useState(false);
-  const [editingSchedule, setEditingSchedule] = useState<CastrationSchedule | null>(null);
-  const [rescheduleTarget, setRescheduleTarget] = useState<CastrationSchedule | null>(null);
-  const [confirmTarget, setConfirmTarget] = useState<CastrationSchedule | null>(null);
-  const [completeTarget, setCompleteTarget] = useState<CastrationSchedule | null>(null);
-  const [cancelTarget, setCancelTarget] = useState<CastrationSchedule | null>(null);
-  const [deleteTarget, setDeleteTarget] = useState<CastrationSchedule | null>(null);
+  const [editingAnimal, setEditingAnimal] = useState<Animal | null>(null);
+  const [rescheduleTarget, setRescheduleTarget] = useState<Animal | null>(null);
+  const [confirmTarget, setConfirmTarget] = useState<Animal | null>(null);
+  const [completeTarget, setCompleteTarget] = useState<Animal | null>(null);
+  const [cancelTarget, setCancelTarget] = useState<Animal | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<Animal | null>(null);
   const [deletePassword, setDeletePassword] = useState('');
   const [deleteError, setDeleteError] = useState('');
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
 
-  const showToast = useCallback((result: CastrationResult) => {
-    if (result.message) {
-      setToast({ message: result.message, type: result.success ? 'success' : 'error' });
-      setTimeout(() => setToast(null), 3500);
-    }
+  const showToast = useCallback((message: string, type: 'success' | 'error') => {
+    setToast({ message, type });
+    setTimeout(() => setToast(null), 3500);
   }, []);
+
+  const castrationAnimals = useMemo(() => {
+    return animals.filter((a) => a.castrationScheduledDate && a.castrationScheduledDate.trim() !== '');
+  }, [animals]);
 
   const filteredSchedules = useMemo(() => {
     const term = searchTerm.toLowerCase();
-    return schedules.filter((s) => {
-      if (filterStatus !== 'all' && s.status !== filterStatus) return false;
-      if (filterSpecies !== 'all' && s.animalSpecies !== filterSpecies) return false;
-      const parts = s.scheduledDate.split('/');
-      if (parts.length === 3) {
-        const m = parseInt(parts[1], 10);
-        const y = parseInt(parts[2], 10);
+    return castrationAnimals.filter((a) => {
+      const status = (a.castrationStatus as CastrationStatus) || 'agendada';
+      if (filterStatus !== 'all' && status !== filterStatus) return false;
+      if (filterSpecies !== 'all' && a.species !== filterSpecies) return false;
+      const parsed = parseBRDate(a.castrationScheduledDate || '');
+      if (parsed) {
+        const m = parsed.getMonth() + 1;
+        const y = parsed.getFullYear();
         if (m !== filterMonth || y !== filterYear) return false;
       }
-      if (term && !s.animalName.toLowerCase().includes(term)) return false;
+      if (term && !a.name.toLowerCase().includes(term)) return false;
       return true;
     });
-  }, [schedules, filterStatus, filterSpecies, filterMonth, filterYear, searchTerm]);
+  }, [castrationAnimals, filterStatus, filterSpecies, filterMonth, filterYear, searchTerm]);
 
   const monthStats = useMemo(() => {
-    const ms = schedules.filter((s) => {
-      const parts = s.scheduledDate.split('/');
-      return parts.length === 3 && parseInt(parts[1], 10) === filterMonth && parseInt(parts[2], 10) === filterYear;
+    const ms = castrationAnimals.filter((a) => {
+      const parsed = parseBRDate(a.castrationScheduledDate || '');
+      return parsed && parsed.getMonth() + 1 === filterMonth && parsed.getFullYear() === filterYear;
     });
     return {
       total: ms.length,
-      realizada: ms.filter((s) => s.status === 'realizada').length,
-      cancelada: ms.filter((s) => s.status === 'cancelada').length,
-      agendada: ms.filter((s) => s.status === 'agendada').length,
-      confirmada: ms.filter((s) => s.status === 'confirmada').length,
-      reagendada: ms.filter((s) => s.status === 'reagendada').length
+      realizada: ms.filter((a) => a.castrationStatus === 'realizada').length,
+      cancelada: ms.filter((a) => a.castrationStatus === 'cancelada').length,
+      agendada: ms.filter((a) => !a.castrationStatus || a.castrationStatus === 'agendada').length,
+      confirmada: ms.filter((a) => a.castrationStatus === 'confirmada').length,
+      reagendada: ms.filter((a) => a.castrationStatus === 'reagendada').length
     };
-  }, [schedules, filterMonth, filterYear]);
+  }, [castrationAnimals, filterMonth, filterYear]);
 
   const uniqueVeterinarians = useMemo(() => {
     const set = new Set<string>();
-    schedules.forEach((s) => { if (s.veterinarian) set.add(s.veterinarian); });
+    castrationAnimals.forEach((a) => { if (a.castrationVeterinarian) set.add(a.castrationVeterinarian); });
     return Array.from(set).sort();
-  }, [schedules]);
+  }, [castrationAnimals]);
 
-  const handleCreate = useCallback(async (data: { animalId: string; animalName: string; animalSpecies: string; scheduledDate: string; veterinarian: string; notes: string }) => {
-    const result = await createSchedule(data);
-    showToast(result);
-    if (result.success) setShowNewModal(false);
-  }, [createSchedule, showToast]);
+  const handleCreate = useCallback(async (data: { animalId: string; scheduledDate: string; veterinarian: string; notes: string }) => {
+    const success = await updateAnimal(data.animalId, {
+      castrationScheduledDate: data.scheduledDate,
+      castrationStatus: 'agendada',
+      castrationVeterinarian: data.veterinarian,
+      castrationNotes: data.notes
+    });
+    if (success) {
+      addSuggestion('veterinario', data.veterinarian);
+      showToast('Castração agendada com sucesso!', 'success');
+      setShowNewModal(false);
+    } else {
+      showToast('Erro ao agendar castração.', 'error');
+    }
+  }, [updateAnimal, showToast]);
 
   const handleUpdate = useCallback(async (data: { scheduledDate: string; veterinarian: string; notes: string }) => {
-    if (!editingSchedule) return;
-    const result = await updateSchedule(editingSchedule.id, data);
-    showToast(result);
-    if (result.success) setEditingSchedule(null);
-  }, [editingSchedule, updateSchedule, showToast]);
+    if (!editingAnimal) return;
+    const success = await updateAnimal(editingAnimal.id, {
+      castrationScheduledDate: data.scheduledDate,
+      castrationVeterinarian: data.veterinarian,
+      castrationNotes: data.notes
+    });
+    if (success) {
+      addSuggestion('veterinario', data.veterinarian);
+      showToast('Agendamento atualizado!', 'success');
+      setEditingAnimal(null);
+    } else {
+      showToast('Erro ao atualizar agendamento.', 'error');
+    }
+  }, [editingAnimal, updateAnimal, showToast]);
 
-  const handleReschedule = useCallback(async (newDate: string, reason: string) => {
+  const handleReschedule = useCallback(async (newDate: string) => {
     if (!rescheduleTarget) return;
-    const result = await reschedule(rescheduleTarget.id, newDate, reason);
-    showToast(result);
-    if (result.success) setRescheduleTarget(null);
-  }, [rescheduleTarget, reschedule, showToast]);
+    const success = await updateAnimal(rescheduleTarget.id, {
+      castrationScheduledDate: newDate,
+      castrationStatus: 'reagendada'
+    });
+    if (success) {
+      showToast('Castração reagendada!', 'success');
+      setRescheduleTarget(null);
+    } else {
+      showToast('Erro ao reagendar.', 'error');
+    }
+  }, [rescheduleTarget, updateAnimal, showToast]);
 
   const handleConfirm = useCallback(async () => {
     if (!confirmTarget) return;
-    const result = await confirmSchedule(confirmTarget.id);
-    showToast(result);
-    if (result.success) setConfirmTarget(null);
-  }, [confirmTarget, confirmSchedule, showToast]);
+    const success = await updateAnimal(confirmTarget.id, {
+      castrationStatus: 'confirmada'
+    });
+    if (success) {
+      showToast('Castração confirmada!', 'success');
+      setConfirmTarget(null);
+    } else {
+      showToast('Erro ao confirmar.', 'error');
+    }
+  }, [confirmTarget, updateAnimal, showToast]);
 
   const handleComplete = useCallback(async (performedDate: string) => {
     if (!completeTarget) return;
-    const result = await completeSchedule(completeTarget.id, performedDate);
-    showToast(result);
-    if (result.success) setCompleteTarget(null);
-  }, [completeTarget, completeSchedule, showToast]);
+    const success = await updateAnimal(completeTarget.id, {
+      castrationStatus: 'realizada',
+      castrationDate: performedDate,
+      castrado: true
+    });
+    if (success) {
+      showToast('Castração registrada como realizada!', 'success');
+      setCompleteTarget(null);
+    } else {
+      showToast('Erro ao registrar realização.', 'error');
+    }
+  }, [completeTarget, updateAnimal, showToast]);
 
   const handleCancel = useCallback(async (reason: string) => {
     if (!cancelTarget) return;
-    const result = await cancelSchedule(cancelTarget.id, reason);
-    showToast(result);
-    if (result.success) setCancelTarget(null);
-  }, [cancelTarget, cancelSchedule, showToast]);
+    const success = await updateAnimal(cancelTarget.id, {
+      castrationStatus: 'cancelada',
+      castrationNotes: cancelTarget.castrationNotes
+        ? `${cancelTarget.castrationNotes}\n[Cancelamento] ${reason}`
+        : `[Cancelamento] ${reason}`
+    });
+    if (success) {
+      showToast('Castração cancelada.', 'success');
+      setCancelTarget(null);
+    } else {
+      showToast('Erro ao cancelar.', 'error');
+    }
+  }, [cancelTarget, updateAnimal, showToast]);
 
   const handleDelete = useCallback(async () => {
     if (!deleteTarget) return;
     if (deletePassword !== '0001') { setDeleteError('Senha incorreta'); return; }
-    const result = await deleteSchedule(deleteTarget.id);
-    showToast(result);
-    if (result.success) { setDeleteTarget(null); setDeletePassword(''); setDeleteError(''); }
-  }, [deleteTarget, deletePassword, deleteSchedule, showToast]);
+    const success = await updateAnimal(deleteTarget.id, {
+      castrationScheduledDate: undefined,
+      castrationStatus: undefined,
+      castrationVeterinarian: undefined,
+      castrationNotes: undefined
+    });
+    if (success) {
+      showToast('Agendamento removido.', 'success');
+      setDeleteTarget(null);
+      setDeletePassword('');
+      setDeleteError('');
+    } else {
+      showToast('Erro ao remover agendamento.', 'error');
+    }
+  }, [deleteTarget, deletePassword, updateAnimal, showToast]);
 
   const closeDeleteModal = useCallback(() => { setDeleteTarget(null); setDeletePassword(''); setDeleteError(''); }, []);
 
   const generatePDF = useCallback(() => {
     const doc = new jsPDF();
     const monthName = MONTH_NAMES[filterMonth - 1];
+    const pageWidth = doc.internal.pageSize.getWidth();
 
-    doc.setFontSize(16);
+    // Header background
+    doc.setFillColor(16, 185, 129);
+    doc.rect(0, 0, pageWidth, 35, 'F');
+
+    // ONG name
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(18);
     doc.setFont('helvetica', 'bold');
-    doc.text('Relatório de Castrações', 14, 20);
+    doc.text('Viva Bicho', 14, 15);
 
-    doc.setFontSize(11);
+    // Report title
+    doc.setFontSize(12);
     doc.setFont('helvetica', 'normal');
-    doc.text(`Período: ${monthName} de ${filterYear}`, 14, 28);
-    doc.text(`Total: ${filteredSchedules.length} agendamento(s) | Realizadas: ${monthStats.realizada} | Canceladas: ${monthStats.cancelada}`, 14, 34);
+    doc.text('Relatório de Castrações', 14, 23);
+
+    // Date on right
+    doc.setFontSize(9);
+    doc.text(`Gerado em: ${new Date().toLocaleDateString('pt-BR')} às ${new Date().toLocaleTimeString('pt-BR')}`, pageWidth - 14, 15, { align: 'right' });
+
+    // Filters applied
+    doc.setTextColor(100, 116, 139);
+    doc.setFontSize(8);
+    doc.text(`Mês: ${monthName} | Ano: ${filterYear}`, pageWidth - 14, 23, { align: 'right' });
+
+    // Reset text color
+    doc.setTextColor(0, 0, 0);
+
+    // Summary section
+    let y = 42;
+    doc.setFillColor(248, 250, 252);
+    doc.roundedRect(14, y, pageWidth - 28, 22, 3, 3, 'F');
 
     doc.setFontSize(9);
-    doc.text(`Gerado em: ${new Date().toLocaleDateString('pt-BR')} às ${new Date().toLocaleTimeString('pt-BR')}`, 14, 40);
+    doc.setFont('helvetica', 'bold');
+    doc.text('RESUMO', 20, y + 8);
 
-    const body = filteredSchedules.map((s) => [
-      s.animalName,
-      SPECIES_LABELS_CASTRATION[s.animalSpecies] || s.animalSpecies,
-      s.veterinarian,
-      s.scheduledDate,
-      CASTRATION_STATUS_LABELS[s.status],
-      s.performedDate || '-',
-      s.notes || '-'
-    ]);
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(8);
+    const summaryY = y + 15;
+    doc.text(`Total: ${filteredSchedules.length}`, 20, summaryY);
+    doc.text(`Agendadas: ${monthStats.agendada}`, 60, summaryY);
+    doc.text(`Confirmadas: ${monthStats.confirmada}`, 100, summaryY);
+    doc.text(`Realizadas: ${monthStats.realizada}`, 140, summaryY);
+    doc.text(`Canceladas: ${monthStats.cancelada}`, 180, summaryY);
 
-    autoTable(doc, {
-      startY: 45,
-      head: [['Animal', 'Espécie', 'Veterinário', 'Data', 'Status', 'Realizado', 'Obs.']],
-      body,
-      styles: { fontSize: 8, cellPadding: 3 },
-      headStyles: { fillColor: [16, 185, 129], textColor: 255, fontStyle: 'bold' },
-      alternateRowStyles: { fillColor: [248, 250, 252] },
-      margin: { left: 14, right: 14 }
+    // Table
+    const body = filteredSchedules.map((a) => {
+      const status = (a.castrationStatus as CastrationStatus) || 'agendada';
+      return [
+        a.name,
+        SPECIES_LABELS_CASTRATION[a.species] || a.species,
+        a.castrationVeterinarian || '-',
+        a.castrationScheduledDate || '-',
+        CASTRATION_STATUS_LABELS[status],
+        a.castrationDate || '-',
+        (a.castrationNotes || '-').substring(0, 30)
+      ];
     });
 
-    doc.save(`castracoes_${monthName.toLowerCase()}_${filterYear}.pdf`);
+    autoTable(doc, {
+      startY: y + 28,
+      head: [['Animal', 'Espécie', 'Veterinário', 'Data Agendada', 'Status', 'Data Realização', 'Obs.']],
+      body,
+      styles: { fontSize: 7.5, cellPadding: 2.5, lineColor: [226, 232, 240], lineWidth: 0.1 },
+      headStyles: { fillColor: [16, 185, 129], textColor: 255, fontStyle: 'bold', fontSize: 7.5 },
+      alternateRowStyles: { fillColor: [248, 250, 252] },
+      margin: { left: 14, right: 14 },
+      didDrawPage: (data) => {
+        // Footer on each page
+        const pageCount = doc.getNumberOfPages();
+        doc.setFontSize(7);
+        doc.setTextColor(150, 150, 150);
+        doc.text(
+          `Viva Bicho — Relatório de Castrações — Página ${data.pageNumber} de ${pageCount}`,
+          pageWidth / 2,
+          doc.internal.pageSize.getHeight() - 8,
+          { align: 'center' }
+        );
+      }
+    });
+
+    doc.save(`relatorio_castracoes_${monthName.toLowerCase()}_${filterYear}.pdf`);
   }, [filteredSchedules, filterMonth, filterYear, monthStats]);
 
   const renderStatusBadge = useCallback((status: CastrationStatus, size: 'sm' | 'xs' = 'sm') => {
@@ -220,48 +342,49 @@ export const CastracoesView: React.FC = () => {
     );
   }, []);
 
-  const renderActionButtons = useCallback((schedule: CastrationSchedule) => {
-    const canEdit = schedule.status === 'agendada' || schedule.status === 'reagendada';
-    const canConfirm = schedule.status === 'agendada' || schedule.status === 'reagendada';
-    const canComplete = schedule.status === 'confirmada' || schedule.status === 'agendada';
-    const canReschedule = schedule.status !== 'realizada' && schedule.status !== 'cancelada';
-    const canCancel = schedule.status !== 'realizada' && schedule.status !== 'cancelada';
+  const renderActionButtons = useCallback((animal: Animal) => {
+    const status = (animal.castrationStatus as CastrationStatus) || 'agendada';
+    const canEdit = status === 'agendada' || status === 'reagendada';
+    const canConfirm = status === 'agendada' || status === 'reagendada';
+    const canComplete = status === 'confirmada' || status === 'agendada';
+    const canReschedule = status !== 'realizada' && status !== 'cancelada';
+    const canCancel = status !== 'realizada' && status !== 'cancelada';
     const canDelete = isAdmin;
 
     return (
       <div className="flex items-center gap-1 flex-wrap justify-end">
         {canEdit && (
-          <button onClick={() => setEditingSchedule(schedule)} title="Editar"
+          <button onClick={() => setEditingAnimal(animal)} title="Editar"
             className="p-1.5 rounded-lg text-slate-400 hover:text-blue-600 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
             <Edit3 className="w-3.5 h-3.5" />
           </button>
         )}
         {canConfirm && (
-          <button onClick={() => setConfirmTarget(schedule)} title="Confirmar"
+          <button onClick={() => setConfirmTarget(animal)} title="Confirmar"
             className="p-1.5 rounded-lg text-slate-400 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-950/30 transition-colors">
             <CheckCircle2 className="w-3.5 h-3.5" />
           </button>
         )}
         {canComplete && (
-          <button onClick={() => setCompleteTarget(schedule)} title="Marcar como realizada"
+          <button onClick={() => setCompleteTarget(animal)} title="Marcar como realizada"
             className="p-1.5 rounded-lg text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-950/30 transition-colors">
             <CalendarDays className="w-3.5 h-3.5" />
           </button>
         )}
         {canReschedule && (
-          <button onClick={() => setRescheduleTarget(schedule)} title="Reagendar"
+          <button onClick={() => setRescheduleTarget(animal)} title="Reagendar"
             className="p-1.5 rounded-lg text-slate-400 hover:text-violet-600 hover:bg-violet-50 dark:hover:bg-violet-950/30 transition-colors">
             <RefreshCw className="w-3.5 h-3.5" />
           </button>
         )}
         {canCancel && (
-          <button onClick={() => setCancelTarget(schedule)} title="Cancelar"
+          <button onClick={() => setCancelTarget(animal)} title="Cancelar"
             className="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/30 transition-colors">
             <XCircle className="w-3.5 h-3.5" />
           </button>
         )}
         {canDelete && (
-          <button onClick={() => setDeleteTarget(schedule)} title="Excluir"
+          <button onClick={() => setDeleteTarget(animal)} title="Excluir"
             className="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/30 transition-colors">
             <Trash2 className="w-3.5 h-3.5" />
           </button>
@@ -396,23 +519,26 @@ export const CastracoesView: React.FC = () => {
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-50 dark:divide-slate-800/50">
-                {filteredSchedules.map((s) => (
-                  <tr key={s.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/30 transition-colors">
-                    <td className="py-3">
-                      <button onClick={() => navigateToAnimal(s.animalId)}
-                        className="text-sm font-bold text-slate-900 dark:text-white hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors">
-                        {s.animalName}
-                      </button>
-                    </td>
-                    <td className="py-3 text-xs text-slate-500 dark:text-slate-400 hidden sm:table-cell">
-                      {SPECIES_LABELS_CASTRATION[s.animalSpecies] || s.animalSpecies}
-                    </td>
-                    <td className="py-3 text-xs text-slate-500 dark:text-slate-400 hidden md:table-cell">{s.veterinarian}</td>
-                    <td className="py-3 text-xs font-mono font-bold text-slate-600 dark:text-slate-300 hidden md:table-cell">{s.scheduledDate}</td>
-                    <td className="py-3">{renderStatusBadge(s.status, 'xs')}</td>
-                    <td className="py-3 text-right">{renderActionButtons(s)}</td>
-                  </tr>
-                ))}
+                {filteredSchedules.map((a) => {
+                  const status = (a.castrationStatus as CastrationStatus) || 'agendada';
+                  return (
+                    <tr key={a.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/30 transition-colors">
+                      <td className="py-3">
+                        <button onClick={() => navigateToAnimal(a.id)}
+                          className="text-sm font-bold text-slate-900 dark:text-white hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors">
+                          {a.name}
+                        </button>
+                      </td>
+                      <td className="py-3 text-xs text-slate-500 dark:text-slate-400 hidden sm:table-cell">
+                        {SPECIES_LABELS_CASTRATION[a.species] || a.species}
+                      </td>
+                      <td className="py-3 text-xs text-slate-500 dark:text-slate-400 hidden md:table-cell">{a.castrationVeterinarian || '-'}</td>
+                      <td className="py-3 text-xs font-mono font-bold text-slate-600 dark:text-slate-300 hidden md:table-cell">{a.castrationScheduledDate}</td>
+                      <td className="py-3">{renderStatusBadge(status, 'xs')}</td>
+                      <td className="py-3 text-right">{renderActionButtons(a)}</td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
@@ -421,22 +547,27 @@ export const CastracoesView: React.FC = () => {
 
       {/* ========== MODALS ========== */}
       {showNewModal && (
-        <NewCastrationModal animals={animals} existingSchedules={schedules} onClose={() => setShowNewModal(false)} onSubmit={handleCreate} />
+        <NewCastrationModal
+          animals={castrationAnimals}
+          allAnimals={animals}
+          onClose={() => setShowNewModal(false)}
+          onSubmit={handleCreate}
+        />
       )}
-      {editingSchedule && (
-        <EditCastrationModal schedule={editingSchedule} onClose={() => setEditingSchedule(null)} onSubmit={handleUpdate} />
+      {editingAnimal && (
+        <EditCastrationModal animal={editingAnimal} onClose={() => setEditingAnimal(null)} onSubmit={handleUpdate} />
       )}
       {rescheduleTarget && (
-        <RescheduleModal schedule={rescheduleTarget} onClose={() => setRescheduleTarget(null)} onSubmit={handleReschedule} />
+        <RescheduleModal animal={rescheduleTarget} onClose={() => setRescheduleTarget(null)} onSubmit={handleReschedule} />
       )}
       {confirmTarget && (
-        <ConfirmModal schedule={confirmTarget} onClose={() => setConfirmTarget(null)} onConfirm={handleConfirm} />
+        <ConfirmModal animal={confirmTarget} onClose={() => setConfirmTarget(null)} onConfirm={handleConfirm} />
       )}
       {completeTarget && (
-        <CompleteModal schedule={completeTarget} onClose={() => setCompleteTarget(null)} onSubmit={handleComplete} />
+        <CompleteModal animal={completeTarget} onClose={() => setCompleteTarget(null)} onSubmit={handleComplete} />
       )}
       {cancelTarget && (
-        <CancelModal schedule={cancelTarget} onClose={() => setCancelTarget(null)} onSubmit={handleCancel} />
+        <CancelModal animal={cancelTarget} onClose={() => setCancelTarget(null)} onSubmit={handleCancel} />
       )}
       {deleteTarget && (
         <DeleteModal target={deleteTarget} password={deletePassword} error={deleteError} onPasswordChange={setDeletePassword} onConfirm={handleDelete} onClose={closeDeleteModal} />
@@ -448,13 +579,13 @@ export const CastracoesView: React.FC = () => {
 // ==================== MODALS ====================
 
 interface NewCastrationModalProps {
-  animals: { id: string; name: string; species: string }[];
-  existingSchedules: CastrationSchedule[];
+  animals: Animal[];
+  allAnimals: Animal[];
   onClose: () => void;
-  onSubmit: (data: { animalId: string; animalName: string; animalSpecies: string; scheduledDate: string; veterinarian: string; notes: string }) => void;
+  onSubmit: (data: { animalId: string; scheduledDate: string; veterinarian: string; notes: string }) => void;
 }
 
-const NewCastrationModal: React.FC<NewCastrationModalProps> = ({ animals, existingSchedules, onClose, onSubmit }) => {
+const NewCastrationModal: React.FC<NewCastrationModalProps> = ({ animals, allAnimals, onClose, onSubmit }) => {
   const [animalId, setAnimalId] = useState('');
   const [scheduledDate, setScheduledDate] = useState('');
   const [veterinarian, setVeterinarian] = useState('');
@@ -462,21 +593,27 @@ const NewCastrationModal: React.FC<NewCastrationModalProps> = ({ animals, existi
   const [error, setError] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
 
-  const availableAnimals = useMemo(() => {
-    return animals.filter((a) => {
-      if (!a.name.toLowerCase().includes(searchTerm.toLowerCase())) return false;
-      return !existingSchedules.some((s) => s.animalId === a.id && s.status !== 'realizada' && s.status !== 'cancelada');
-    });
-  }, [animals, existingSchedules, searchTerm]);
+  const vetSuggestions = useMemo(() => getSuggestions('veterinario'), []);
 
-  const selectedAnimal = useMemo(() => animals.find((a) => a.id === animalId), [animals, animalId]);
+  const availableAnimals = useMemo(() => {
+    return allAnimals.filter((a) => {
+      if (!a.name.toLowerCase().includes(searchTerm.toLowerCase())) return false;
+      if (a.castrationScheduledDate && a.castrationScheduledDate.trim() !== '' &&
+          a.castrationStatus !== 'realizada' && a.castrationStatus !== 'cancelada') {
+        return false;
+      }
+      return true;
+    });
+  }, [allAnimals, searchTerm]);
+
+  const selectedAnimal = useMemo(() => allAnimals.find((a) => a.id === animalId), [allAnimals, animalId]);
 
   const handleSubmit = () => {
     if (!animalId) { setError('Selecione um animal.'); return; }
     if (!scheduledDate) { setError('Informe a data.'); return; }
     if (!veterinarian.trim()) { setError('Informe o veterinário.'); return; }
     setError('');
-    onSubmit({ animalId, animalName: selectedAnimal?.name || '', animalSpecies: selectedAnimal?.species || 'outro', scheduledDate, veterinarian: veterinarian.trim(), notes: notes.trim() });
+    onSubmit({ animalId, scheduledDate, veterinarian: veterinarian.trim(), notes: notes.trim() });
   };
 
   return (
@@ -516,13 +653,11 @@ const NewCastrationModal: React.FC<NewCastrationModalProps> = ({ animals, existi
           </div>
           <div className="space-y-2">
             <label className="text-xs font-bold text-slate-700 dark:text-slate-300">Data *</label>
-            <input type="text" placeholder="DD/MM/AAAA" value={scheduledDate} onChange={(e) => setScheduledDate(e.target.value)}
-              className="w-full py-2.5 px-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm font-medium text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all" />
+            <DatePicker value={scheduledDate} onChange={setScheduledDate} placeholder="DD/MM/AAAA" />
           </div>
           <div className="space-y-2">
             <label className="text-xs font-bold text-slate-700 dark:text-slate-300">Veterinário *</label>
-            <input type="text" placeholder="Nome do veterinário" value={veterinarian} onChange={(e) => setVeterinarian(e.target.value)}
-              className="w-full py-2.5 px-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm font-medium text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all" />
+            <AutoComplete value={veterinarian} onChange={setVeterinarian} suggestions={vetSuggestions} placeholder="Nome do veterinário" />
           </div>
           <div className="space-y-2">
             <label className="text-xs font-bold text-slate-700 dark:text-slate-300">Observações</label>
@@ -540,16 +675,18 @@ const NewCastrationModal: React.FC<NewCastrationModalProps> = ({ animals, existi
 };
 
 interface EditCastrationModalProps {
-  schedule: CastrationSchedule;
+  animal: Animal;
   onClose: () => void;
   onSubmit: (data: { scheduledDate: string; veterinarian: string; notes: string }) => void;
 }
 
-const EditCastrationModal: React.FC<EditCastrationModalProps> = ({ schedule, onClose, onSubmit }) => {
-  const [scheduledDate, setScheduledDate] = useState(schedule.scheduledDate);
-  const [veterinarian, setVeterinarian] = useState(schedule.veterinarian);
-  const [notes, setNotes] = useState(schedule.notes);
+const EditCastrationModal: React.FC<EditCastrationModalProps> = ({ animal, onClose, onSubmit }) => {
+  const [scheduledDate, setScheduledDate] = useState(animal.castrationScheduledDate || '');
+  const [veterinarian, setVeterinarian] = useState(animal.castrationVeterinarian || '');
+  const [notes, setNotes] = useState(animal.castrationNotes || '');
   const [error, setError] = useState('');
+
+  const vetSuggestions = useMemo(() => getSuggestions('veterinario'), []);
 
   const handleSubmit = () => {
     if (!scheduledDate) { setError('Informe a data.'); return; }
@@ -566,7 +703,7 @@ const EditCastrationModal: React.FC<EditCastrationModalProps> = ({ schedule, onC
             <div className="w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-950/30 flex items-center justify-center"><Edit3 className="w-5 h-5 text-blue-600 dark:text-blue-400" /></div>
             <div>
               <h3 className="text-base font-bold text-slate-900 dark:text-white">Editar Agendamento</h3>
-              <p className="text-xs text-slate-500 dark:text-slate-400">{schedule.animalName}</p>
+              <p className="text-xs text-slate-500 dark:text-slate-400">{animal.name}</p>
             </div>
           </div>
           <button onClick={onClose} className="p-2 rounded-lg text-slate-400 hover:text-slate-900 hover:bg-slate-100 dark:hover:text-white dark:hover:bg-slate-800 transition-colors"><XCircle className="w-5 h-5" /></button>
@@ -575,13 +712,11 @@ const EditCastrationModal: React.FC<EditCastrationModalProps> = ({ schedule, onC
         <div className="space-y-4">
           <div className="space-y-2">
             <label className="text-xs font-bold text-slate-700 dark:text-slate-300">Data *</label>
-            <input type="text" placeholder="DD/MM/AAAA" value={scheduledDate} onChange={(e) => setScheduledDate(e.target.value)}
-              className="w-full py-2.5 px-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm font-medium text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all" />
+            <DatePicker value={scheduledDate} onChange={setScheduledDate} placeholder="DD/MM/AAAA" />
           </div>
           <div className="space-y-2">
             <label className="text-xs font-bold text-slate-700 dark:text-slate-300">Veterinário *</label>
-            <input type="text" value={veterinarian} onChange={(e) => setVeterinarian(e.target.value)}
-              className="w-full py-2.5 px-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm font-medium text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all" />
+            <AutoComplete value={veterinarian} onChange={setVeterinarian} suggestions={vetSuggestions} placeholder="Nome do veterinário" />
           </div>
           <div className="space-y-2">
             <label className="text-xs font-bold text-slate-700 dark:text-slate-300">Observações</label>
@@ -599,21 +734,19 @@ const EditCastrationModal: React.FC<EditCastrationModalProps> = ({ schedule, onC
 };
 
 interface RescheduleModalProps {
-  schedule: CastrationSchedule;
+  animal: Animal;
   onClose: () => void;
-  onSubmit: (newDate: string, reason: string) => void;
+  onSubmit: (newDate: string) => void;
 }
 
-const RescheduleModal: React.FC<RescheduleModalProps> = ({ schedule, onClose, onSubmit }) => {
+const RescheduleModal: React.FC<RescheduleModalProps> = ({ animal, onClose, onSubmit }) => {
   const [newDate, setNewDate] = useState('');
-  const [reason, setReason] = useState('');
   const [error, setError] = useState('');
 
   const handleSubmit = () => {
     if (!newDate) { setError('Informe a nova data.'); return; }
-    if (!reason.trim()) { setError('Informe o motivo.'); return; }
     setError('');
-    onSubmit(newDate, reason.trim());
+    onSubmit(newDate);
   };
 
   return (
@@ -624,7 +757,7 @@ const RescheduleModal: React.FC<RescheduleModalProps> = ({ schedule, onClose, on
             <div className="w-10 h-10 rounded-xl bg-violet-50 dark:bg-violet-950/30 flex items-center justify-center"><RefreshCw className="w-5 h-5 text-violet-600 dark:text-violet-400" /></div>
             <div>
               <h3 className="text-base font-bold text-slate-900 dark:text-white">Reagendar</h3>
-              <p className="text-xs text-slate-500 dark:text-slate-400">{schedule.animalName} · {schedule.scheduledDate}</p>
+              <p className="text-xs text-slate-500 dark:text-slate-400">{animal.name} · {animal.castrationScheduledDate}</p>
             </div>
           </div>
           <button onClick={onClose} className="p-2 rounded-lg text-slate-400 hover:text-slate-900 hover:bg-slate-100 dark:hover:text-white dark:hover:bg-slate-800 transition-colors"><XCircle className="w-5 h-5" /></button>
@@ -633,13 +766,7 @@ const RescheduleModal: React.FC<RescheduleModalProps> = ({ schedule, onClose, on
         <div className="space-y-4">
           <div className="space-y-2">
             <label className="text-xs font-bold text-slate-700 dark:text-slate-300">Nova Data *</label>
-            <input type="text" placeholder="DD/MM/AAAA" value={newDate} onChange={(e) => setNewDate(e.target.value)}
-              className="w-full py-2.5 px-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm font-medium text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all" />
-          </div>
-          <div className="space-y-2">
-            <label className="text-xs font-bold text-slate-700 dark:text-slate-300">Motivo *</label>
-            <textarea rows={3} value={reason} onChange={(e) => setReason(e.target.value)} placeholder="Motivo do reagendamento"
-              className="w-full py-2.5 px-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm font-medium text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all resize-none" />
+            <DatePicker value={newDate} onChange={setNewDate} placeholder="DD/MM/AAAA" />
           </div>
         </div>
         <div className="flex items-center justify-end gap-3 pt-2 border-t border-slate-100 dark:border-slate-800">
@@ -652,12 +779,12 @@ const RescheduleModal: React.FC<RescheduleModalProps> = ({ schedule, onClose, on
 };
 
 interface ConfirmModalProps {
-  schedule: CastrationSchedule;
+  animal: Animal;
   onClose: () => void;
   onConfirm: () => void;
 }
 
-const ConfirmModal: React.FC<ConfirmModalProps> = ({ schedule, onClose, onConfirm }) => (
+const ConfirmModal: React.FC<ConfirmModalProps> = ({ animal, onClose, onConfirm }) => (
   <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
     <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xl w-full max-w-md space-y-5 p-6">
       <div className="flex items-center gap-3">
@@ -668,10 +795,10 @@ const ConfirmModal: React.FC<ConfirmModalProps> = ({ schedule, onClose, onConfir
         </div>
       </div>
       <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-700/50 space-y-1">
-        <p className="text-sm font-bold text-slate-900 dark:text-white">{schedule.animalName}</p>
-        <p className="text-xs text-slate-500 dark:text-slate-400">{SPECIES_LABELS_CASTRATION[schedule.animalSpecies] || schedule.animalSpecies}</p>
-        <p className="text-xs text-slate-500 dark:text-slate-400">Data: {schedule.scheduledDate}</p>
-        <p className="text-xs text-slate-500 dark:text-slate-400">Veterinário: {schedule.veterinarian}</p>
+        <p className="text-sm font-bold text-slate-900 dark:text-white">{animal.name}</p>
+        <p className="text-xs text-slate-500 dark:text-slate-400">{SPECIES_LABELS_CASTRATION[animal.species] || animal.species}</p>
+        <p className="text-xs text-slate-500 dark:text-slate-400">Data: {animal.castrationScheduledDate}</p>
+        <p className="text-xs text-slate-500 dark:text-slate-400">Veterinário: {animal.castrationVeterinarian}</p>
       </div>
       <div className="flex items-center justify-end gap-3 pt-2 border-t border-slate-100 dark:border-slate-800">
         <button onClick={onClose} className="px-4 py-2.5 rounded-xl text-sm font-bold text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">Cancelar</button>
@@ -682,13 +809,13 @@ const ConfirmModal: React.FC<ConfirmModalProps> = ({ schedule, onClose, onConfir
 );
 
 interface CompleteModalProps {
-  schedule: CastrationSchedule;
+  animal: Animal;
   onClose: () => void;
   onSubmit: (performedDate: string) => void;
 }
 
-const CompleteModal: React.FC<CompleteModalProps> = ({ schedule, onClose, onSubmit }) => {
-  const [performedDate, setPerformedDate] = useState(formatDateBR(new Date()));
+const CompleteModal: React.FC<CompleteModalProps> = ({ animal, onClose, onSubmit }) => {
+  const [performedDate, setPerformedDate] = useState(getTodayBR());
   const [error, setError] = useState('');
 
   const handleSubmit = () => {
@@ -704,14 +831,13 @@ const CompleteModal: React.FC<CompleteModalProps> = ({ schedule, onClose, onSubm
           <div className="w-10 h-10 rounded-xl bg-emerald-50 dark:bg-emerald-950/30 flex items-center justify-center"><CalendarDays className="w-5 h-5 text-emerald-600 dark:text-emerald-400" /></div>
           <div>
             <h3 className="text-base font-bold text-slate-900 dark:text-white">Marcar como Realizada</h3>
-            <p className="text-xs text-slate-500 dark:text-slate-400">{schedule.animalName}</p>
+            <p className="text-xs text-slate-500 dark:text-slate-400">{animal.name}</p>
           </div>
         </div>
         {error && <div className="p-3 rounded-xl bg-rose-50 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-800"><p className="text-xs font-bold text-rose-600 dark:text-rose-400">{error}</p></div>}
         <div className="space-y-2">
           <label className="text-xs font-bold text-slate-700 dark:text-slate-300">Data de Realização *</label>
-          <input type="text" placeholder="DD/MM/AAAA" value={performedDate} onChange={(e) => setPerformedDate(e.target.value)}
-            className="w-full py-2.5 px-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm font-medium text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all" />
+          <DatePicker value={performedDate} onChange={setPerformedDate} placeholder="DD/MM/AAAA" />
         </div>
         <div className="flex items-center justify-end gap-3 pt-2 border-t border-slate-100 dark:border-slate-800">
           <button onClick={onClose} className="px-4 py-2.5 rounded-xl text-sm font-bold text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">Cancelar</button>
@@ -723,12 +849,12 @@ const CompleteModal: React.FC<CompleteModalProps> = ({ schedule, onClose, onSubm
 };
 
 interface CancelModalProps {
-  schedule: CastrationSchedule;
+  animal: Animal;
   onClose: () => void;
   onSubmit: (reason: string) => void;
 }
 
-const CancelModal: React.FC<CancelModalProps> = ({ schedule, onClose, onSubmit }) => {
+const CancelModal: React.FC<CancelModalProps> = ({ animal, onClose, onSubmit }) => {
   const [reason, setReason] = useState('');
   const [error, setError] = useState('');
 
@@ -745,7 +871,7 @@ const CancelModal: React.FC<CancelModalProps> = ({ schedule, onClose, onSubmit }
           <div className="w-10 h-10 rounded-xl bg-rose-50 dark:bg-rose-950/30 flex items-center justify-center"><XCircle className="w-5 h-5 text-rose-600 dark:text-rose-400" /></div>
           <div>
             <h3 className="text-base font-bold text-slate-900 dark:text-white">Cancelar Castração</h3>
-            <p className="text-xs text-slate-500 dark:text-slate-400">{schedule.animalName} · {schedule.scheduledDate}</p>
+            <p className="text-xs text-slate-500 dark:text-slate-400">{animal.name} · {animal.castrationScheduledDate}</p>
           </div>
         </div>
         {error && <div className="p-3 rounded-xl bg-rose-50 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-800"><p className="text-xs font-bold text-rose-600 dark:text-rose-400">{error}</p></div>}
@@ -764,7 +890,7 @@ const CancelModal: React.FC<CancelModalProps> = ({ schedule, onClose, onSubmit }
 };
 
 interface DeleteModalProps {
-  target: CastrationSchedule;
+  target: Animal;
   password: string;
   error: string;
   onPasswordChange: (v: string) => void;
@@ -783,8 +909,8 @@ const DeleteModal: React.FC<DeleteModalProps> = ({ target, password, error, onPa
         </div>
       </div>
       <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-700/50">
-        <p className="text-sm font-bold text-slate-900 dark:text-white">{target.animalName}</p>
-        <p className="text-xs text-slate-500 dark:text-slate-400">Data: {target.scheduledDate}</p>
+        <p className="text-sm font-bold text-slate-900 dark:text-white">{target.name}</p>
+        <p className="text-xs text-slate-500 dark:text-slate-400">Data: {target.castrationScheduledDate}</p>
       </div>
       <div className="space-y-2">
         <label className="text-xs font-bold text-slate-700 dark:text-slate-300 flex items-center gap-2"><Lock className="w-3.5 h-3.5" />Digite a senha para confirmar</label>

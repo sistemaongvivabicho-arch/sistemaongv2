@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { useAuditActions } from '../../context/useAuditActions';
 import { X, Bird, Check } from 'lucide-react';
+import { DatePicker } from '../common/DatePicker';
+import { getTodayBR } from '../../utils/dateUtils';
 
 interface RegisterDeathModalProps {
   isOpen: boolean;
@@ -17,9 +19,7 @@ export const RegisterDeathModal: React.FC<RegisterDeathModalProps> = ({
 
   const animal = animalId ? getAnimalById(animalId) : null;
 
-  const todayStr = `${new Date().getDate().toString().padStart(2, '0')}/${(new Date().getMonth() + 1).toString().padStart(2, '0')}/${new Date().getFullYear()}`;
-
-  const [deathDate, setDeathDate] = useState(todayStr);
+  const [deathDate, setDeathDate] = useState(getTodayBR());
   const [notes, setNotes] = useState('');
   const [submitting, setSubmitting] = useState(false);
 
@@ -74,16 +74,12 @@ export const RegisterDeathModal: React.FC<RegisterDeathModalProps> = ({
         {/* Form */}
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
           <div>
-            <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
-              Data do Óbito / Saída <span className="text-rose-500">*</span>
-            </label>
-            <input
-              type="text"
-              required
+            <DatePicker
               value={deathDate}
-              onChange={(e) => setDeathDate(e.target.value)}
-              placeholder="DD/MM/AAAA"
-              className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-slate-500"
+              onChange={setDeathDate}
+              label="Data do Óbito / Saída"
+              required
+              defaultToToday
             />
           </div>
 

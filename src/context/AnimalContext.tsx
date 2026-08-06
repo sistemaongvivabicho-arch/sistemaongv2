@@ -1,13 +1,14 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { 
-  Animal, 
+import {
+  Animal,
   AnimalPhoto,
-  LocationType, 
-  AdoptionDetails, 
+  LocationType,
+  AdoptionDetails,
   DeathDetails,
   LOCATION_LABELS,
   PorteType
 } from '../types/animal';
+import { seedSuggestionsFromAnimals } from '../utils/autocompleteStorage';
 import {
   DashboardFilters,
   DEFAULT_DASHBOARD_FILTERS,
@@ -134,6 +135,9 @@ const mapFromDb = (db: any): Animal => {
     castrado: db.castrado ?? false,
     castrationDate: db.castration_date || '',
     castrationScheduledDate: db.castration_scheduled_date || '',
+    castrationStatus: db.castration_status || null,
+    castrationVeterinarian: db.castration_veterinarian || null,
+    castrationNotes: db.castration_notes || null,
     vaccinationDate: db.vaccination_date || '',
     vaccinationDueDate: db.vaccination_due_date || ''
   };
@@ -210,6 +214,9 @@ const mapToDb = (animal: Animal): any => {
     castrado: animal.castrado ?? false,
     castration_date: animal.castrationDate || null,
     castration_scheduled_date: animal.castrationScheduledDate || null,
+    castration_status: animal.castrationStatus || null,
+    castration_veterinarian: animal.castrationVeterinarian || null,
+    castration_notes: animal.castrationNotes || null,
     vaccination_date: animal.vaccinationDate || null,
     vaccination_due_date: animal.vaccinationDueDate || null
   };
@@ -410,11 +417,13 @@ export const AnimalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
                 showToast(`Migração parcial. Supabase: ${verifiedAnimals.length} | Local: ${localAnimals.length}`, 'warning');
               }
               setAnimals(verifiedAnimals);
+              seedSuggestionsFromAnimals(verifiedAnimals);
             }
           }
         } else {
           // Normal case: use remote database records
           setAnimals(remoteAnimals);
+          seedSuggestionsFromAnimals(remoteAnimals);
         }
       } catch (err: any) {
         showToast('Erro ao sincronizar banco: ' + (err.message || err), 'error');

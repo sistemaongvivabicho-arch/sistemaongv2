@@ -26,7 +26,11 @@ export type AuditActionType =
   | 'desativacao_usuario'
   | 'reset_senha'
   | 'backup_gerado'
-  | 'backup_erro';
+  | 'backup_erro'
+  | 'documento_criado'
+  | 'documento_editado'
+  | 'documento_substituido'
+  | 'documento_excluido';
 
 export interface AuditLogEntry {
   id: string;
@@ -68,7 +72,11 @@ export const AUDIT_ACTION_LABELS: Record<AuditActionType, string> = {
   desativacao_usuario: 'Ativação/Desativação',
   reset_senha: 'Reset de senha',
   backup_gerado: 'Backup gerado',
-  backup_erro: 'Erro no backup'
+  backup_erro: 'Erro no backup',
+  documento_criado: 'Documento criado',
+  documento_editado: 'Documento editado',
+  documento_substituido: 'Documento substituído',
+  documento_excluido: 'Documento excluído'
 };
 
 export const AUDIT_ACTION_COLORS: Record<AuditActionType, string> = {
@@ -99,5 +107,9 @@ export const AUDIT_ACTION_COLORS: Record<AuditActionType, string> = {
   desativacao_usuario: 'bg-rose-50 text-rose-700 border-rose-200',
   reset_senha: 'bg-orange-50 text-orange-700 border-orange-200',
   backup_gerado: 'bg-cyan-50 text-cyan-700 border-cyan-200',
-  backup_erro: 'bg-red-50 text-red-700 border-red-200'
+  backup_erro: 'bg-red-50 text-red-700 border-red-200',
+  documento_criado: 'bg-emerald-50 text-emerald-700 border-emerald-200',
+  documento_editado: 'bg-blue-50 text-blue-700 border-blue-200',
+  documento_substituido: 'bg-amber-50 text-amber-700 border-amber-200',
+  documento_excluido: 'bg-red-50 text-red-700 border-red-200'
 };

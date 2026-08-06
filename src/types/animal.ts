@@ -133,6 +133,9 @@ export interface Animal {
   castrado?: boolean;                 // false por padrão
   castrationDate?: string;            // DD/MM/AAAA — data em que a castração foi realizada
   castrationScheduledDate?: string;   // DD/MM/AAAA — data agendada para a castração
+  castrationStatus?: string | null;   // agendada | confirmada | realizada | cancelada | reagendada
+  castrationVeterinarian?: string | null; // nome do veterinário responsável
+  castrationNotes?: string | null;    // observações da castração
   vaccinationDate?: string;           // DD/MM/AAAA — última vacina aplicada
   vaccinationDueDate?: string;        // DD/MM/AAAA — próxima vacina / revacinação
 }

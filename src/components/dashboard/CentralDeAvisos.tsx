@@ -12,7 +12,6 @@ import {
   Syringe,
   Calendar
 } from 'lucide-react';
-import { SPECIES_LABELS } from '../../types/animal';
 import { getPublicPhotoUrl } from '../../context/lib/photos';
 
 function daysSinceEntry(entryDate: string): number {
@@ -84,7 +83,7 @@ export const CentralDeAvisos: React.FC = () => {
         </span>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {/* Card 1: Animais em Triagem */}
         <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm p-4 space-y-3">
           <div className="flex items-center gap-2.5">
@@ -143,68 +142,6 @@ export const CentralDeAvisos: React.FC = () => {
             className="w-full flex items-center justify-center gap-1.5 py-2 rounded-xl bg-sky-50 dark:bg-sky-950/30 text-sky-700 dark:text-sky-300 text-[11px] font-bold hover:bg-sky-100 dark:hover:bg-sky-900/50 transition-colors"
           >
             Abrir Animais em Triagem
-            <ArrowRight className="w-3 h-3" />
-          </button>
-        </div>
-
-        {/* Card 2: Castrações de Hoje */}
-        <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm p-4 space-y-3">
-          <div className="flex items-center gap-2.5">
-            <div className="p-2 rounded-xl bg-rose-500/10">
-              <Scissors className="w-4 h-4 text-rose-600 dark:text-rose-400" />
-            </div>
-            <div>
-              <p className="text-xs font-bold text-slate-900 dark:text-white">
-                Castrações de Hoje
-              </p>
-              <p className="text-[10px] text-slate-500 dark:text-slate-400">
-                {castrationsToday.length} agendada(s)
-              </p>
-            </div>
-          </div>
-
-          {castrationsToday.length === 0 ? (
-            <p className="text-[11px] text-slate-400 italic py-2">
-              Nenhuma castração agendada para hoje.
-            </p>
-          ) : (
-            <div className="space-y-2 max-h-36 overflow-y-auto">
-              {castrationsToday.map((animal) => (
-                <div
-                  key={animal.id}
-                  className="flex items-center gap-2.5 p-2 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-700/50"
-                >
-                  <div className="w-7 h-7 rounded-full bg-slate-200 dark:bg-slate-700 flex items-center justify-center shrink-0 overflow-hidden">
-                    {animal.photoUrl ? (
-                      <img
-                        src={getPublicPhotoUrl(animal.photoUrl)}
-                        alt=""
-                        className="w-full h-full object-cover"
-                      />
-                    ) : (
-                      <span className="text-[10px] font-bold text-slate-500">
-                        {animal.name.charAt(0)}
-                      </span>
-                    )}
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <p className="text-[11px] font-bold text-slate-900 dark:text-white truncate">
-                      {animal.name}
-                    </p>
-                    <p className="text-[9px] text-slate-500 dark:text-slate-400">
-                      {SPECIES_LABELS[animal.species]}
-                    </p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-
-          <button
-            onClick={() => setActiveTab('castracoes')}
-            className="w-full flex items-center justify-center gap-1.5 py-2 rounded-xl bg-rose-50 dark:bg-rose-950/30 text-rose-700 dark:text-rose-300 text-[11px] font-bold hover:bg-rose-100 dark:hover:bg-rose-900/50 transition-colors"
-          >
-            Abrir Castrações
             <ArrowRight className="w-3 h-3" />
           </button>
         </div>

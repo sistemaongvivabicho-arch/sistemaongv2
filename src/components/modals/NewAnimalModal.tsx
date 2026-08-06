@@ -1,24 +1,28 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useAuditActions } from '../../context/useAuditActions';
-import { 
-  X, 
-  Dog, 
-  User, 
-  ShieldAlert, 
-  MapPin, 
-  ClipboardList, 
-  FileText, 
-  Check, 
+import {
+  X,
+  Dog,
+  User,
+  ShieldAlert,
+  MapPin,
+  ClipboardList,
+  FileText,
+  Check,
   Camera
 } from 'lucide-react';
-import { 
-  SpeciesType, 
-  SexType, 
+import {
+  SpeciesType,
+  SexType,
   PorteType,
   EntryOrigin,
   RESCUE_ORIGIN_OPTIONS
 } from '../../types/animal';
 import { InstagramPhotoUploader } from '../common/InstagramPhotoUploader';
+import { DatePicker } from '../common/DatePicker';
+import { AutoComplete } from '../common/AutoComplete';
+import { getSuggestions } from '../../utils/autocompleteStorage';
+import { getTodayBR } from '../../utils/dateUtils';
 
 const STORAGE_KEY = 'new_animal_form_data';
 
@@ -48,11 +52,6 @@ interface FormData {
   vaccinationDueDate: string;
 }
 
-const getTodayStr = () => {
-  const now = new Date();
-  return `${now.getDate().toString().padStart(2, '0')}/${(now.getMonth() + 1).toString().padStart(2, '0')}/${now.getFullYear()}`;
-};
-
 const getInitialFormData = (): FormData => {
   const saved = localStorage.getItem(STORAGE_KEY);
   if (saved) {
@@ -73,7 +72,7 @@ const getDefaultFormData = (): FormData => ({
   porte: '',
   raca: '',
   cor: '',
-  entryDate: getTodayStr(),
+  entryDate: getTodayBR(),
   microchip: '',
   age: '',
   weight: '',
@@ -155,7 +154,7 @@ export const NewAnimalModal: React.FC<NewAnimalModalProps> = ({ isOpen, onClose 
         cor: formData.cor.trim() || undefined,
         age: formData.age.trim() || undefined,
         weight: formData.weight.trim() ? (formData.weight.trim().toLowerCase().endsWith('kg') ? formData.weight.trim() : `${formData.weight.trim()} kg`) : undefined,
-        entryDate: formData.entryDate || getTodayStr(),
+        entryDate: formData.entryDate || getTodayBR(),
         currentLocation: 'triagem',
         origin: formData.origin,
         originNotes: formData.originNotes.trim() || undefined,
@@ -300,44 +299,34 @@ export const NewAnimalModal: React.FC<NewAnimalModalProps> = ({ isOpen, onClose 
 
               {/* Raça (Opcional) */}
               <div>
-                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
-                  Raça <span className="text-slate-400 font-normal">(opcional)</span>
-                </label>
-                <input
-                  type="text"
+                <AutoComplete
                   value={formData.raca}
-                  onChange={(e) => updateField('raca', e.target.value)}
+                  onChange={(v) => updateField('raca', v)}
+                  suggestions={getSuggestions('raca')}
                   placeholder="Ex: Vira-lata, Persa..."
-                  className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                  label="Raça"
                 />
               </div>
 
               {/* Cor (Opcional) */}
               <div>
-                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
-                  Cor <span className="text-slate-400 font-normal">(opcional)</span>
-                </label>
-                <input
-                  type="text"
+                <AutoComplete
                   value={formData.cor}
-                  onChange={(e) => updateField('cor', e.target.value)}
+                  onChange={(v) => updateField('cor', v)}
+                  suggestions={getSuggestions('cor')}
                   placeholder="Ex: Caramelo, Preto..."
-                  className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                  label="Cor"
                 />
               </div>
 
               {/* Data de Entrada (Obrigatório) */}
               <div>
-                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
-                  Data de Entrada <span className="text-rose-500">*</span>
-                </label>
-                <input
-                  type="text"
-                  required
+                <DatePicker
                   value={formData.entryDate}
-                  onChange={(e) => updateField('entryDate', e.target.value)}
-                  placeholder="DD/MM/AAAA"
-                  className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                  onChange={(v) => updateField('entryDate', v)}
+                  label="Data de Entrada"
+                  required
+                  defaultToToday
                 />
               </div>
 
@@ -402,28 +391,22 @@ export const NewAnimalModal: React.FC<NewAnimalModalProps> = ({ isOpen, onClose 
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
-                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
-                  Nome do Tutor
-                </label>
-                <input
-                  type="text"
+                <AutoComplete
                   value={formData.originTutorName}
-                  onChange={(e) => updateField('originTutorName', e.target.value)}
+                  onChange={(v) => updateField('originTutorName', v)}
+                  suggestions={getSuggestions('tutor_nome')}
                   placeholder="Deixe em branco se não identificado"
-                  className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                  label="Nome do Tutor"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
-                  Contato do Tutor
-                </label>
-                <input
-                  type="text"
+                <AutoComplete
                   value={formData.originTutorContact}
-                  onChange={(e) => updateField('originTutorContact', e.target.value)}
+                  onChange={(v) => updateField('originTutorContact', v)}
+                  suggestions={getSuggestions('tutor_contato')}
                   placeholder="Telefone / Celular"
-                  className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                  label="Contato do Tutor"
                 />
               </div>
             </div>
@@ -498,15 +481,12 @@ export const NewAnimalModal: React.FC<NewAnimalModalProps> = ({ isOpen, onClose 
               </div>
 
               <div className="sm:col-span-2">
-                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
-                  Endereço do Resgate
-                </label>
-                <input
-                  type="text"
+                <AutoComplete
                   value={formData.rescueAddress}
-                  onChange={(e) => updateField('rescueAddress', e.target.value)}
+                  onChange={(v) => updateField('rescueAddress', v)}
+                  suggestions={getSuggestions('endereco')}
                   placeholder="Informe onde o animal foi encontrado"
-                  className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                  label="Endereço do Resgate"
                 />
               </div>
 
@@ -568,56 +548,36 @@ export const NewAnimalModal: React.FC<NewAnimalModalProps> = ({ isOpen, onClose 
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
-                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
-                  Data da Castração <span className="text-slate-400 font-normal">(opcional)</span>
-                </label>
-                <input
-                  type="text"
+                <DatePicker
                   value={formData.castrationDate}
-                  onChange={(e) => updateField('castrationDate', e.target.value)}
-                  placeholder="DD/MM/AAAA"
+                  onChange={(v) => updateField('castrationDate', v)}
+                  label="Data da Castração"
                   disabled={!formData.castrado}
-                  className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:opacity-50 disabled:pointer-events-none"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
-                  Castração Agendada <span className="text-slate-400 font-normal">(opcional)</span>
-                </label>
-                <input
-                  type="text"
+                <DatePicker
                   value={formData.castrationScheduledDate}
-                  onChange={(e) => updateField('castrationScheduledDate', e.target.value)}
-                  placeholder="DD/MM/AAAA"
+                  onChange={(v) => updateField('castrationScheduledDate', v)}
+                  label="Castração Agendada"
                   disabled={formData.castrado}
-                  className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:opacity-50 disabled:pointer-events-none"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
-                  Última Vacina <span className="text-slate-400 font-normal">(opcional)</span>
-                </label>
-                <input
-                  type="text"
+                <DatePicker
                   value={formData.vaccinationDate}
-                  onChange={(e) => updateField('vaccinationDate', e.target.value)}
-                  placeholder="DD/MM/AAAA"
-                  className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                  onChange={(v) => updateField('vaccinationDate', v)}
+                  label="Última Vacina"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
-                  Próxima Vacina <span className="text-slate-400 font-normal">(opcional)</span>
-                </label>
-                <input
-                  type="text"
+                <DatePicker
                   value={formData.vaccinationDueDate}
-                  onChange={(e) => updateField('vaccinationDueDate', e.target.value)}
-                  placeholder="DD/MM/AAAA"
-                  className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                  onChange={(v) => updateField('vaccinationDueDate', v)}
+                  label="Próxima Vacina"
                 />
               </div>
             </div>

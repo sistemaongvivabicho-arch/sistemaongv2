@@ -11,15 +11,13 @@ import {
 } from 'lucide-react';
 import { Animal } from '../../types/animal';
 import { DashboardFilters, MONTH_NAMES } from '../../types/dashboard';
-import { parseBRDate, isBeforeToday, isInPeriod } from './dashboardUtils';
+import { isBeforeToday, isInPeriod } from './dashboardUtils';
 
 interface CastrationAgendaProps {
   animals: Animal[];
   filters: DashboardFilters;
   onMonthChange: (month: number | null) => void;
 }
-
-const WEEK_DAYS = ['D', 'S', 'T', 'Q', 'Q', 'S', 'S'];
 
 export const CastrationAgenda: React.FC<CastrationAgendaProps> = ({
   animals,
@@ -33,7 +31,6 @@ export const CastrationAgenda: React.FC<CastrationAgendaProps> = ({
 
   const [viewMonth, setViewMonth] = useState<number>(filters.month ?? currentMonth);
   const [viewYear, setViewYear] = useState<number>(filters.year ?? currentYear);
-  const [selectedDay, setSelectedDay] = useState<number | null>(null);
 
   // Sincroniza quando os filtros mudam (ex.: clique no Resumo Mensal)
   React.useEffect(() => {
@@ -43,13 +40,11 @@ export const CastrationAgenda: React.FC<CastrationAgendaProps> = ({
 
   const changeMonth = (m: number) => {
     setViewMonth(m);
-    setSelectedDay(null);
     onMonthChange(m);
   };
 
   const changeYear = (y: number) => {
     setViewYear(y);
-    setSelectedDay(null);
   };
 
   const goPrev = () => {
@@ -115,30 +110,6 @@ export const CastrationAgenda: React.FC<CastrationAgendaProps> = ({
     [animals]
   );
 
-  // Mini calendário
-  const daysInMonth = new Date(viewYear, viewMonth, 0).getDate();
-  const firstDow = new Date(viewYear, viewMonth - 1, 1).getDay();
-  const scheduledByDay = useMemo(() => {
-    const map: Record<number, Animal[]> = {};
-    scheduledInMonth.forEach((a) => {
-      const d = parseBRDate(a.castrationScheduledDate || '');
-      if (d) {
-        const day = d.getDate();
-        map[day] = map[day] || [];
-        map[day].push(a);
-      }
-    });
-    return map;
-  }, [scheduledInMonth]);
-
-  const dayList = (day: number) => (scheduledByDay[day] || []).filter(
-    (a) => (selectedDay == null || selectedDay === day)
-  );
-
-  const visibleScheduled = selectedDay != null
-    ? dayList(selectedDay)
-    : scheduledInMonth;
-
   return (
     <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm p-5 space-y-4">
       {/* Header */}
@@ -200,7 +171,6 @@ export const CastrationAgenda: React.FC<CastrationAgendaProps> = ({
                 onMonthChange(null);
                 setViewMonth(currentMonth);
                 setViewYear(currentYear);
-                setSelectedDay(null);
               }}
               className="inline-flex items-center gap-1 px-2 py-1.5 rounded-lg bg-rose-50 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400 text-[11px] font-bold hover:bg-rose-100 transition-colors"
               title="Remover filtro de mês do dashboard"
@@ -213,7 +183,7 @@ export const CastrationAgenda: React.FC<CastrationAgendaProps> = ({
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
-        {/* Mini calendário */}
+        {/* Agendamentos do mês */}
         <div className="space-y-2">
           <div className="flex items-center justify-between">
             <p className="text-xs font-bold text-slate-700 dark:text-slate-300">
@@ -224,62 +194,16 @@ export const CastrationAgenda: React.FC<CastrationAgendaProps> = ({
             </p>
           </div>
 
-          <div className="grid grid-cols-7 gap-1 text-center">
-            {WEEK_DAYS.map((d, i) => (
-              <div key={i} className="text-[10px] font-black text-slate-400 uppercase py-1">
-                {d}
-              </div>
-            ))}
-            {Array.from({ length: firstDow }).map((_, i) => (
-              <div key={`blank-${i}`} />
-            ))}
-            {Array.from({ length: daysInMonth }).map((_, i) => {
-              const day = i + 1;
-              const hasSchedule = scheduledByDay[day]?.length > 0;
-              const isToday =
-                day === now.getDate() &&
-                viewMonth === currentMonth &&
-                viewYear === currentYear;
-              const isSelected = selectedDay === day;
-              return (
-                <button
-                  key={day}
-                  onClick={() => setSelectedDay(isSelected ? null : day)}
-                  className={`relative aspect-square rounded-lg text-[11px] font-bold flex items-center justify-center transition-all ${
-                    isSelected
-                      ? 'bg-emerald-600 text-white shadow-sm'
-                      : isToday
-                      ? 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border border-emerald-500/40'
-                      : hasSchedule
-                      ? 'bg-amber-50 dark:bg-amber-950/40 text-slate-800 dark:text-slate-100 hover:bg-amber-100 dark:hover:bg-amber-900/40'
-                      : 'text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'
-                  }`}
-                  title={hasSchedule ? `${scheduledByDay[day].length} agendamento(s)` : undefined}
-                >
-                  {day}
-                  {hasSchedule && !isSelected && (
-                    <span className="absolute bottom-0.5 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-amber-500" />
-                  )}
-                </button>
-              );
-            })}
-          </div>
-
-          {/* Agendados no mês / dia */}
-          <div className="pt-2 border-t border-slate-100 dark:border-slate-800 space-y-1.5">
+          <div className="pt-2 space-y-1.5">
             <p className="text-[10px] font-black uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
               <CalendarCheck className="w-3.5 h-3.5" />
-              {selectedDay != null
-                ? `Agendados em ${selectedDay.toString().padStart(2, '0')}/${viewMonth
-                    .toString()
-                    .padStart(2, '0')}`
-                : `Agendados em ${MONTH_NAMES[viewMonth - 1]}`}
+              Agendados em {MONTH_NAMES[viewMonth - 1]}
             </p>
-            {visibleScheduled.length === 0 ? (
+            {scheduledInMonth.length === 0 ? (
               <p className="text-[11px] text-slate-400 italic">Nenhum agendamento neste período.</p>
             ) : (
-              <div className="space-y-1 max-h-40 overflow-y-auto pr-1">
-                {visibleScheduled.map((a) => (
+              <div className="space-y-1 max-h-60 overflow-y-auto pr-1">
+                {scheduledInMonth.map((a) => (
                   <button
                     key={a.id}
                     onClick={() => navigateToAnimal(a.id)}

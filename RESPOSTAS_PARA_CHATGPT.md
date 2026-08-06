@@ -772,79 +772,331 @@ Para ativar o backup, o administrador deve:
 
 ---
 
-## v2.9.1 — Backup Manual (Reescrito)
+## v2.10.0 — Integração do Módulo Castrações (Fonte Única de Verdade)
 
 ### Resumo da alteração
-Reescrita completa do módulo Backup. Abordagem simplificada: download local de ZIP com todos os dados, sem upload para Google Drive. A Edge Function `backup-drive` foi removida.
+Reescrita completa do módulo Castrações para usar a tabela `animals` como fonte única de verdade. A tabela `castration_schedules` foi descontinuada — todos os dados de castração agora vivem diretamente no registro do animal. O CastrationsContext foi removido.
 
-### Nova abordagem
-- **Sem servidor externo** — Backup gerado inteiramente no navegador
-- **Download automático** — ZIP baixado automaticamente ao clicar "Gerar Backup"
-- **Google Drive** — Botão abre `https://drive.google.com/drive/my-drive` em nova aba com instrução para arrastar o arquivo
-- **Nome em português** — Arquivo nomeado com mês em português (ex: `BACKUP_AGOSTO_05.08.26_18h45.zip`)
-- **3 botões de ação** — Gerar Backup, Abrir Google Drive, Abrir Pasta de Downloads
-- **Restaurar desabilitado** — Botão "Restaurar Backup" desabilitado com mensagem "Em breve"
-- **Backup Recomendado** — Card com cálculo dinâmico do próximo backup recomendado
+### Alteração de arquitetura
+| Antes | Depois |
+|-------|--------|
+| `castration_schedules` tabela separada | Campos no `animals` |
+| `CastrationsContext` para CRUD | `updateAnimal()` do AnimalContext |
+| Calendário mensal/semanal/diário | Lista mensal simplificada |
 
-### Estrutura do ZIP
-```
-BACKUP_AGOSTO_05.08.26_18h45.zip
-├── manifest.json      (sistema, versão, ONG, data, contagens)
-├── animals.json       (tabela animals)
-├── profiles.json      (tabela profiles)
-├── audit_logs.json    (tabela audit_logs)
-├── alerts.json        (tabela alerts)
-├── castrations.json   (localStorage castration_schedules)
-└── config.json        (metadados do backup)
-```
+### Novos campos na tabela `animals` (migration)
+| Campo | Tipo | Descrição |
+|-------|------|-----------|
+| `castration_status` | text | `agendada` \| `confirmada` \| `realizada` \| `cancelada` \| `reagendada` |
+| `castration_veterinarian` | text | Nome do veterinário |
+| `castration_notes` | text | Observações da castração |
 
-### Interface
-| Componente | Descrição |
-|------------|-----------|
-| **Header** | 📦 Backup do Sistema + descrição |
-| **Card Último Backup** | Data/Hora, Arquivo, Tamanho, Status |
-| **Card Backup Recomendado** | Texto dinâmico: Hoje/Amanhã/Em X dias/Configurar |
-| **Botão Gerar Backup** | Download ZIP local com todas as tabelas |
-| **Botão Abrir Google Drive** | Abre Drive em nova aba |
-| **Botão Abrir Pasta de Downloads** | Mensagem sobre Ctrl+J para acessar pasta |
-| **Mensagem informativa** | "Após baixar o arquivo, arraste-o para sua pasta de Backups no Google Drive." |
-| **Restaurar Backup** | Botão desabilitado "Em breve" |
-| **Tabela de histórico** | Data/Hora, Nome, Tamanho, Status, Excluir |
+### Novos campos na interface `Animal` (`src/types/animal.ts`)
+| Campo | Tipo |
+|-------|------|
+| `castrationStatus` | `CastrationStatus \| undefined` |
+| `castrationVeterinarian` | `string \| undefined` |
+| `castrationNotes` | `string \| undefined` |
 
-### Tipos de auditoria
-| Ação | Descrição |
-|------|-----------|
-| `backup_gerado` | Backup manual do sistema gerado |
-| `backup_erro` | Erro ao gerar backup |
-
-### Funções utilitárias (`src/types/backup.ts`)
-| Função | Descrição |
-|--------|-----------|
-| `generateBackupFileName()` | Gera nome `BACKUP_MES_DD.MM.AA_HHhMM.zip` com mês em português |
-| `formatDateTimeBR()` | Converte ISO para data/hora no formato brasileiro |
-| `getNextBackupText()` | Calcula texto do próximo backup recomendado |
-| `formatBytes()` | Formata bytes para KB/MB/GB |
+### Fluxo CRUD (todas as operações escrevem no animal)
+| Ação | Campos alterados |
+|------|-----------------|
+| **Agendar** | `castrationScheduledDate`, `castrationStatus='agendada'`, `castrationVeterinarian`, `castrationNotes` |
+| **Editar** | `castrationScheduledDate`, `castrationVeterinarian`, `castrationNotes` |
+| **Confirmar** | `castrationStatus='confirmada'` |
+| **Realizar** | `castrationStatus='realizada'`, `castrationDate=today`, `castrado=true` |
+| **Cancelar** | `castrationStatus='cancelada'` (motivo adicionado às notes) |
+| **Reagendar** | `castrationScheduledDate=novaData`, `castrationStatus='reagendada'` |
+| **Excluir** | Limpa todos os campos de castração |
 
 ### Arquivos modificados
-| Arquivo | Ação |
-|---------|------|
-| `src/types/backup.ts` | **Modificado** — Helpers com meses em português, `getNextBackupText()` |
-| `src/types/audit.ts` | **Modificado** — `backup_erro` adicionado |
-| `src/components/backup/BackupView.tsx` | **Reescrito** — 3 botões, cards, nome PT, restore disabled |
-
-### Arquivos mantidos (sem alteração)
-- `src/components/layout/Sidebar.tsx` — Backup continua no menu
-- `src/App.tsx` — Rota `backup` mantida
-- `src/components/animals/*.tsx` — Nenhuma alteração
-- `src/context/*.tsx` — Nenhuma alteração
+| Arquivo | Alteração |
+|---------|-----------|
+| `src/types/animal.ts` | +3 campos: `castrationStatus`, `castrationVeterinarian`, `castrationNotes` |
+| `src/context/AnimalContext.tsx` | `mapFromDb`/`mapToDb` para 3 novas colunas |
+| `src/components/animals/CastracoesView.tsx` | **Reescrito** — lê de `animals`, CRUD via `updateAnimal()` |
+| `src/components/animals/AnimalDetailView.tsx` | Exibe status, veterinário e observações de castração |
+| `src/components/dashboard/CastrationAgenda.tsx` | Remove mini calendário, mantém lista mensal |
+| `src/components/alerts/OngeSummaryCard.tsx` | Lê castrações de `animals` em vez de `schedules` |
+| `src/App.tsx` | Remove `CastrationsProvider` |
 
 ### Validações
 - `npx tsc --noEmit` — ✅ Sem erros
-- `npm run build` — ✅ Build limpo (1029 kB JS, 93 kB CSS)
-- `npm run dev` — ✅ Servidor funcional
+- `npm run build` — ✅ Build limpo
+
+---
+
+## v2.10.1 — Padronização de Datas com Calendário Compacto
+
+### Resumo da alteração
+Substituição de todos os inputs de data do tipo `<input type="date">` por um componente de calendário compacto (`DatePicker`) com auto-preenchimento da data atual e popup interativo.
+
+### Novo componente: `DatePicker` (`src/components/common/DatePicker.tsx`)
+| Funcionalidade | Descrição |
+|----------------|-----------|
+| **Auto-preenchimento** | Preenche automaticamente com a data de hoje (DD/MM/AAAA) |
+| **Popup de calendário** | Calendário mensal com seleção de dia |
+| **Navegação** | Mês/anterior, mês/próximo, seletor de mês e ano |
+| **Botões** | "Hoje" (auto-preenche) e "Limpar" (apaga) |
+| **Entrada manual** | Aceita digitação direta no formato DD/MM/AAAA |
+| **Dark mode** | Suporte completo ao tema escuro |
+| **Posicionamento** | Abre abaixo do input, z-index alto |
+
+### Novas utilitárias (`src/utils/dateUtils.ts`)
+| Função | Descrição |
+|--------|-----------|
+| `getTodayBR()` | Retorna data de hoje em formato DD/MM/AAAA |
+| `formatDateBR(date)` | Formata Date para DD/MM/AAAA |
+| `parseBRDate(str)` | Converte DD/MM/AAAA para Date |
+| `isValidBRDate(str)` | Valida se string é data válida |
+| `isBeforeToday(str)` | Verifica se data é anterior a hoje |
+| `isSameMonthYear(str, m, y)` | Verifica se data está no mês/ano |
+| `getMonthNames()` | Retorna nomes dos meses em português |
+| `getYearOptions()` | Retorna anos disponíveis (2024-2028) |
+
+### Arquivos modificados
+| Arquivo | Alteração |
+|---------|-----------|
+| `src/utils/dateUtils.ts` | **Criado** — 8 funções utilitárias |
+| `src/components/common/DatePicker.tsx` | **Criado** — Componente reutilizável |
+| `src/components/modals/NewAnimalModal.tsx` | 4 campos de data → `DatePicker` |
+| `src/components/modals/EditAnimalModal.tsx` | 4 campos de data → `DatePicker` |
+| `src/components/modals/RegisterDeathModal.tsx` | Data do óbito → `DatePicker` |
+| `src/components/modals/RegisterAdoptionModal.tsx` | Data da adoção → `DatePicker` |
+| `src/components/animals/CastracoesView.tsx` | Inputs de data → `DatePicker` |
+
+### Validações
+- `npx tsc --noEmit` — ✅ Sem erros
+- `npm run build` — ✅ Build limpo
+
+---
+
+## v2.10.2 — AutoComplete Inteligente para Formulários
+
+### Resumo da alteração
+Componente de autocomplete que sugere valores anteriores enquanto o usuário digita. As sugestões são coletas automaticamente dos dados existentes e armazenadas em `localStorage`.
+
+### Novo componente: `AutoComplete` (`src/components/common/AutoComplete.tsx`)
+| Funcionalidade | Descrição |
+|----------------|-----------|
+| **Sugestões** | Lista filtrada enquanto digita (mínimo 1 caractere) |
+| **Navegação por teclado** | Setas para cima/baixo, Enter para selecionar, Escape para fechar |
+| **Highlight** | Texto digitado destacado em negrito nas sugestões |
+| **Máximo** | 8 sugestões exibidas |
+| **localStorage** | Sugestões persistidas entre sessões |
+| **Dark mode** | Suporte completo |
+| **Posicionamento** | Dropdown abaixo do input, z-index alto |
+
+### Novo serviço: `autocompleteStorage` (`src/utils/autocompleteStorage.ts`)
+| Campo | Descrição |
+|-------|-----------|
+| `raca` | Raças de animais |
+| `cor` | Cores |
+| `veterinario` | Veterinários |
+| `tutor_nome` | Nomes de tutores |
+| `tutor_contato` | Contatos de tutores |
+| `endereco` | Endereços |
+
+| Função | Descrição |
+|--------|-----------|
+| `getSuggestions(field)` | Retorna sugestões para um campo |
+| `addSuggestion(field, value)` | Adiciona valor às sugestões |
+| `addSuggestionsFromAnimal(animal)` | Coleta dados de um animal |
+| `seedSuggestionsFromAnimals(animals)` | Coleta dados de todos os animais (chamada no carregamento) |
+
+### Campos convertidos para AutoComplete
+| Modal | Campos |
+|-------|--------|
+| `NewAnimalModal` | Raça, Cor, Tutor Nome, Tutor Contato, Endereço |
+| `EditAnimalModal` | Raça, Cor, Tutor Nome, Tutor Contato, Endereço |
+| `RegisterAdoptionModal` | Nome do Adotante, Contato do Adotante, Endereço |
+| `CastracoesView` | Veterinário |
+
+### Arquivos criados
+| Arquivo | Descrição |
+|---------|-----------|
+| `src/utils/autocompleteStorage.ts` | Serviço de sugestões com localStorage |
+| `src/components/common/AutoComplete.tsx` | Componente reutilizável |
+
+### Arquivos modificados
+| Arquivo | Alteração |
+|---------|-----------|
+| `src/context/AnimalContext.tsx` | Chama `seedSuggestionsFromAnimals()` após carregar animais |
+| `src/components/modals/NewAnimalModal.tsx` | 5 campos → `AutoComplete` |
+| `src/components/modals/EditAnimalModal.tsx` | 5 campos → `AutoComplete` |
+| `src/components/modals/RegisterAdoptionModal.tsx` | 3 campos → `AutoComplete` |
+| `src/components/animals/CastracoesView.tsx` | Veterinário → `AutoComplete` |
+
+### Validações
+- `npx tsc --noEmit` — ✅ Sem erros
+- `npm run build` — ✅ Build limpo
+
+---
+
+## Resumo das versões v2.10.x
+
+| Versão | Foco | Arquivos criados | Arquivos modificados |
+|--------|------|-----------------|---------------------|
+| v2.10.0 | Fonte única de verdade (animals) | 1 migration | 7 |
+| v2.10.1 | DatePicker compacto | 2 (dateUtils + DatePicker) | 6 |
+| v2.10.2 | AutoComplete inteligente | 2 (autocompleteStorage + AutoComplete) | 5 |
+
+### Total de impacto
+- **Arquivos criados:** 5
+- **Arquivos modificados:** 15 (alguns em comum)
+- **Migration:** 1 (3 novas colunas na tabela animals)
+- **Contexts removidos:** 1 (CastrationsContext)
+- **Providers removidos:** 1 (CastrationsProvider)
+
+---
+
+## v2.11.0 — Módulo "Documentos do Animal"
+
+### Resumo da alteração
+Novo módulo completo de gerenciamento de documentos anexados ao animal. Cada animal possui sua própria pasta de documentos, permitindo organizar boletins, receitas, exames, laudos e outros arquivos relacionados ao histórico.
+
+### Localização
+Tela **Ficha do Animal** — card "📄 Documentos do Animal" entre Galeria de Fotos e Informações do Animal. Ao clicar, abre modal centralizado.
+
+### Tabela `animal_documents` (migration)
+| Campo | Tipo | Descrição |
+|-------|------|-----------|
+| `id` | uuid | PK automática |
+| `animal_id` | uuid | FK → animals.id (CASCADE) |
+| `document_type` | text | Tipo do documento |
+| `custom_name` | text | Nome personalizado (opcional) |
+| `file_name` | text | Nome original do arquivo |
+| `file_path` | text | Caminho no storage |
+| `mime_type` | text | Tipo MIME |
+| `file_size` | integer | Tamanho em bytes |
+| `document_date` | text | Data do documento (DD/MM/AAAA) |
+| `observation` | text | Observações |
+| `uploaded_by` | text | Quem fez upload |
+| `created_at` | timestamptz | Data de criação |
+| `updated_at` | timestamptz | Última atualização |
+
+### Storage
+| Bucket | Política | Descrição |
+|--------|----------|-----------|
+| `animal-documents` | Privado, uploads autenticados | Documentos dos animais |
+
+**Estrutura:** `animal-documents/{animal-id}/{tipo}_{timestamp}.{ext}`
+
+### Tipos de documento
+| Tipo | Label |
+|------|-------|
+| `boletim_entrada` | Boletim de Entrada |
+| `receita_veterinaria` | Receita Veterinária |
+| `exame` | Exame |
+| `laudo` | Laudo |
+| `vacinacao` | Vacinação |
+| `castracao` | Castração |
+| `contrato` | Contrato |
+| `rg_animal` | RG Animal |
+| `microchip` | Microchip |
+| `termo` | Termo |
+| `atestado` | Atestado |
+| `personalizado` | Documento Personalizado |
+
+### Funcionalidades
+
+#### Modal Principal (`AnimalDocumentsModal`)
+- Grid responsivo de cards (4 cols desktop, 3 tablet, 2 mobile)
+- Cada card: ícone colorido por tipo, nome/tipo, data, tamanho, 3 botões de ação
+- Botão verde "➕ Novo Documento"
+- Exclusão com confirmação + senha (0001)
+- Toast de sucesso/erro
+- Estado vazio com ilustração
+
+#### Modal de Cadastro/Edição (`DocumentUploadModal`)
+- Upload de arquivo (galeria, câmera ou seleção)
+- Tipos aceitos: PDF, JPG, JPEG, PNG, WEBP
+- Máximo: 10MB
+- Campo "Tipo do Documento" (select)
+- Se "Personalizado": campo "Nome do Documento"
+- DatePicker para data do documento
+- Campo de observações (opcional)
+
+#### Modal de Visualização (`DocumentViewModal`)
+- Imagens: zoom in/out, navegação entre documentos
+- PDF: visualizador iframe dentro do modal
+- Download do arquivo
+- Navegação por setas do teclado
+
+### Ações por card
+| Ação | Descrição |
+|------|-----------|
+| 👁 Visualizar | Abre visualizador de imagem/PDF |
+| ✏ Editar | Abre modal de edição (tipo, data, obs) |
+| 🗑 Excluir | Exclui com confirmação + senha |
+
+### Auditoria
+| Ação | Descrição |
+|------|-----------|
+| `documento_criado` | Novo documento adicionado |
+| `documento_editado` | Metadados alterados |
+| `documento_substituido` | Arquivo substituído |
+| `documento_excluido` | Documento removido |
+
+### Arquivos criados
+| Arquivo | Descrição |
+|---------|-----------|
+| `supabase/migrations/20260806110000_create_animal_documents.sql` | Tabela + bucket + RLS |
+| `src/types/animalDocument.ts` | Tipos e constantes |
+| `src/services/animalDocumentService.ts` | CRUD + upload/download |
+| `src/components/animals/AnimalDocumentsModal.tsx` | Modal principal |
+| `src/components/animals/DocumentUploadModal.tsx` | Modal de cadastro |
+| `src/components/animals/DocumentViewModal.tsx` | Visualizador |
+
+### Arquivos modificados
+| Arquivo | Alteração |
+|---------|-----------|
+| `src/components/animals/AnimalDetailView.tsx` | +card Documentos +import +state |
+| `src/types/audit.ts` | +4 ações de documento |
+
+### Validações
+- `npx tsc --noEmit` — ✅ Sem erros
+- `npm run build` — ✅ Build limpo
+
+---
+
+## v2.11.1 — UX Botões "Animais em Triagem"
+
+### Resumo da alteração
+Reorganização dos botões de ação da tela Animais em Triagem com nova ordem lógica e modal dedicado para finalizar triagem.
+
+### Antes
+| Ordem | Botão | Ação |
+|-------|-------|------|
+| 1 | 👁 Ver Ficha | Abre ficha |
+| 2 | 📍 Alterar Local | Abre modal genérico de localização |
+| 3 | ✏ Editar | Abre edição |
+
+### Depois
+| Ordem | Botão | Ação |
+|-------|-------|------|
+| 1 | 👁 Ver Ficha | Abre ficha completa |
+| 2 | ✏ Editar Cadastro | Abre edição do animal |
+| 3 | ✅ Finalizar Triagem | Abre modal dedicado |
+
+### Modal "Finalizar Triagem"
+- Pergunta: "Deseja finalizar a triagem deste animal?"
+- Select de destino: Canil, Gatil, Lar Temporário, Área de Cães, Guarda Compartilhada, Clínica Parceira
+- Ao confirmar: atualiza localização, remove da lista de triagem, registra auditoria
+- Botões: Cancelar / Confirmar
+
+### Arquivos modificados
+| Arquivo | Alteração |
+|---------|-----------|
+| `src/components/animals/TriageAnimalsView.tsx` | Nova ordem + modal inline + remove prop `onOpenChangeLocationModal` |
+| `src/App.tsx` | Remove prop `onOpenChangeLocationModal` do TriageAnimalsView |
+
+### Validações
+- `npx tsc --noEmit` — ✅ Sem erros
+- `npm run build` — ✅ Build limpo
 
 ### Confirmação
-- Nenhuma funcionalidade existente foi alterada
-- Login, Auditoria, Castrações, Cadastro, Avisos, Relatórios permanecem inalterados
-- Banco de dados não foi modificado
-- Migrations, Storage, Providers não foram alterados
+- Nenhuma outra funcionalidade foi alterada
+- Fluxo de movimentação do animal mantido
+- Auditoria automática preservada
+- Login, Cadastro, Castrações, Avisos, Relatórios permanecem inalterados

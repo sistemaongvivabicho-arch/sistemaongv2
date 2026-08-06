@@ -3,7 +3,6 @@ import {
   PawPrint, Home, Stethoscope, Heart, Skull, Scissors, Syringe, AlertTriangle
 } from 'lucide-react';
 import { useAnimalContext } from '../../context/AnimalContext';
-import { useCastrations } from '../../context/CastrationsContext';
 
 function parseDateBR(dateStr: string): Date | null {
   if (!dateStr) return null;
@@ -24,7 +23,6 @@ function daysDiffFromNow(dateStr: string): number {
 
 export const OngeSummaryCard: React.FC = () => {
   const { animals, setActiveTab } = useAnimalContext();
-  const { schedules } = useCastrations();
 
   const stats = useMemo(() => {
     const internacaoLocs = ['internacao_gatos', 'internacao_caes'];
@@ -35,8 +33,8 @@ export const OngeSummaryCard: React.FC = () => {
     const adotados = animals.filter((a) => a.status === 'adotado').length;
     const obitos = animals.filter((a) => a.status === 'obito').length;
 
-    const castAgendadas = schedules.filter(
-      (s) => s.status === 'agendada' || s.status === 'confirmada'
+    const castAgendadas = animals.filter(
+      (a) => a.castrationStatus === 'agendada' || a.castrationStatus === 'confirmada'
     ).length;
 
     const vacinasVencidas = animals.filter((a) => {
@@ -60,7 +58,7 @@ export const OngeSummaryCard: React.FC = () => {
       { label: 'Vacinas', value: vacinasVencidas, icon: Syringe, gradient: 'from-yellow-400 to-amber-500', navigate: 'entrada' },
       { label: 'Internações', value: internacoesAcima30d, icon: AlertTriangle, gradient: 'from-red-500 to-rose-600', navigate: 'entrada' }
     ];
-  }, [animals, schedules]);
+  }, [animals]);
 
   return (
     <div className="relative overflow-hidden rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 shadow-sm">

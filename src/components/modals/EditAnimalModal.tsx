@@ -4,6 +4,9 @@ import { X, Edit3, Check, ShieldAlert } from 'lucide-react';
 import { SpeciesType, SexType, PorteType, EntryOrigin, RESCUE_ORIGIN_OPTIONS } from '../../types/animal';
 import { PhotoUploader } from '../common/PhotoUploader';
 import { PhotoGallery } from '../common/PhotoGallery';
+import { DatePicker } from '../common/DatePicker';
+import { AutoComplete } from '../common/AutoComplete';
+import { getSuggestions } from '../../utils/autocompleteStorage';
 
 interface EditAnimalModalProps {
   isOpen: boolean;
@@ -236,28 +239,22 @@ if (!isOpen || !animal) return null;
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
-                Raça
-              </label>
-              <input
-                type="text"
+              <AutoComplete
                 value={raca}
-                onChange={(e) => setRaca(e.target.value)}
+                onChange={setRaca}
+                suggestions={getSuggestions('raca')}
                 placeholder="Ex: Vira-lata, Persa..."
-                className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-xs"
+                label="Raça"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
-                Cor
-              </label>
-              <input
-                type="text"
+              <AutoComplete
                 value={cor}
-                onChange={(e) => setCor(e.target.value)}
+                onChange={setCor}
+                suggestions={getSuggestions('cor')}
                 placeholder="Ex: Caramelo, Preto..."
-                className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-xs"
+                label="Cor"
               />
             </div>
 
@@ -293,27 +290,22 @@ if (!isOpen || !animal) return null;
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
-                Nome do Tutor de Origem
-              </label>
-              <input
-                type="text"
+              <AutoComplete
                 value={originTutorName}
-                onChange={(e) => setOriginTutorName(e.target.value)}
+                onChange={setOriginTutorName}
+                suggestions={getSuggestions('tutor_nome')}
                 placeholder="Não identificado se em branco"
-                className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-xs"
+                label="Nome do Tutor de Origem"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
-                Contato do Tutor de Origem
-              </label>
-              <input
-                type="text"
+              <AutoComplete
                 value={originTutorContact}
-                onChange={(e) => setOriginTutorContact(e.target.value)}
-                className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-xs"
+                onChange={setOriginTutorContact}
+                suggestions={getSuggestions('tutor_contato')}
+                placeholder="Telefone / Celular"
+                label="Contato do Tutor de Origem"
               />
             </div>
 
@@ -343,15 +335,12 @@ if (!isOpen || !animal) return null;
                 </div>
 
                 <div className="sm:col-span-2">
-                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
-                    Endereço do Resgate
-                  </label>
-                  <input
-                    type="text"
+                  <AutoComplete
                     value={rescueAddress}
-                    onChange={(e) => setRescueAddress(e.target.value)}
+                    onChange={setRescueAddress}
+                    suggestions={getSuggestions('endereco')}
                     placeholder="Informe onde o animal foi encontrado"
-                    className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-xs"
+                    label="Endereço do Resgate"
                   />
                 </div>
 
@@ -390,56 +379,36 @@ if (!isOpen || !animal) return null;
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
-                    Data da Castração
-                  </label>
-                  <input
-                    type="text"
+                  <DatePicker
                     value={castrationDate}
-                    onChange={(e) => setCastrationDate(e.target.value)}
-                    placeholder="DD/MM/AAAA"
+                    onChange={setCastrationDate}
+                    label="Data da Castração"
                     disabled={!castrado}
-                    className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-xs disabled:opacity-50 disabled:pointer-events-none"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
-                    Castração Agendada
-                  </label>
-                  <input
-                    type="text"
+                  <DatePicker
                     value={castrationScheduledDate}
-                    onChange={(e) => setCastrationScheduledDate(e.target.value)}
-                    placeholder="DD/MM/AAAA"
+                    onChange={setCastrationScheduledDate}
+                    label="Castração Agendada"
                     disabled={castrado}
-                    className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-xs disabled:opacity-50 disabled:pointer-events-none"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
-                    Última Vacina
-                  </label>
-                  <input
-                    type="text"
+                  <DatePicker
                     value={vaccinationDate}
-                    onChange={(e) => setVaccinationDate(e.target.value)}
-                    placeholder="DD/MM/AAAA"
-                    className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-xs"
+                    onChange={setVaccinationDate}
+                    label="Última Vacina"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
-                    Próxima Vacina
-                  </label>
-                  <input
-                    type="text"
+                  <DatePicker
                     value={vaccinationDueDate}
-                    onChange={(e) => setVaccinationDueDate(e.target.value)}
-                    placeholder="DD/MM/AAAA"
-                    className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-xs"
+                    onChange={setVaccinationDueDate}
+                    label="Próxima Vacina"
                   />
                 </div>
               </div>

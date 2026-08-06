@@ -1,6 +1,10 @@
 import React, { useState } from 'react';
 import { useAuditActions } from '../../context/useAuditActions';
 import { X, Heart, Check } from 'lucide-react';
+import { DatePicker } from '../common/DatePicker';
+import { AutoComplete } from '../common/AutoComplete';
+import { getSuggestions } from '../../utils/autocompleteStorage';
+import { getTodayBR } from '../../utils/dateUtils';
 
 interface RegisterAdoptionModalProps {
   isOpen: boolean;
@@ -17,9 +21,7 @@ export const RegisterAdoptionModal: React.FC<RegisterAdoptionModalProps> = ({
 
   const animal = animalId ? getAnimalById(animalId) : null;
 
-  const todayStr = `${new Date().getDate().toString().padStart(2, '0')}/${(new Date().getMonth() + 1).toString().padStart(2, '0')}/${new Date().getFullYear()}`;
-
-  const [adoptionDate, setAdoptionDate] = useState(todayStr);
+  const [adoptionDate, setAdoptionDate] = useState(getTodayBR());
   const [adopterName, setAdopterName] = useState('');
   const [adopterContact, setAdopterContact] = useState('');
   const [adopterAddress, setAdopterAddress] = useState('');
@@ -87,57 +89,44 @@ export const RegisterAdoptionModal: React.FC<RegisterAdoptionModalProps> = ({
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="sm:col-span-2">
-              <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
-                Nome do Novo Tutor <span className="text-rose-500">*</span>
-              </label>
-              <input
-                type="text"
-                required
+              <AutoComplete
                 value={adopterName}
-                onChange={(e) => setAdopterName(e.target.value)}
+                onChange={setAdopterName}
+                suggestions={getSuggestions('tutor_nome')}
                 placeholder="Ex: Carlos Eduardo Guimarães"
-                className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-rose-500"
+                label="Nome do Novo Tutor"
+                required
               />
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
-                Contato do Tutor <span className="text-rose-500">*</span>
-              </label>
-              <input
-                type="text"
-                required
+              <AutoComplete
                 value={adopterContact}
-                onChange={(e) => setAdopterContact(e.target.value)}
+                onChange={setAdopterContact}
+                suggestions={getSuggestions('tutor_contato')}
                 placeholder="(19) 99999-8888"
-                className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-rose-500"
+                label="Contato do Tutor"
+                required
               />
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
-                Data da Adoção / Saída <span className="text-rose-500">*</span>
-              </label>
-              <input
-                type="text"
-                required
+              <DatePicker
                 value={adoptionDate}
-                onChange={(e) => setAdoptionDate(e.target.value)}
-                placeholder="DD/MM/AAAA"
-                className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-rose-500"
+                onChange={setAdoptionDate}
+                label="Data da Adoção / Saída"
+                required
+                defaultToToday
               />
             </div>
 
             <div className="sm:col-span-2">
-              <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
-                Endereço do Novo Tutor
-              </label>
-              <input
-                type="text"
+              <AutoComplete
                 value={adopterAddress}
-                onChange={(e) => setAdopterAddress(e.target.value)}
+                onChange={setAdopterAddress}
+                suggestions={getSuggestions('endereco')}
                 placeholder="Ex: Rua das Flores, 120 - Bairro Centro"
-                className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-xs focus:outline-none focus:ring-2 focus:ring-rose-500"
+                label="Endereço do Novo Tutor"
               />
             </div>
 

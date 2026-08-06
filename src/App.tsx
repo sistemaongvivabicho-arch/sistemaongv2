@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { AnimalProvider, useAnimalContext } from './context/AnimalContext';
 import { AuditProvider } from './context/AuditContext';
 import { AlertProvider } from './context/AlertContext';
-import { CastrationsProvider } from './context/CastrationsContext';
 import { useAuth } from './context/AuthContext';
 import { Sidebar } from './components/layout/Sidebar';
 import { Header } from './components/layout/Header';
@@ -160,7 +159,6 @@ const MainAppContent: React.FC = () => {
         return (
           <TriageAnimalsView
             onOpenEditModal={openEditModal}
-            onOpenChangeLocationModal={openChangeLocationModal}
           />
         );
       case 'no_abrigo':
@@ -271,9 +269,7 @@ export default function App() {
     <AnimalProvider>
       <AuditProvider>
         <AlertProvider>
-          <CastrationsProvider>
-            <MainAppContent />
-          </CastrationsProvider>
+          <MainAppContent />
         </AlertProvider>
       </AuditProvider>
     </AnimalProvider>
