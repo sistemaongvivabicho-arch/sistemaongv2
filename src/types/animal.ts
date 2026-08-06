@@ -92,6 +92,14 @@ export interface DeathDetails {
   notes?: string;
 }
 
+export interface AnimalPhoto {
+  id: string;
+  animal_id: string;
+  storage_path: string;
+  is_primary: boolean;
+  created_at: string;
+}
+
 export interface Animal {
   id: string;
   name: string;
@@ -118,7 +126,8 @@ export interface Animal {
   history: HistoryEntry[];
   adoptionDetails?: AdoptionDetails;
   deathDetails?: DeathDetails;
-  photoUrl?: string;
+  photoUrl?: string; // Legacy: primary photo storage_path for backward compatibility
+  photos?: AnimalPhoto[];
 
   // Fase 13 — Saúde & Castração (dashboard gerencial)
   castrado?: boolean;                 // false por padrão

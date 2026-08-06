@@ -3,6 +3,7 @@ import { useAuditActions } from '../../context/useAuditActions';
 import { X, Edit3, Check, ShieldAlert } from 'lucide-react';
 import { SpeciesType, SexType, PorteType, EntryOrigin, RESCUE_ORIGIN_OPTIONS } from '../../types/animal';
 import { PhotoUploader } from '../common/PhotoUploader';
+import { PhotoGallery } from '../common/PhotoGallery';
 
 interface EditAnimalModalProps {
   isOpen: boolean;
@@ -15,7 +16,7 @@ export const EditAnimalModal: React.FC<EditAnimalModalProps> = ({
   animalId,
   onClose
 }) => {
-  const { getAnimalById, updateAnimal, uploadAnimalPhoto, deleteAnimalPhoto } = useAuditActions();
+  const { getAnimalById, updateAnimal, uploadAnimalPhoto, deleteAnimalPhoto, deleteSpecificPhoto, setPrimaryPhoto, getPhotosByAnimal } = useAuditActions();
 
   const animal = animalId ? getAnimalById(animalId) : null;
 
@@ -152,12 +153,14 @@ if (!isOpen || !animal) return null;
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="sm:col-span-2">
               <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
-                Foto do Animal
+                Fotos do Animal
               </label>
-              <PhotoUploader
-                photoPath={animal.photoUrl}
+              <PhotoGallery
+                photos={getPhotosByAnimal(animal.id)}
                 onUpload={(file) => uploadAnimalPhoto(animal.id, file)}
-                onDelete={() => deleteAnimalPhoto(animal.id)}
+                onDeletePhoto={(photoId) => deleteSpecificPhoto(animal.id, photoId)}
+                onDeleteAll={() => deleteAnimalPhoto(animal.id)}
+                onSetPrimary={(photoId) => setPrimaryPhoto(animal.id, photoId)}
               />
             </div>
 

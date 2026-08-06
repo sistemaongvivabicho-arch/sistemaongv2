@@ -15,6 +15,8 @@ export type AuditActionType =
   | 'exclusao_agendamento'
   | 'upload_foto'
   | 'troca_foto'
+  | 'exclusao_foto'
+  | 'animal_delete'
   | 'exclusao_aviso'
   | 'login'
   | 'logout'
@@ -55,6 +57,8 @@ export const AUDIT_ACTION_LABELS: Record<AuditActionType, string> = {
   exclusao_agendamento: 'Exclusão de agendamento',
   upload_foto: 'Upload de foto',
   troca_foto: 'Troca de foto',
+  exclusao_foto: 'Exclusão de foto',
+  animal_delete: 'Exclusão de animal',
   exclusao_aviso: 'Exclusão de aviso',
   login: 'Login',
   logout: 'Logout',
@@ -84,6 +88,8 @@ export const AUDIT_ACTION_COLORS: Record<AuditActionType, string> = {
   exclusao_agendamento: 'bg-red-50 text-red-700 border-red-200',
   upload_foto: 'bg-green-50 text-green-700 border-green-200',
   troca_foto: 'bg-lime-50 text-lime-700 border-lime-200',
+  exclusao_foto: 'bg-red-50 text-red-700 border-red-200',
+  animal_delete: 'bg-red-100 text-red-800 border-red-300',
   exclusao_aviso: 'bg-red-50 text-red-700 border-red-200',
   login: 'bg-emerald-50 text-emerald-700 border-emerald-200',
   logout: 'bg-slate-100 text-slate-700 border-slate-300',

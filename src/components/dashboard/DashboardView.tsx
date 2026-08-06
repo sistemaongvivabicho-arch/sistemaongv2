@@ -22,20 +22,13 @@ import { Animal } from '../../types/animal';
 import { MONTH_NAMES } from '../../types/dashboard';
 import { FiltersPanel } from './FiltersPanel';
 import { DashboardCards, DashboardCardConfig } from './DashboardCards';
+import { SummaryCard } from './SummaryCard';
 import { MonthlySummary } from './MonthlySummary';
-import { AlertsPanel } from './AlertsPanel';
-import { GlobalSearch } from './GlobalSearch';
 import { ExportReport } from './ExportReport';
-import {
-  MovementsBarChart,
-  LocationBarChart,
-  SpeciesDonutChart
-} from './Charts';
 import {
   applyFilters,
   filterByEntryPeriod,
   isInPeriod,
-  buildAlerts,
   hasActiveFilters
 } from './dashboardUtils';
 
@@ -53,7 +46,6 @@ export const DashboardView: React.FC = () => {
     animals,
     dashboardFilters: filters,
     setDashboardFilters,
-    navigateToAnimal,
     setActiveTab
   } = useAnimalContext();
   const { isAdmin } = useAuth();
@@ -81,8 +73,6 @@ export const DashboardView: React.FC = () => {
       ),
     [baseFiltered, filters.month, filters.year]
   );
-
-  const alerts = useMemo(() => buildAlerts(baseFiltered), [baseFiltered]);
 
   const activeFilterCount = [
     filters.month != null,
@@ -220,15 +210,6 @@ export const DashboardView: React.FC = () => {
     ];
   }, [baseFiltered, periodBase, adoptedInPeriod, deceasedInPeriod, period]);
 
-  // Entradas recentes (coorte do período)
-  const recentEntries = useMemo(
-    () =>
-      [...periodBase]
-        .sort((a, b) => b.entryDate.localeCompare(a.entryDate))
-        .slice(0, 5),
-    [periodBase]
-  );
-
   if (animals.length === 0) {
     return (
       <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm p-12 text-center space-y-3">
@@ -264,7 +245,6 @@ export const DashboardView: React.FC = () => {
           </div>
 
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
-            <GlobalSearch />
             <div className="shrink-0">
               <ExportReport animals={baseFiltered} filters={filters} />
             </div>
@@ -303,6 +283,9 @@ export const DashboardView: React.FC = () => {
         <FiltersPanel open={filtersOpen} onToggle={() => setFiltersOpen((o) => !o)} />
 
         <div className="flex-1 min-w-0 w-full space-y-6">
+          {/* Resumo Geral */}
+          <SummaryCard />
+
           {/* Cards de indicadores */}
           <DashboardCards cards={cards} />
 
@@ -334,69 +317,13 @@ export const DashboardView: React.FC = () => {
             </div>
           )}
 
-          {/* Gráficos */}
-          <MovementsBarChart animals={baseFiltered} year={filters.year} />
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-            <LocationBarChart animals={periodBase} />
-            <SpeciesDonutChart animals={periodBase} />
-          </div>
-
-          {/* Resumo mensal + alertas */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
-            <MonthlySummary
-              animals={baseFiltered}
-              year={filters.year}
-              selectedMonth={filters.month}
-              onSelectMonth={(m) => setDashboardFilters({ ...filters, month: m })}
-            />
-            <AlertsPanel groups={alerts} />
-          </div>
-
-          {/* Entradas recentes (funcionalidade existente preservada) */}
-          <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm p-5 space-y-3">
-            <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
-              <div>
-                <h2 className="text-sm font-bold text-slate-900 dark:text-white">
-                  Entradas recentes
-                </h2>
-                <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
-                  Últimos animais do conjunto filtrado
-                </p>
-              </div>
-              {recentEntries.length > 0 && (
-                <button
-                  onClick={() => navigateToAnimal(recentEntries[0].id)}
-                  className="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 transition-colors"
-                >
-                  Ver ficha
-                  <ArrowRight className="w-3.5 h-3.5" />
-                </button>
-              )}
-            </div>
-
-            {recentEntries.length === 0 ? (
-              <p className="text-xs text-slate-400 italic py-4 text-center">
-                Nenhum animal no conjunto filtrado.
-              </p>
-            ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-2">
-                {recentEntries.map((animal) => (
-                  <button
-                    key={animal.id}
-                    onClick={() => navigateToAnimal(animal.id)}
-                    className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 text-left hover:border-emerald-500 hover:shadow-sm transition-all"
-                  >
-                    <p className="text-xs font-bold text-slate-900 dark:text-white truncate">
-                      {animal.name}
-                    </p>
-                    <p className="text-[10px] text-slate-500 mt-0.5">
-                      Entrada: {animal.entryDate}
-                    </p>
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
+          {/* Resumo mensal */}
+          <MonthlySummary
+            animals={baseFiltered}
+            year={filters.year}
+            selectedMonth={filters.month}
+            onSelectMonth={(m) => setDashboardFilters({ ...filters, month: m })}
+          />
         </div>
       </div>
     </div>

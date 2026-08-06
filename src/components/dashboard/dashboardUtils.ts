@@ -2,6 +2,7 @@ import {
   Animal,
   LOCATION_LABELS,
   ORIGIN_LABELS,
+  SPECIES_LABELS,
   SpeciesType,
   LocationType
 } from '../../types/animal';
@@ -63,18 +64,25 @@ export function searchMatchesAnimal(a: Animal, q: string): boolean {
   const haystack = [
     a.name,
     a.microchip,
+    a.raca,
+    a.cor,
+    a.porte,
+    a.sex === 'macho' ? 'macho male' : 'femea fêmea female',
+    a.age,
+    SPECIES_LABELS[a.species],
+    a.originTutorName,
+    a.originTutorContact,
     a.originProtocol,
     a.originNotes,
     a.entryNotes,
     a.currentObservation,
     a.rescueAddress,
-    a.originTutorName,
-    a.originTutorContact,
     ORIGIN_LABELS[a.origin],
-    LOCATION_LABELS[a.currentLocation]?.label
+    LOCATION_LABELS[a.currentLocation]?.label,
+    a.status === 'no_abrigo' ? 'no abrigo abrigo' : a.status === 'adotado' ? 'adotado' : 'obito óbito falecido'
   ]
     .filter(Boolean)
-    .join(' \n ')
+    .join(' ')
     .toLowerCase();
   return haystack.includes(term);
 }

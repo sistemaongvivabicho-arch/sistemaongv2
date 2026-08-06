@@ -10,7 +10,6 @@ import {
   Building2,
   Calendar, 
   Scale, 
-  Info,
   Layers
 } from 'lucide-react';
 import { LOCATION_LABELS, LocationType, SPECIES_LABELS, formatWeight } from '../../types/animal';

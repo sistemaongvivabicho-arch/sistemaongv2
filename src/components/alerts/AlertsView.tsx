@@ -23,6 +23,7 @@ import {
 } from '../../types/alerts';
 import { NewAlertModal } from './NewAlertModal';
 import { CentralDeAvisos } from '../dashboard/CentralDeAvisos';
+import { OngeSummaryCard } from './OngeSummaryCard';
 
 function formatTimestamp(ts: string): string {
   try {
@@ -89,6 +90,9 @@ export const AlertsView: React.FC<AlertsViewProps> = ({ isModalOpen, onModalClos
 
   return (
     <div className="space-y-6">
+      {/* Resumo Geral da ONG */}
+      <OngeSummaryCard />
+
       {/* Central de Avisos */}
       <CentralDeAvisos />
 

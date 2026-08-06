@@ -70,24 +70,29 @@ export const BackupView: React.FC = () => {
     setHistory(prev => [progressRecord, ...prev]);
 
     try {
-      const [animalsRes, profilesRes, auditRes, alertsRes] = await Promise.all([
+      const [animalsRes, profilesRes, auditRes, alertsRes, castrationsRes, photosRes] = await Promise.all([
         supabase.from('animals').select('*'),
         supabase.from('profiles').select('*'),
         supabase.from('audit_logs').select('*'),
-        supabase.from('alerts').select('*')
+        supabase.from('alerts').select('*'),
+        supabase.from('castration_schedules').select('*'),
+        supabase.from('photos').select('*')
       ]);
 
       if (animalsRes.error) throw new Error(`animals: ${animalsRes.error.message}`);
       if (profilesRes.error) throw new Error(`profiles: ${profilesRes.error.message}`);
       if (auditRes.error) throw new Error(`audit_logs: ${auditRes.error.message}`);
       if (alertsRes.error) throw new Error(`alerts: ${alertsRes.error.message}`);
+      if (castrationsRes.error) throw new Error(`castration_schedules: ${castrationsRes.error.message}`);
+      if (photosRes.error) throw new Error(`photos: ${photosRes.error.message}`);
 
-      const castrationsData = loadFromStorage('vivabicho_castration_schedules', []);
+      const castrationsData = castrationsRes.data || [];
+      const photosData = photosRes.data || [];
 
       const now = new Date();
       const manifest = {
         system: 'ONG Viva Bicho v2',
-        version: '2.9.1',
+        version: '3.0.0',
         organization: 'ONG Viva Bicho',
         exportedAt: now.toISOString(),
         exportedBy: profile?.name || 'Sistema',
@@ -96,7 +101,8 @@ export const BackupView: React.FC = () => {
           profiles: (profilesRes.data || []).length,
           audit_logs: (auditRes.data || []).length,
           alerts: (alertsRes.data || []).length,
-          castration_schedules: castrationsData.length
+          castration_schedules: castrationsData.length,
+          photos: photosData.length
         }
       };
 
@@ -107,9 +113,10 @@ export const BackupView: React.FC = () => {
       zip.file('audit_logs.json', JSON.stringify(auditRes.data || [], null, 2));
       zip.file('alerts.json', JSON.stringify(alertsRes.data || [], null, 2));
       zip.file('castrations.json', JSON.stringify(castrationsData, null, 2));
+      zip.file('photos.json', JSON.stringify(photosData, null, 2));
       zip.file('config.json', JSON.stringify({
         backupDate: now.toISOString(),
-        systemVersion: '2.9.1',
+        systemVersion: '3.0.0',
         organization: 'ONG Viva Bicho'
       }, null, 2));
 

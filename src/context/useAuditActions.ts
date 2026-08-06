@@ -1,6 +1,7 @@
 import { useCallback } from 'react';
 import { useAnimalContext } from './AnimalContext';
 import { useAudit } from './AuditContext';
+import { useAuth } from './AuthContext';
 import { AuditActionType } from '../types/audit';
 import { Animal, LOCATION_LABELS, SPECIES_LABELS, SEX_LABELS } from '../types/animal';
 
@@ -19,6 +20,7 @@ function sexLabel(sx: string): string {
 export function useAuditActions() {
   const ctx = useAnimalContext();
   const { addAuditLog } = useAudit();
+  const { profile } = useAuth();
 
   const addAnimal = useCallback(
     async (animalData: Omit<Animal, 'id' | 'history' | 'status'>) => {
@@ -207,16 +209,17 @@ export function useAuditActions() {
 
       const result = await ctx.deleteAnimal(id);
       if (result) {
+        const userName = profile?.name || 'Sistema';
         await addAuditLog(
-          'exclusao_animal',
-          `Animal "${current.name}" foi excluído do sistema.`,
+          'animal_delete',
+          `${userName} excluiu animal "${current.name}".`,
           id,
           current.name
         );
       }
       return result;
     },
-    [ctx, addAuditLog]
+    [ctx, addAuditLog, profile]
   );
 
   const uploadAnimalPhoto = useCallback(
@@ -247,9 +250,47 @@ export function useAuditActions() {
       const result = await ctx.deleteAnimalPhoto(id);
       if (result) {
         await addAuditLog(
-          'exclusao_animal',
+          'exclusao_foto',
           `${current.name}: foto removida da ficha.`,
           id,
+          current.name
+        );
+      }
+      return result;
+    },
+    [ctx, addAuditLog]
+  );
+
+  const deleteSpecificPhoto = useCallback(
+    async (animalId: string, photoId: string) => {
+      const current = ctx.getAnimalById(animalId);
+      if (!current) return false;
+
+      const result = await ctx.deleteSpecificPhoto(animalId, photoId);
+      if (result) {
+        await addAuditLog(
+          'exclusao_foto',
+          `${current.name}: foto removida da galeria.`,
+          animalId,
+          current.name
+        );
+      }
+      return result;
+    },
+    [ctx, addAuditLog]
+  );
+
+  const setPrimaryPhoto = useCallback(
+    async (animalId: string, photoId: string) => {
+      const current = ctx.getAnimalById(animalId);
+      if (!current) return false;
+
+      const result = await ctx.setPrimaryPhoto(animalId, photoId);
+      if (result) {
+        await addAuditLog(
+          'troca_foto',
+          `${current.name}: foto principal alterada.`,
+          animalId,
           current.name
         );
       }
@@ -267,6 +308,8 @@ export function useAuditActions() {
     registerDeath,
     deleteAnimal,
     uploadAnimalPhoto,
-    deleteAnimalPhoto
+    deleteAnimalPhoto,
+    deleteSpecificPhoto,
+    setPrimaryPhoto
   };
 }

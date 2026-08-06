@@ -195,8 +195,9 @@ const MainAppContent: React.FC = () => {
         return <BackupView />;
       default:
         return (
-          <CadastroEntradaView
-            onOpenNewAnimalModal={() => setIsNewAnimalModalOpen(true)}
+          <AlertsView
+            isModalOpen={isAlertModalOpen}
+            onModalClose={() => setIsAlertModalOpen(false)}
           />
         );
     }

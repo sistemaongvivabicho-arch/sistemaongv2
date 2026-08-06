@@ -1,5 +1,6 @@
 import React from 'react';
 import { useAuditActions } from '../../context/useAuditActions';
+import { useAuth } from '../../context/AuthContext';
 import { 
   ArrowLeft, 
   Dog, 
@@ -16,7 +17,9 @@ import {
   Phone,
   Tag,
   AlertCircle,
-  Syringe
+  Syringe,
+  Camera,
+  Trash2
 } from 'lucide-react';
 import { 
   LOCATION_LABELS, 
@@ -28,6 +31,8 @@ import {
   formatWeight
 } from '../../types/animal';
 import { PhotoUploader } from '../common/PhotoUploader';
+import { PhotoGallery } from '../common/PhotoGallery';
+import { DeleteAnimalModal } from '../modals/DeleteAnimalModal';
 
 interface AnimalDetailViewProps {
   animalId: string;
@@ -46,7 +51,10 @@ export const AnimalDetailView: React.FC<AnimalDetailViewProps> = ({
   onOpenDeathModal,
   onOpenUndoModal
 }) => {
-  const { getAnimalById, setSelectedAnimalId, uploadAnimalPhoto, deleteAnimalPhoto } = useAuditActions();
+  const { getAnimalById, setSelectedAnimalId, uploadAnimalPhoto, deleteAnimalPhoto, deleteSpecificPhoto, setPrimaryPhoto, getPhotosByAnimal } = useAuditActions();
+  const { isAdmin } = useAuth();
+
+  const [deleteModalOpen, setDeleteModalOpen] = React.useState(false);
 
   React.useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -70,6 +78,7 @@ export const AnimalDetailView: React.FC<AnimalDetailViewProps> = ({
   }
 
   const currentLocation = LOCATION_LABELS[animal.currentLocation];
+  const animalPhotos = getPhotosByAnimal(animal.id);
 
   // Status Badge styling
   let statusBadge = (
@@ -171,7 +180,40 @@ export const AnimalDetailView: React.FC<AnimalDetailViewProps> = ({
             <RotateCcw className="w-4 h-4" />
             Desfazer
           </button>
+
+          {isAdmin && (
+            <button
+              onClick={() => setDeleteModalOpen(true)}
+              className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-rose-50 dark:bg-rose-950/40 text-rose-700 dark:text-rose-300 hover:bg-rose-100 dark:hover:bg-rose-900/60 text-xs font-bold transition-colors"
+              title="Excluir animal permanentemente"
+            >
+              <Trash2 className="w-4 h-4" />
+              Excluir Animal
+            </button>
+          )}
         </div>
+      </div>
+
+      <DeleteAnimalModal
+        isOpen={deleteModalOpen}
+        animalId={animal.id}
+        onClose={() => setDeleteModalOpen(false)}
+        onDeleted={() => setSelectedAnimalId(null)}
+      />
+
+      {/* Photo Gallery Section */}
+      <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
+        <h2 className="text-sm font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 flex items-center gap-2 mb-4">
+          <Camera className="w-4 h-4 text-emerald-600" />
+          Galeria de Fotos
+        </h2>
+        <PhotoGallery
+          photos={animalPhotos}
+          onUpload={(file) => uploadAnimalPhoto(animal.id, file)}
+          onDeletePhoto={(photoId) => deleteSpecificPhoto(animal.id, photoId)}
+          onDeleteAll={() => deleteAnimalPhoto(animal.id)}
+          onSetPrimary={(photoId) => setPrimaryPhoto(animal.id, photoId)}
+        />
       </div>
 
       {/* Main Details Grid */}

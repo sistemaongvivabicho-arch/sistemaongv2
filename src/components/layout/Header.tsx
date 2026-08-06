@@ -2,8 +2,9 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useAnimalContext } from '../../context/AnimalContext';
 import { useAuth } from '../../context/AuthContext';
 import { useAlerts } from '../../context/AlertContext';
-import { Menu, Plus, Bell, ChevronRight, X, Clock, User } from 'lucide-react';
+import { Menu, Plus, Bell, ChevronRight, X, Search } from 'lucide-react';
 import { PRIORITY_COLORS, RECIPIENT_LABELS } from '../../types/alerts';
+import { HeaderSearch } from './HeaderSearch';
 
 interface HeaderProps {
   onOpenMobileMenu: () => void;
@@ -31,6 +32,7 @@ export const Header: React.FC<HeaderProps> = ({ onOpenMobileMenu, onOpenNewAnima
   const { profile } = useAuth();
   const { alerts, unreadCount, markAsRead, markAllAsRead } = useAlerts();
   const [panelOpen, setPanelOpen] = useState(false);
+  const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
   const panelRef = useRef<HTMLDivElement>(null);
 
   const selectedAnimal = selectedAnimalId ? getAnimalById(selectedAnimalId) : null;
@@ -136,6 +138,20 @@ export const Header: React.FC<HeaderProps> = ({ onOpenMobileMenu, onOpenNewAnima
 
         {/* Right Actions & User Profile */}
         <div className="flex items-center gap-2 sm:gap-3">
+          {/* Global Search - Desktop */}
+          <div className="hidden md:block">
+            <HeaderSearch />
+          </div>
+
+          {/* Mobile Search Button */}
+          <button
+            onClick={() => setMobileSearchOpen(!mobileSearchOpen)}
+            className="md:hidden p-2.5 rounded-xl text-slate-500 hover:text-slate-700 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800 transition-colors"
+            title="Buscar"
+          >
+            <Search className="w-5 h-5" />
+          </button>
+
           {/* Contextual Action Button */}
           {activeTab === 'entrada' && (
             <button
@@ -290,6 +306,13 @@ export const Header: React.FC<HeaderProps> = ({ onOpenMobileMenu, onOpenNewAnima
           </div>
         </div>
       </div>
+
+      {/* Mobile Search Panel */}
+      {mobileSearchOpen && (
+        <div className="md:hidden px-4 pb-4 pt-2">
+          <HeaderSearch />
+        </div>
+      )}
     </header>
   );
 };

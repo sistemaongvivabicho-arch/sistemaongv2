@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { 
   Animal, 
+  AnimalPhoto,
   LocationType, 
   AdoptionDetails, 
   DeathDetails,
@@ -53,6 +54,9 @@ interface AnimalContextType {
   deleteAnimal: (id: string) => Promise<boolean>;
   uploadAnimalPhoto: (id: string, file: File) => Promise<string | null>;
   deleteAnimalPhoto: (id: string) => Promise<boolean>;
+  deleteSpecificPhoto: (animalId: string, photoId: string) => Promise<boolean>;
+  setPrimaryPhoto: (animalId: string, photoId: string) => Promise<boolean>;
+  getPhotosByAnimal: (animalId: string) => AnimalPhoto[];
   
   // Selectors/Helpers
   getAnimalById: (id: string) => Animal | undefined;
@@ -126,6 +130,7 @@ const mapFromDb = (db: any): Animal => {
     adoptionDetails,
     deathDetails,
     photoUrl: db.photo_url || '',
+    photos: [],
     castrado: db.castrado ?? false,
     castrationDate: db.castration_date || '',
     castrationScheduledDate: db.castration_scheduled_date || '',
@@ -181,9 +186,9 @@ const mapToDb = (animal: Animal): any => {
     microchip: animal.microchip || null,
     species: animal.species,
     sex: animal.sex,
-    porte: animal.porte || null,
     raca: animal.raca || null,
     cor: animal.cor || null,
+    porte: animal.porte || null,
     age: animal.age || null,
     weight: weightNum,
     entry_date,
@@ -217,10 +222,11 @@ export const AnimalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     : 'Sistema';
 
   const [animals, setAnimals] = useState<Animal[]>([]);
+  const [allPhotos, setAllPhotos] = useState<AnimalPhoto[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [undoStack, setUndoStack] = useState<Record<string, Animal[]>>({});
 
-  const [activeTab, setActiveTab] = useState<string>('entrada');
+  const [activeTab, setActiveTab] = useState<string>('avisos');
   const [selectedAnimalId, setSelectedAnimalId] = useState<string | null>(null);
   const [locationFilter, setLocationFilter] = useState<LocationType | null>(null);
   const [toasts, setToasts] = useState<ToastInfo[]>([]);
@@ -287,6 +293,15 @@ export const AnimalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     return animals.find((a) => a.id === id);
   };
 
+  const getPhotosByAnimal = (animalId: string): AnimalPhoto[] => {
+    return allPhotos
+      .filter((p) => p.animal_id === animalId)
+      .sort((a, b) => {
+        if (a.is_primary !== b.is_primary) return a.is_primary ? -1 : 1;
+        return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+      });
+  };
+
   const resolveAnimal = async (id: string): Promise<Animal | null> => {
     const local = getAnimalById(id);
     if (local) return local;
@@ -331,6 +346,16 @@ export const AnimalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         if (dbError) throw dbError;
 
         const remoteAnimals = (dbData || []).map(mapFromDb);
+
+        // Load all photos
+        const { data: photosData, error: photosError } = await supabase
+          .from('photos')
+          .select('*')
+          .order('created_at', { ascending: false });
+
+        if (!photosError && photosData) {
+          setAllPhotos(photosData as AnimalPhoto[]);
+        }
 
         // Check if there is data in localStorage to migrate (one-time migration)
         const localSaved = localStorage.getItem('ong_animais_data_v1');
@@ -427,8 +452,33 @@ export const AnimalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       )
       .subscribe();
 
+    // Subscribe to photos realtime changes
+    const photosChannel = supabase
+      .channel('public:photos')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'photos' },
+        (payload) => {
+          const { eventType, new: newRow, old: oldRow } = payload;
+          if (eventType === 'INSERT') {
+            setAllPhotos((prev) => {
+              if (prev.some((p) => p.id === newRow.id)) return prev;
+              return [newRow as AnimalPhoto, ...prev];
+            });
+          } else if (eventType === 'UPDATE') {
+            setAllPhotos((prev) =>
+              prev.map((p) => (p.id === newRow.id ? (newRow as AnimalPhoto) : p))
+            );
+          } else if (eventType === 'DELETE') {
+            setAllPhotos((prev) => prev.filter((p) => p.id !== oldRow.id));
+          }
+        }
+      )
+      .subscribe();
+
     return () => {
       supabase.removeChannel(channel);
+      supabase.removeChannel(photosChannel);
     };
   }, [profile]);
 
@@ -461,19 +511,44 @@ export const AnimalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     const dbRow = mapToDb(newAnimal);
 
     try {
-      const { error } = await supabase.from('animals').insert(dbRow);
-      if (error) throw error;
+      const { data, error } = await supabase
+        .from('animals')
+        .insert(dbRow)
+        .select();
+
+      if (error) {
+        console.error('[addAnimal] Supabase error:', {
+          code: error.code,
+          message: error.message,
+          details: error.details,
+          hint: error.hint
+        });
+        showToast(`Erro ao cadastrar animal: ${error.message}`, 'error');
+        return null;
+      }
+
+      if (!data || data.length === 0) {
+        console.error('[addAnimal] Nenhum registro retornado apos insercao.');
+        showToast('Animal cadastrado, mas falha ao confirmar.', 'warning');
+        return newId;
+      }
+
       showToast('Animal cadastrado com sucesso.', 'success');
       return newId;
     } catch (err: any) {
-      showToast('Erro ao cadastrar animal: ' + err.message, 'error');
+      console.error('[addAnimal] Excecao:', err);
+      showToast('Erro inesperado ao cadastrar animal: ' + (err.message || err), 'error');
       return null;
     }
   };
 
   const updateAnimal = async (id: string, updatedData: Partial<Animal>): Promise<boolean> => {
     const current = getAnimalById(id);
-    if (!current) return false;
+    if (!current) {
+      console.error('[updateAnimal] Animal nao encontrado:', id);
+      showToast('Animal nao encontrado.', 'error');
+      return false;
+    }
 
     pushUndoSnapshot(current);
 
@@ -484,7 +559,7 @@ export const AnimalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       id: 'hist-' + Date.now(),
       date: formattedDate,
       title: 'Dados atualizados',
-      description: 'Ficha e informações cadastrais atualizadas.',
+      description: 'Ficha e informacoes cadastrais atualizadas.',
       user: operatorName,
       iconType: 'edit' as const
     };
@@ -498,19 +573,45 @@ export const AnimalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     const dbRow = mapToDb(updatedAnimal);
 
     try {
-      const { error } = await supabase.from('animals').update(dbRow).eq('id', id);
-      if (error) throw error;
+      const { data, error } = await supabase
+        .from('animals')
+        .update(dbRow)
+        .eq('id', id)
+        .select();
+
+      if (error) {
+        console.error('[updateAnimal] Supabase error:', {
+          code: error.code,
+          message: error.message,
+          details: error.details,
+          hint: error.hint
+        });
+        showToast(`Erro ao atualizar animal: ${error.message}`, 'error');
+        return false;
+      }
+
+      if (!data || data.length === 0) {
+        console.error('[updateAnimal] Nenhum registro atualizado. ID:', id);
+        showToast('Animal nao encontrado no banco de dados.', 'error');
+        return false;
+      }
+
       showToast('Cadastro atualizado com sucesso.', 'success');
       return true;
     } catch (err: any) {
-      showToast('Erro ao atualizar animal: ' + err.message, 'error');
+      console.error('[updateAnimal] Excecao:', err);
+      showToast('Erro inesperado ao atualizar animal: ' + (err.message || err), 'error');
       return false;
     }
   };
 
   const changeLocation = async (id: string, newLocation: LocationType, observation?: string): Promise<boolean> => {
     const current = getAnimalById(id);
-    if (!current) return false;
+    if (!current) {
+      console.error('[changeLocation] Animal nao encontrado:', id);
+      showToast('Animal nao encontrado.', 'error');
+      return false;
+    }
 
     pushUndoSnapshot(current);
 
@@ -523,7 +624,7 @@ export const AnimalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     const newHistoryEntry = {
       id: 'hist-' + Date.now(),
       date: formattedDate,
-      title: 'Mudança de localização',
+      title: 'Mudanca de localizacao',
       description: `${oldLocLabel} → ${newLocLabel}.${observation ? ` Obs: ${observation}` : ''}`,
       user: operatorName,
       iconType: 'move' as const
@@ -539,12 +640,34 @@ export const AnimalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     const dbRow = mapToDb(updatedAnimal);
 
     try {
-      const { error } = await supabase.from('animals').update(dbRow).eq('id', id);
-      if (error) throw error;
-      showToast('Localização atualizada com sucesso.', 'success');
+      const { data, error } = await supabase
+        .from('animals')
+        .update(dbRow)
+        .eq('id', id)
+        .select();
+
+      if (error) {
+        console.error('[changeLocation] Supabase error:', {
+          code: error.code,
+          message: error.message,
+          details: error.details,
+          hint: error.hint
+        });
+        showToast(`Erro ao alterar localizacao: ${error.message}`, 'error');
+        return false;
+      }
+
+      if (!data || data.length === 0) {
+        console.error('[changeLocation] Nenhum registro atualizado. ID:', id);
+        showToast('Animal nao encontrado no banco de dados.', 'error');
+        return false;
+      }
+
+      showToast('Localizacao atualizada com sucesso.', 'success');
       return true;
     } catch (err: any) {
-      showToast('Erro ao alterar localização: ' + err.message, 'error');
+      console.error('[changeLocation] Excecao:', err);
+      showToast('Erro inesperado ao alterar localizacao: ' + (err.message || err), 'error');
       return false;
     }
   };
@@ -589,19 +712,45 @@ export const AnimalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     const dbRow = mapToDb(updatedAnimal);
 
     try {
-      const { error } = await supabase.from('animals').update(dbRow).eq('id', id);
-      if (error) throw error;
-      showToast('Adoção registrada com sucesso.', 'success');
+      const { data, error } = await supabase
+        .from('animals')
+        .update(dbRow)
+        .eq('id', id)
+        .select();
+
+      if (error) {
+        console.error('[registerAdoption] Supabase error:', {
+          code: error.code,
+          message: error.message,
+          details: error.details,
+          hint: error.hint
+        });
+        showToast(`Erro ao registrar adocao: ${error.message}`, 'error');
+        return false;
+      }
+
+      if (!data || data.length === 0) {
+        console.error('[registerAdoption] Nenhum registro atualizado. ID:', id);
+        showToast('Animal nao encontrado no banco de dados.', 'error');
+        return false;
+      }
+
+      showToast('Adocao registrada com sucesso.', 'success');
       return true;
     } catch (err: any) {
-      showToast('Erro ao registrar adoção: ' + err.message, 'error');
+      console.error('[registerAdoption] Excecao:', err);
+      showToast('Erro inesperado ao registrar adocao: ' + (err.message || err), 'error');
       return false;
     }
   };
 
   const registerDeath = async (id: string, details: { deathDate: string; notes?: string }): Promise<boolean> => {
     const current = getAnimalById(id);
-    if (!current) return false;
+    if (!current) {
+      console.error('[registerDeath] Animal nao encontrado:', id);
+      showToast('Animal nao encontrado.', 'error');
+      return false;
+    }
 
     pushUndoSnapshot(current);
 
@@ -617,8 +766,8 @@ export const AnimalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     const newHistoryEntry = {
       id: 'hist-' + Date.now(),
       date: formattedDate,
-      title: 'Óbito registrado',
-      description: `Óbito ocorrido em ${details.deathDate}.${details.notes ? ` Obs: ${details.notes}` : ''}`,
+      title: 'Obito registrado',
+      description: `Obito ocorrido em ${details.deathDate}.${details.notes ? ` Obs: ${details.notes}` : ''}`,
       user: operatorName,
       iconType: 'death' as const
     };
@@ -633,12 +782,34 @@ export const AnimalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     const dbRow = mapToDb(updatedAnimal);
 
     try {
-      const { error } = await supabase.from('animals').update(dbRow).eq('id', id);
-      if (error) throw error;
-      showToast('Óbito registrado com sucesso.', 'success');
+      const { data, error } = await supabase
+        .from('animals')
+        .update(dbRow)
+        .eq('id', id)
+        .select();
+
+      if (error) {
+        console.error('[registerDeath] Supabase error:', {
+          code: error.code,
+          message: error.message,
+          details: error.details,
+          hint: error.hint
+        });
+        showToast(`Erro ao registrar obito: ${error.message}`, 'error');
+        return false;
+      }
+
+      if (!data || data.length === 0) {
+        console.error('[registerDeath] Nenhum registro atualizado. ID:', id);
+        showToast('Animal nao encontrado no banco de dados.', 'error');
+        return false;
+      }
+
+      showToast('Obito registrado com sucesso.', 'success');
       return true;
     } catch (err: any) {
-      showToast('Erro ao registrar óbito: ' + err.message, 'error');
+      console.error('[registerDeath] Excecao:', err);
+      showToast('Erro inesperado ao registrar obito: ' + (err.message || err), 'error');
       return false;
     }
   };
@@ -672,8 +843,28 @@ export const AnimalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     const dbRow = mapToDb(restoredAnimal);
 
     try {
-      const { error } = await supabase.from('animals').update(dbRow).eq('id', id);
-      if (error) throw error;
+      const { data, error } = await supabase
+        .from('animals')
+        .update(dbRow)
+        .eq('id', id)
+        .select();
+
+      if (error) {
+        console.error('[undoLastAction] Supabase error:', {
+          code: error.code,
+          message: error.message,
+          details: error.details,
+          hint: error.hint
+        });
+        showToast(`Erro ao desfazer acao: ${error.message}`, 'error');
+        return false;
+      }
+
+      if (!data || data.length === 0) {
+        console.error('[undoLastAction] Nenhum registro atualizado. ID:', id);
+        showToast('Animal nao encontrado no banco de dados.', 'error');
+        return false;
+      }
 
       // Pop snapshot from memory undo stack
       setUndoStack((prev) => ({
@@ -681,22 +872,51 @@ export const AnimalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         [id]: prev[id].slice(0, -1)
       }));
 
-      showToast('Última alteração desfeita com sucesso.', 'success');
+      showToast('Ultima alteracao desfeita com sucesso.', 'success');
       return true;
     } catch (err: any) {
-      showToast('Erro ao desfazer ação: ' + err.message, 'error');
+      console.error('[undoLastAction] Excecao:', err);
+      showToast('Erro inesperado ao desfazer acao: ' + (err.message || err), 'error');
       return false;
     }
   };
 
   const deleteAnimal = async (id: string): Promise<boolean> => {
     try {
+      // 1. Fetch all photos for this animal to clean up storage
+      const { data: photosData } = await supabase
+        .from('photos')
+        .select('storage_path')
+        .eq('animal_id', id);
+
+      // 2. Delete photo files from Supabase Storage
+      if (photosData && photosData.length > 0) {
+        const filePaths = photosData.map((p) => p.storage_path);
+        await supabase.storage.from(PHOTOS_BUCKET).remove(filePaths);
+      }
+
+      // 3. Delete the animal (cascades to photos table via FK)
       const { error } = await supabase.from('animals').delete().eq('id', id);
-      if (error) throw error;
-      showToast('Animal excluído com sucesso.', 'success');
+      if (error) {
+        console.error('[deleteAnimal] Supabase error:', {
+          code: error.code,
+          message: error.message,
+          details: error.details,
+          hint: error.hint
+        });
+        showToast(`Erro ao excluir animal: ${error.message}`, 'error');
+        return false;
+      }
+
+      // 4. Clean up local state
+      setAllPhotos((prev) => prev.filter((p) => p.animal_id !== id));
+      setAnimals((prev) => prev.filter((a) => a.id !== id));
+
+      showToast('Animal excluido com sucesso.', 'success');
       return true;
     } catch (err: any) {
-      showToast('Erro ao excluir animal: ' + err.message, 'error');
+      console.error('[deleteAnimal] Excecao:', err);
+      showToast('Erro inesperado ao excluir animal: ' + (err.message || err), 'error');
       return false;
     }
   };
@@ -711,19 +931,54 @@ export const AnimalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     try {
       const { error: uploadError } = await supabase.storage
         .from(PHOTOS_BUCKET)
-        .upload(filePath, file, { upsert: true });
+        .upload(filePath, file, {
+          contentType: file.type || 'image/jpeg',
+          upsert: false
+        });
       if (uploadError) throw uploadError;
 
-      pushUndoSnapshot(current);
+      // Unset current primary photo
+      const currentPhotos = getPhotosByAnimal(id);
+      const currentPrimary = currentPhotos.find((p) => p.is_primary);
 
+      if (currentPrimary) {
+        await supabase
+          .from('photos')
+          .update({ is_primary: false })
+          .eq('id', currentPrimary.id);
+      }
+
+      // Insert new photo as primary
+      const newPhoto: AnimalPhoto = {
+        id: crypto.randomUUID(),
+        animal_id: id,
+        storage_path: filePath,
+        is_primary: true,
+        created_at: new Date().toISOString()
+      };
+
+      const { error: insertError } = await supabase
+        .from('photos')
+        .insert(newPhoto);
+      if (insertError) throw insertError;
+
+      // Update local state
+      setAllPhotos((prev) => {
+        const withoutCurrent = prev.filter((p) => p.animal_id !== id || !p.is_primary);
+        return [newPhoto, ...withoutCurrent];
+      });
+
+      // Update animal's photo_url for backward compatibility
+      pushUndoSnapshot(current);
       const now = new Date();
       const formattedDate = `${now.getDate().toString().padStart(2, '0')}/${(now.getMonth() + 1).toString().padStart(2, '0')}/${now.getFullYear()} ${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
 
+      const hadPhoto = currentPhotos.length > 0;
       const newHistoryEntry = {
         id: 'hist-' + Date.now(),
         date: formattedDate,
-        title: 'Foto atualizada',
-        description: 'Nova foto adicionada à ficha do animal.',
+        title: hadPhoto ? 'Nova foto adicionada' : 'Foto inicial adicionada',
+        description: hadPhoto ? 'Nova foto adicionada à galeria do animal.' : 'Primeira foto adicionada à ficha do animal.',
         user: operatorName,
         iconType: 'edit' as const
       };
@@ -731,6 +986,7 @@ export const AnimalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       const updatedAnimal: Animal = {
         ...current,
         photoUrl: filePath,
+        photos: [newPhoto, ...currentPhotos.filter((p) => p.id !== newPhoto.id)],
         history: [newHistoryEntry, ...current.history]
       };
 
@@ -738,15 +994,20 @@ export const AnimalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         .from('animals')
         .update(mapToDb(updatedAnimal))
         .eq('id', id);
-      if (updateError) throw updateError;
-
-      if (current.photoUrl) {
-        await supabase.storage.from(PHOTOS_BUCKET).remove([current.photoUrl]);
+      if (updateError) {
+        console.error('[uploadAnimalPhoto] Supabase update error:', {
+          code: updateError.code,
+          message: updateError.message,
+          details: updateError.details,
+          hint: updateError.hint
+        });
+        throw updateError;
       }
 
-      showToast('Foto atualizada com sucesso.', 'success');
+      showToast('Foto adicionada com sucesso.', 'success');
       return filePath;
     } catch (err: any) {
+      console.error('[uploadAnimalPhoto] Excecao:', err);
       showToast('Erro ao enviar foto: ' + (err.message || err), 'error');
       return null;
     }
@@ -754,14 +1015,51 @@ export const AnimalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
   const deleteAnimalPhoto = async (id: string): Promise<boolean> => {
     const current = await resolveAnimal(id);
-    if (!current || !current.photoUrl) return false;
+    if (!current) return false;
+
+    const currentPhotos = getPhotosByAnimal(id);
+    if (currentPhotos.length === 0) return false;
 
     try {
+      const primaryPhoto = currentPhotos.find((p) => p.is_primary) || currentPhotos[0];
+
+      // Remove from storage
       const { error: removeError } = await supabase.storage
         .from(PHOTOS_BUCKET)
-        .remove([current.photoUrl]);
+        .remove([primaryPhoto.storage_path]);
       if (removeError) throw removeError;
 
+      // Remove from photos table
+      const { error: deleteError } = await supabase
+        .from('photos')
+        .delete()
+        .eq('id', primaryPhoto.id);
+      if (deleteError) throw deleteError;
+
+      // Update local state
+      const remainingPhotos = currentPhotos.filter((p) => p.id !== primaryPhoto.id);
+      setAllPhotos((prev) => prev.filter((p) => p.id !== primaryPhoto.id));
+
+      // If deleted photo was primary and there are remaining photos, make the newest one primary
+      let newPrimaryPath = '';
+      if (primaryPhoto.is_primary && remainingPhotos.length > 0) {
+        const sortedRemaining = [...remainingPhotos].sort(
+          (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+        );
+        const newPrimary = sortedRemaining[0];
+        newPrimaryPath = newPrimary.storage_path;
+
+        await supabase
+          .from('photos')
+          .update({ is_primary: true })
+          .eq('id', newPrimary.id);
+
+        setAllPhotos((prev) =>
+          prev.map((p) => (p.id === newPrimary.id ? { ...p, is_primary: true } : p))
+        );
+      }
+
+      // Update animal record
       pushUndoSnapshot(current);
 
       const now = new Date();
@@ -771,14 +1069,23 @@ export const AnimalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         id: 'hist-' + Date.now(),
         date: formattedDate,
         title: 'Foto removida',
-        description: 'Foto removida da ficha do animal.',
+        description: remainingPhotos.length > 0
+          ? 'Foto removida da galeria do animal.'
+          : 'Todas as fotos foram removidas.',
         user: operatorName,
         iconType: 'edit' as const
       };
 
       const updatedAnimal: Animal = {
         ...current,
-        photoUrl: '',
+        photoUrl: newPrimaryPath,
+        photos: remainingPhotos.map((p) =>
+          p.id === (primaryPhoto.is_primary && remainingPhotos.length > 0
+            ? remainingPhotos.find((r) => r.storage_path === newPrimaryPath)?.id
+            : p.id)
+            ? { ...p, is_primary: true }
+            : p
+        ),
         history: [newHistoryEntry, ...current.history]
       };
 
@@ -786,12 +1093,180 @@ export const AnimalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         .from('animals')
         .update(mapToDb(updatedAnimal))
         .eq('id', id);
-      if (updateError) throw updateError;
+      if (updateError) {
+        console.error('[deleteAnimalPhoto] Supabase update error:', {
+          code: updateError.code,
+          message: updateError.message,
+          details: updateError.details,
+          hint: updateError.hint
+        });
+        throw updateError;
+      }
 
       showToast('Foto removida com sucesso.', 'success');
       return true;
     } catch (err: any) {
+      console.error('[deleteAnimalPhoto] Excecao:', err);
       showToast('Erro ao remover foto: ' + (err.message || err), 'error');
+      return false;
+    }
+  };
+
+  const deleteSpecificPhoto = async (animalId: string, photoId: string): Promise<boolean> => {
+    const current = await resolveAnimal(animalId);
+    if (!current) return false;
+
+    const currentPhotos = getPhotosByAnimal(animalId);
+    const targetPhoto = currentPhotos.find((p) => p.id === photoId);
+    if (!targetPhoto) return false;
+
+    // Don't allow deleting the last photo via this method
+    if (currentPhotos.length === 1) {
+      return deleteAnimalPhoto(animalId);
+    }
+
+    try {
+      // Remove from storage
+      const { error: removeError } = await supabase.storage
+        .from(PHOTOS_BUCKET)
+        .remove([targetPhoto.storage_path]);
+      if (removeError) throw removeError;
+
+      // Remove from photos table
+      const { error: deleteError } = await supabase
+        .from('photos')
+        .delete()
+        .eq('id', photoId);
+      if (deleteError) throw deleteError;
+
+      // Update local state
+      const remainingPhotos = currentPhotos.filter((p) => p.id !== photoId);
+      setAllPhotos((prev) => prev.filter((p) => p.id !== photoId));
+
+      // If deleted photo was primary, make the newest remaining one primary
+      let newPrimaryPath = current.photoUrl || '';
+      if (targetPhoto.is_primary && remainingPhotos.length > 0) {
+        const sortedRemaining = [...remainingPhotos].sort(
+          (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+        );
+        const newPrimary = sortedRemaining[0];
+        newPrimaryPath = newPrimary.storage_path;
+
+        await supabase
+          .from('photos')
+          .update({ is_primary: true })
+          .eq('id', newPrimary.id);
+
+        setAllPhotos((prev) =>
+          prev.map((p) => (p.id === newPrimary.id ? { ...p, is_primary: true } : p))
+        );
+      }
+
+      // Update animal record
+      pushUndoSnapshot(current);
+
+      const now = new Date();
+      const formattedDate = `${now.getDate().toString().padStart(2, '0')}/${(now.getMonth() + 1).toString().padStart(2, '0')}/${now.getFullYear()} ${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
+
+      const newHistoryEntry = {
+        id: 'hist-' + Date.now(),
+        date: formattedDate,
+        title: 'Foto removida da galeria',
+        description: 'Uma foto foi removida da galeria do animal.',
+        user: operatorName,
+        iconType: 'edit' as const
+      };
+
+      const updatedAnimal: Animal = {
+        ...current,
+        photoUrl: newPrimaryPath,
+        photos: remainingPhotos,
+        history: [newHistoryEntry, ...current.history]
+      };
+
+      const { error: updateError } = await supabase
+        .from('animals')
+        .update(mapToDb(updatedAnimal))
+        .eq('id', animalId);
+      if (updateError) {
+        console.error('[deleteSpecificPhoto] Supabase update error:', {
+          code: updateError.code,
+          message: updateError.message,
+          details: updateError.details,
+          hint: updateError.hint
+        });
+        throw updateError;
+      }
+
+      showToast('Foto removida com sucesso.', 'success');
+      return true;
+    } catch (err: any) {
+      console.error('[deleteSpecificPhoto] Excecao:', err);
+      showToast('Erro ao remover foto: ' + (err.message || err), 'error');
+      return false;
+    }
+  };
+
+  const setPrimaryPhoto = async (animalId: string, photoId: string): Promise<boolean> => {
+    const current = await resolveAnimal(animalId);
+    if (!current) return false;
+
+    const currentPhotos = getPhotosByAnimal(animalId);
+    const targetPhoto = currentPhotos.find((p) => p.id === photoId);
+    if (!targetPhoto) return false;
+
+    try {
+      // Unset current primary
+      const currentPrimary = currentPhotos.find((p) => p.is_primary);
+      if (currentPrimary && currentPrimary.id !== photoId) {
+        await supabase
+          .from('photos')
+          .update({ is_primary: false })
+          .eq('id', currentPrimary.id);
+      }
+
+      // Set new primary
+      await supabase
+        .from('photos')
+        .update({ is_primary: true })
+        .eq('id', photoId);
+
+      // Update local state
+      setAllPhotos((prev) =>
+        prev.map((p) => {
+          if (p.animal_id !== animalId) return p;
+          return { ...p, is_primary: p.id === photoId };
+        })
+      );
+
+      // Update animal's photo_url
+      pushUndoSnapshot(current);
+
+      const updatedAnimal: Animal = {
+        ...current,
+        photoUrl: targetPhoto.storage_path,
+        photos: currentPhotos.map((p) => ({ ...p, is_primary: p.id === photoId }))
+      };
+
+      const { error: updateError } = await supabase
+        .from('animals')
+        .update(mapToDb(updatedAnimal))
+        .eq('id', animalId);
+      if (updateError) {
+        console.error('[setPrimaryPhoto] Supabase update error:', {
+          code: updateError.code,
+          message: updateError.message,
+          details: updateError.details,
+          hint: updateError.hint
+        });
+        throw updateError;
+      }
+
+      showToast('Foto principal atualizada.', 'success');
+      return true;
+    } catch (err: any) {
+      console.error('[setPrimaryPhoto] Excecao:', err);
+      showToast('Erro ao definir foto principal: ' + (err.message || err), 'error');
       return false;
     }
   };
@@ -825,6 +1300,9 @@ export const AnimalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         deleteAnimal,
         uploadAnimalPhoto,
         deleteAnimalPhoto,
+        deleteSpecificPhoto,
+        setPrimaryPhoto,
+        getPhotosByAnimal,
         getAnimalById,
         navigateToAnimal,
         navigateToLocationVisualization
