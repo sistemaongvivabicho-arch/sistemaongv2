@@ -44,11 +44,11 @@ export const MovementsBarChart: React.FC<{ animals: Animal[]; year: number | nul
             <BarChart3 className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
             Movimentações por mês
           </h2>
-          <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
+          <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
             {year ? `Período de referência: ${year}` : 'Todos os anos'}
           </p>
         </div>
-        <div className="flex items-center gap-3 text-[10px] font-bold text-slate-500 dark:text-slate-400">
+        <div className="flex items-center gap-3 text-xs font-bold text-slate-500 dark:text-slate-400">
           <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-sm bg-emerald-500" />Entradas</span>
           <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-sm bg-rose-500" />Adoções</span>
           <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-sm bg-slate-500" />Óbitos</span>
@@ -76,7 +76,7 @@ export const MovementsBarChart: React.FC<{ animals: Animal[]; year: number | nul
                   title={`${m.deaths} óbito(s)`}
                 />
               </div>
-              <span className="text-[9px] font-bold text-slate-400 dark:text-slate-500">
+              <span className="text-xs font-bold text-slate-400 dark:text-slate-500">
                 {MONTH_NAMES_SHORT[m.month - 1]}
               </span>
             </div>
@@ -102,7 +102,7 @@ export const LocationBarChart: React.FC<{ animals: Animal[] }> = ({ animals }) =
           <MapPinned className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
           Animais por localização
         </h2>
-        <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
+        <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
           Distribuição atual do conjunto filtrado
         </p>
       </div>
@@ -117,7 +117,7 @@ export const LocationBarChart: React.FC<{ animals: Animal[] }> = ({ animals }) =
             const loc = LOCATION_LABELS[entry.loc];
             return (
               <div key={entry.loc}>
-                <div className="flex items-center justify-between text-[11px] mb-1">
+                <div className="flex items-center justify-between text-xs mb-1">
                   <span className="font-bold text-slate-700 dark:text-slate-300">{loc.label}</span>
                   <span className="font-black text-slate-900 dark:text-white">{entry.count}</span>
                 </div>
@@ -169,7 +169,7 @@ export const SpeciesDonutChart: React.FC<{ animals: Animal[] }> = ({ animals }) 
           <PieChart className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
           Animais por espécie
         </h2>
-        <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
+        <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
           Composição do conjunto filtrado
         </p>
       </div>
@@ -186,7 +186,7 @@ export const SpeciesDonutChart: React.FC<{ animals: Animal[] }> = ({ animals }) 
           >
             <div className="absolute inset-3 rounded-full bg-white dark:bg-slate-900 flex flex-col items-center justify-center">
               <span className="text-xl font-black text-slate-900 dark:text-white">{total}</span>
-              <span className="text-[9px] font-bold text-slate-400 uppercase">animais</span>
+              <span className="text-xs font-bold text-slate-400 uppercase">animais</span>
             </div>
           </div>
           <div className="space-y-2 flex-1">
@@ -198,7 +198,7 @@ export const SpeciesDonutChart: React.FC<{ animals: Animal[] }> = ({ animals }) 
                 </span>
                 <span className="font-black text-slate-900 dark:text-white">
                   {d.count}
-                  <span className="text-[10px] font-semibold text-slate-400 ml-1">
+                  <span className="text-xs font-semibold text-slate-400 ml-1">
                     ({Math.round((d.count / total) * 100)}%)
                   </span>
                 </span>

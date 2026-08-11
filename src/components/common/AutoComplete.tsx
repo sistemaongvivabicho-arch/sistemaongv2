@@ -134,7 +134,7 @@ export const AutoComplete: React.FC<AutoCompleteProps> = ({
   return (
     <div className="space-y-1.5" ref={containerRef}>
       {label && (
-        <label className="text-xs font-bold text-slate-700 dark:text-slate-300">
+        <label className="text-sm font-bold text-slate-700 dark:text-slate-300">
           {label}{required && ' *'}
         </label>
       )}
@@ -186,7 +186,7 @@ export const AutoComplete: React.FC<AutoCompleteProps> = ({
                   e.preventDefault();
                   handleSelect(suggestion);
                 }}
-                className={`w-full text-left px-3 py-2 text-sm transition-colors ${
+                className={`w-full text-left px-3 py-2.5 text-base transition-colors ${
                   index === focusedIndex
                     ? 'bg-emerald-50 dark:bg-emerald-950/30 text-emerald-700 dark:text-emerald-300'
                     : 'text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800'

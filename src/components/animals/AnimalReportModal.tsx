@@ -41,7 +41,7 @@ const SectionCard: React.FC<{
       <div className="p-1.5 rounded-lg bg-emerald-100 dark:bg-emerald-900/40 text-emerald-600 dark:text-emerald-400">
         {icon}
       </div>
-      <h3 className="text-sm font-bold text-slate-900 dark:text-white">{title}</h3>
+      <h3 className="text-base font-bold text-slate-900 dark:text-white">{title}</h3>
     </div>
     <div className="p-5">{children}</div>
   </div>
@@ -52,8 +52,8 @@ const InfoRow: React.FC<{ label: string; value?: string | null; icon?: React.Rea
 }) => (
   <div className="flex items-start gap-2 py-1.5">
     {icon && <span className="mt-0.5 text-slate-400 dark:text-slate-500">{icon}</span>}
-    <span className="text-xs font-medium text-slate-500 dark:text-slate-400 min-w-[120px]">{label}:</span>
-    <span className="text-xs font-semibold text-slate-900 dark:text-white">{value || 'Não informado'}</span>
+    <span className="text-sm font-semibold text-slate-500 dark:text-slate-400 min-w-[120px]">{label}:</span>
+    <span className="text-sm font-semibold text-slate-900 dark:text-white">{value || 'Não informado'}</span>
   </div>
 );
 
@@ -268,8 +268,8 @@ export const AnimalReportModal: React.FC<AnimalReportModalProps> = ({ isOpen, an
               <FileText className="w-5 h-5 text-white" />
             </div>
             <div>
-              <h2 className="text-lg font-bold text-white">Prontuário Completo</h2>
-              <p className="text-xs text-emerald-100/80">{animal.name}</p>
+              <h2 className="text-xl font-bold text-white">Prontuário Completo</h2>
+              <p className="text-sm text-emerald-100/80">{animal.name}</p>
             </div>
           </div>
           <button
@@ -332,8 +332,8 @@ export const AnimalReportModal: React.FC<AnimalReportModalProps> = ({ isOpen, an
                 {locationHistory.map((entry) => (
                   <div key={entry.id} className="relative pl-6">
                     <div className="absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-emerald-500 border-2 border-white dark:border-slate-900" />
-                    <p className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400">{entry.date}</p>
-                    <p className="text-xs text-slate-700 dark:text-slate-300 mt-0.5">{entry.description}</p>
+                    <p className="text-xs font-bold text-emerald-600 dark:text-emerald-400">{entry.date}</p>
+                    <p className="text-sm text-slate-700 dark:text-slate-300 mt-0.5">{entry.description}</p>
                   </div>
                 ))}
               </div>
@@ -346,7 +346,7 @@ export const AnimalReportModal: React.FC<AnimalReportModalProps> = ({ isOpen, an
               <div className="bg-emerald-50 dark:bg-emerald-950/20 rounded-xl p-4 border border-emerald-200/50 dark:border-emerald-800/50">
                 <div className="flex items-center gap-2 mb-2">
                   <Syringe className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
-                  <span className="text-xs font-bold text-emerald-700 dark:text-emerald-300">Vacinação</span>
+                  <span className="text-sm font-bold text-emerald-700 dark:text-emerald-300">Vacinação</span>
                 </div>
                 <InfoRow label="Última vacina" value={animal.vaccinationDate} />
                 <InfoRow label="Próxima vacina" value={animal.vaccinationDueDate} />
@@ -354,7 +354,7 @@ export const AnimalReportModal: React.FC<AnimalReportModalProps> = ({ isOpen, an
               <div className="bg-rose-50 dark:bg-rose-950/20 rounded-xl p-4 border border-rose-200/50 dark:border-rose-800/50">
                 <div className="flex items-center gap-2 mb-2">
                   <Scissors className="w-3.5 h-3.5 text-rose-600 dark:text-rose-400" />
-                  <span className="text-xs font-bold text-rose-700 dark:text-rose-300">Castração</span>
+                  <span className="text-sm font-bold text-rose-700 dark:text-rose-300">Castração</span>
                 </div>
                 <InfoRow
                   label="Status"
@@ -364,7 +364,7 @@ export const AnimalReportModal: React.FC<AnimalReportModalProps> = ({ isOpen, an
                 <InfoRow label="Agendamento" value={animal.castrationScheduledDate} />
                 <InfoRow label="Veterinário" value={animal.castrationVeterinarian} />
                 {animal.castrationNotes && (
-                  <p className="text-[11px] text-slate-600 dark:text-slate-400 mt-2 italic">{animal.castrationNotes}</p>
+                  <p className="text-xs text-slate-600 dark:text-slate-400 mt-2 italic">{animal.castrationNotes}</p>
                 )}
               </div>
             </div>
@@ -392,14 +392,14 @@ export const AnimalReportModal: React.FC<AnimalReportModalProps> = ({ isOpen, an
                       <FileText className="w-4 h-4 text-blue-600 dark:text-blue-400" />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-xs font-bold text-slate-900 dark:text-white truncate">
+                      <p className="text-sm font-bold text-slate-900 dark:text-white truncate">
                         {DOCUMENT_TYPE_LABELS[doc.documentType] || doc.documentType}
                       </p>
-                      <p className="text-[10px] text-slate-500 dark:text-slate-400">
+                      <p className="text-xs text-slate-500 dark:text-slate-400">
                         {doc.documentDate || doc.createdAt?.split('T')[0] || '—'}
                       </p>
                     </div>
-                    <span className="text-[10px] font-medium text-slate-400 dark:text-slate-500">
+                    <span className="text-xs font-medium text-slate-400 dark:text-slate-500">
                       {formatFileSize(doc.fileSize)}
                     </span>
                   </div>
@@ -441,9 +441,9 @@ export const AnimalReportModal: React.FC<AnimalReportModalProps> = ({ isOpen, an
                 {generalHistory.map((entry) => (
                   <div key={entry.id} className="relative pl-6">
                     <div className="absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-emerald-500 border-2 border-white dark:border-slate-900" />
-                    <p className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400">{entry.date}</p>
-                    <p className="text-xs font-semibold text-slate-900 dark:text-white mt-0.5">{entry.title}</p>
-                    <p className="text-[11px] text-slate-600 dark:text-slate-400 mt-0.5">{entry.description}</p>
+                    <p className="text-xs font-bold text-emerald-600 dark:text-emerald-400">{entry.date}</p>
+                    <p className="text-sm font-semibold text-slate-900 dark:text-white mt-0.5">{entry.title}</p>
+                    <p className="text-xs text-slate-600 dark:text-slate-400 mt-0.5">{entry.description}</p>
                   </div>
                 ))}
               </div>
@@ -460,7 +460,7 @@ export const AnimalReportModal: React.FC<AnimalReportModalProps> = ({ isOpen, an
                 { label: 'Notas de Castração', value: animal.castrationNotes }
               ].map((item) => (
                 <div key={item.label}>
-                  <p className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wide">{item.label}</p>
+                  <p className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wide">{item.label}</p>
                   <p className="text-xs text-slate-700 dark:text-slate-300 mt-0.5">
                     {item.value || <span className="italic text-slate-400 dark:text-slate-500">Nenhuma</span>}
                   </p>
@@ -501,7 +501,7 @@ export const AnimalReportModal: React.FC<AnimalReportModalProps> = ({ isOpen, an
                   className={`p-3 rounded-xl ${stat.bg} border ${stat.border} text-center`}
                 >
                   <p className={`text-xl font-black ${stat.text}`}>{stat.value}</p>
-                  <p className="text-[10px] font-medium text-slate-500 dark:text-slate-400 mt-0.5">{stat.label}</p>
+                  <p className="text-xs font-medium text-slate-500 dark:text-slate-400 mt-0.5">{stat.label}</p>
                 </div>
               ))}
             </div>
@@ -512,21 +512,21 @@ export const AnimalReportModal: React.FC<AnimalReportModalProps> = ({ isOpen, an
         <div className="flex items-center justify-end gap-3 p-5 border-t border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/50">
           <button
             onClick={handlePrint}
-            className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 text-xs font-bold transition-colors"
+            className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 text-sm font-bold transition-colors"
           >
             <Printer className="w-3.5 h-3.5" />
             Imprimir
           </button>
           <button
             onClick={handleExportPDF}
-            className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-sm shadow-emerald-600/25 transition-colors"
+            className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-bold shadow-sm shadow-emerald-600/25 transition-colors"
           >
             <Download className="w-3.5 h-3.5" />
             Exportar PDF
           </button>
           <button
             onClick={onClose}
-            className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-400 text-xs font-bold transition-colors"
+            className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-400 text-sm font-bold transition-colors"
           >
             <X className="w-3.5 h-3.5" />
             Fechar

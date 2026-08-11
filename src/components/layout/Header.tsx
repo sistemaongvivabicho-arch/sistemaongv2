@@ -127,10 +127,10 @@ export const Header: React.FC<HeaderProps> = ({ onOpenMobileMenu, onOpenNewAnima
               </div>
             ) : null}
 
-            <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-900 dark:text-white leading-tight">
+              <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-900 dark:text-white leading-tight">
               {selectedAnimal ? selectedAnimal.name : currentTabInfo.title}
             </h2>
-            <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 hidden sm:block">
+            <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 hidden sm:block font-medium">
               {selectedAnimal ? `Microchip: ${selectedAnimal.microchip || 'Não informado'} | Entrou em ${selectedAnimal.entryDate}` : currentTabInfo.subtitle}
             </p>
           </div>
@@ -154,18 +154,18 @@ export const Header: React.FC<HeaderProps> = ({ onOpenMobileMenu, onOpenNewAnima
 
           {/* Contextual Action Button */}
           {activeTab === 'entrada' && (
-            <button
+              <button
               onClick={onOpenNewAnimalModal}
-              className="flex items-center gap-2 px-3.5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-sm shadow-sm transition-all duration-150 active:scale-95 shrink-0"
+              className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm shadow-sm transition-all duration-150 active:scale-95 shrink-0"
             >
               <Plus className="w-4 h-4 stroke-[2.5]" />
               <span className="hidden sm:inline">Nova Entrada</span>
             </button>
           )}
           {activeTab === 'avisos' && (
-            <button
+              <button
               onClick={onOpenNewAlertModal}
-              className="flex items-center gap-2 px-3.5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-sm shadow-sm transition-all duration-150 active:scale-95 shrink-0"
+              className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm shadow-sm transition-all duration-150 active:scale-95 shrink-0"
             >
               <Plus className="w-4 h-4 stroke-[2.5]" />
               <span className="hidden sm:inline">Novo Aviso</span>
@@ -181,7 +181,7 @@ export const Header: React.FC<HeaderProps> = ({ onOpenMobileMenu, onOpenNewAnima
             >
               <Bell className="w-5 h-5" />
               {unreadCount > 0 && (
-                <span className="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] flex items-center justify-center px-1 rounded-full bg-rose-500 text-white text-[10px] font-bold ring-2 ring-white dark:ring-slate-900">
+                <span className="absolute -top-0.5 -right-0.5 min-w-[20px] h-[20px] flex items-center justify-center px-1 rounded-full bg-rose-500 text-white text-[11px] font-bold ring-2 ring-white dark:ring-slate-900">
                   {unreadCount > 99 ? '99+' : unreadCount}
                 </span>
               )}
@@ -195,16 +195,16 @@ export const Header: React.FC<HeaderProps> = ({ onOpenMobileMenu, onOpenNewAnima
                     <Bell className="w-4 h-4 text-emerald-600" />
                     <h3 className="text-sm font-bold text-slate-900 dark:text-white">Notificações</h3>
                     {unreadCount > 0 && (
-                      <span className="inline-flex items-center justify-center min-w-[18px] h-[18px] px-1 rounded-full bg-rose-500 text-white text-[10px] font-bold">
+                      <span className="inline-flex items-center justify-center min-w-[20px] h-[20px] px-1 rounded-full bg-rose-500 text-white text-[11px] font-bold">
                         {unreadCount}
                       </span>
                     )}
                   </div>
                   <div className="flex items-center gap-1">
                     {unreadCount > 0 && (
-                      <button
+                        <button
                         onClick={markAllAsRead}
-                        className="text-[10px] font-bold text-emerald-600 hover:text-emerald-700 dark:text-emerald-400 px-2 py-1 rounded-lg hover:bg-emerald-50 dark:hover:bg-emerald-950/30 transition-colors"
+                        className="text-xs font-bold text-emerald-600 hover:text-emerald-700 dark:text-emerald-400 px-2 py-1 rounded-lg hover:bg-emerald-50 dark:hover:bg-emerald-950/30 transition-colors"
                       >
                         Marcar tudo lido
                       </button>
@@ -243,17 +243,17 @@ export const Header: React.FC<HeaderProps> = ({ onOpenMobileMenu, onOpenNewAnima
                             <div className={`w-2 h-2 rounded-full mt-1.5 shrink-0 ${colors.dot}`} />
                             <div className="flex-1 min-w-0">
                               <div className="flex items-center gap-2 mb-0.5">
-                                <p className={`text-xs font-bold truncate ${!alert.is_read ? 'text-slate-900 dark:text-white' : 'text-slate-600 dark:text-slate-400'}`}>
+                                <p className={`text-sm font-bold truncate ${!alert.is_read ? 'text-slate-900 dark:text-white' : 'text-slate-600 dark:text-slate-400'}`}>
                                   {alert.title}
                                 </p>
                                 {!alert.is_read && (
                                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0" />
                                 )}
                               </div>
-                              <p className="text-[11px] text-slate-500 dark:text-slate-400 line-clamp-2">
+                              <p className="text-xs text-slate-500 dark:text-slate-400 line-clamp-2">
                                 {alert.message}
                               </p>
-                              <div className="flex items-center gap-2 mt-1 text-[10px] text-slate-400">
+                              <div className="flex items-center gap-2 mt-1 text-[11px] text-slate-400">
                                 <span>{alert.author_name}</span>
                                 <span>·</span>
                                 <span>{formatTimestamp(alert.created_at)}</span>
@@ -273,7 +273,7 @@ export const Header: React.FC<HeaderProps> = ({ onOpenMobileMenu, onOpenNewAnima
                         setPanelOpen(false);
                         setActiveTab('avisos');
                       }}
-                      className="w-full py-2 rounded-xl bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-xs font-bold text-slate-600 dark:text-slate-400 transition-colors"
+                      className="w-full py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-xs font-bold text-slate-600 dark:text-slate-400 transition-colors"
                     >
                       Ver todos os avisos
                     </button>
@@ -295,10 +295,10 @@ export const Header: React.FC<HeaderProps> = ({ onOpenMobileMenu, onOpenNewAnima
             </div>
             {profile && (
               <div className="text-left">
-                <p className="text-xs font-semibold text-slate-800 dark:text-slate-200 leading-tight">
+                <p className="text-sm font-semibold text-slate-800 dark:text-slate-200 leading-tight">
                   {profile.name}
                 </p>
-                <p className="text-[11px] text-slate-500 dark:text-slate-400">
+                <p className="text-xs text-slate-500 dark:text-slate-400">
                   {profile.role === 'admin' ? 'Administrador' : 'Colaborador'}
                 </p>
               </div>

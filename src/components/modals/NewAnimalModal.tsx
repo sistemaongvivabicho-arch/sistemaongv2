@@ -198,10 +198,10 @@ export const NewAnimalModal: React.FC<NewAnimalModalProps> = ({ isOpen, onClose 
               🐾
             </div>
             <div>
-              <h2 className="text-lg font-bold text-slate-900 dark:text-white">
+              <h2 className="text-xl font-bold text-slate-900 dark:text-white">
                 Nova Entrada de Animal
               </h2>
-              <p className="text-xs text-slate-500">
+              <p className="text-sm text-slate-500">
                 Cadastre as informações essenciais para controle do abrigo
               </p>
             </div>
@@ -228,7 +228,7 @@ export const NewAnimalModal: React.FC<NewAnimalModalProps> = ({ isOpen, onClose 
 
           {/* SEÇÃO 2: IDENTIFICAÇÃO DO ANIMAL */}
           <div className="space-y-4">
-            <h3 className="text-xs font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400 flex items-center gap-2 border-b border-slate-100 dark:border-slate-800 pb-2">
+            <h3 className="text-sm font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400 flex items-center gap-2 border-b border-slate-100 dark:border-slate-800 pb-2">
               <Dog className="w-4 h-4" />
               Identificação do Animal
             </h3>
@@ -236,7 +236,7 @@ export const NewAnimalModal: React.FC<NewAnimalModalProps> = ({ isOpen, onClose 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {/* Nome (Obrigatório) */}
               <div className="sm:col-span-2">
-                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+                <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1">
                   Nome do Animal <span className="text-rose-500">*</span>
                 </label>
                 <input
@@ -245,19 +245,19 @@ export const NewAnimalModal: React.FC<NewAnimalModalProps> = ({ isOpen, onClose 
                   value={formData.name}
                   onChange={(e) => updateField('name', e.target.value)}
                   placeholder="Ex: Thor, Luna, Bob..."
-                  className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 font-semibold"
+                  className="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 font-bold"
                 />
               </div>
 
               {/* Espécie (Obrigatório) */}
               <div>
-                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+                <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1">
                   Espécie <span className="text-rose-500">*</span>
                 </label>
                 <select
                   value={formData.species}
                   onChange={(e) => updateField('species', e.target.value as SpeciesType)}
-                  className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                  className="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm font-bold focus:outline-none focus:ring-2 focus:ring-emerald-500"
                 >
                   <option value="cachorro">Cachorro</option>
                   <option value="gato">Gato</option>
@@ -267,13 +267,13 @@ export const NewAnimalModal: React.FC<NewAnimalModalProps> = ({ isOpen, onClose 
 
               {/* Sexo (Obrigatório) */}
               <div>
-                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+                <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1">
                   Sexo <span className="text-rose-500">*</span>
                 </label>
                 <select
                   value={formData.sex}
                   onChange={(e) => updateField('sex', e.target.value as SexType)}
-                  className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                  className="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm font-bold focus:outline-none focus:ring-2 focus:ring-emerald-500"
                 >
                   <option value="macho">Macho</option>
                   <option value="femea">Fêmea</option>
@@ -282,13 +282,13 @@ export const NewAnimalModal: React.FC<NewAnimalModalProps> = ({ isOpen, onClose 
 
               {/* Porte (Opcional) */}
               <div>
-                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+                <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1">
                   Porte <span className="text-slate-400 font-normal">(opcional)</span>
                 </label>
                 <select
                   value={formData.porte}
                   onChange={(e) => updateField('porte', e.target.value as PorteType | '')}
-                  className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                  className="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm font-bold focus:outline-none focus:ring-2 focus:ring-emerald-500"
                 >
                   <option value="">Não informado</option>
                   <option value="pequeno">Pequeno</option>
@@ -332,7 +332,7 @@ export const NewAnimalModal: React.FC<NewAnimalModalProps> = ({ isOpen, onClose 
 
               {/* Idade (Opcional) */}
               <div>
-                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+                <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1">
                   Idade <span className="text-slate-400 font-normal">(opcional)</span>
                 </label>
                 <input
@@ -340,13 +340,13 @@ export const NewAnimalModal: React.FC<NewAnimalModalProps> = ({ isOpen, onClose 
                   value={formData.age}
                   onChange={(e) => updateField('age', e.target.value)}
                   placeholder="Ex: 2 anos, 5 meses..."
-                  className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                  className="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
                 />
               </div>
 
               {/* Peso (Opcional) */}
               <div>
-                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+                <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1">
                   Peso (kg) <span className="text-slate-400 font-normal">(opcional)</span>
                 </label>
                 <div className="relative">
@@ -355,9 +355,9 @@ export const NewAnimalModal: React.FC<NewAnimalModalProps> = ({ isOpen, onClose 
                     value={formData.weight}
                     onChange={(e) => updateField('weight', e.target.value)}
                     placeholder="Ex: 25"
-                    className="w-full p-2.5 pr-10 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                    className="w-full p-3 pr-10 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm font-bold focus:outline-none focus:ring-2 focus:ring-emerald-500"
                   />
-                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-bold text-slate-400 pointer-events-none">
+                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm font-bold text-slate-400 pointer-events-none">
                     kg
                   </span>
                 </div>
@@ -365,7 +365,7 @@ export const NewAnimalModal: React.FC<NewAnimalModalProps> = ({ isOpen, onClose 
 
               {/* Microchip (Opcional) */}
               <div>
-                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+                <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1">
                   Microchip <span className="text-slate-400 font-normal">(opcional)</span>
                 </label>
                 <input
@@ -373,7 +373,7 @@ export const NewAnimalModal: React.FC<NewAnimalModalProps> = ({ isOpen, onClose 
                   value={formData.microchip}
                   onChange={(e) => updateField('microchip', e.target.value)}
                   placeholder="Ex: 982000123456789"
-                  className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-xs font-mono focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                  className="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm font-mono focus:outline-none focus:ring-2 focus:ring-emerald-500"
                 />
               </div>
             </div>
@@ -381,11 +381,11 @@ export const NewAnimalModal: React.FC<NewAnimalModalProps> = ({ isOpen, onClose 
 
           {/* SEÇÃO 3: TUTOR DE ORIGEM (Opcional) */}
           <div className="space-y-4 pt-4 border-t border-slate-100 dark:border-slate-800">
-            <h3 className="text-xs font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400 flex items-center gap-2">
+            <h3 className="text-sm font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400 flex items-center gap-2">
               <User className="w-4 h-4" />
               Tutor de Origem (Opcional)
             </h3>
-            <p className="text-xs text-slate-500">
+            <p className="text-sm text-slate-500">
               Caso o animal seja de resgate sem tutor conhecido, pode deixar estes campos em branco.
             </p>
 
@@ -414,20 +414,20 @@ export const NewAnimalModal: React.FC<NewAnimalModalProps> = ({ isOpen, onClose 
 
           {/* SEÇÃO 4: ORIGEM DA ENTRADA */}
           <div className="space-y-4 pt-4 border-t border-slate-100 dark:border-slate-800">
-            <h3 className="text-xs font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400 flex items-center gap-2">
+            <h3 className="text-sm font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400 flex items-center gap-2">
               <ShieldAlert className="w-4 h-4" />
               Origem da Entrada
             </h3>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div className="sm:col-span-2">
-                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+                <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1">
                   Origem do Resgate <span className="text-rose-500">*</span>
                 </label>
                 <select
                   value={formData.origin}
                   onChange={(e) => updateField('origin', e.target.value as EntryOrigin)}
-                  className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                  className="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm font-bold focus:outline-none focus:ring-2 focus:ring-emerald-500"
                 >
                   <option value="guarda_municipal">Guarda Municipal</option>
                   <option value="resgate_ong">Resgate pela ONG</option>
@@ -440,7 +440,7 @@ export const NewAnimalModal: React.FC<NewAnimalModalProps> = ({ isOpen, onClose 
               </div>
 
               <div className="sm:col-span-2">
-                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+                <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1">
                   Observações da Entrada
                 </label>
                 <textarea
@@ -448,7 +448,7 @@ export const NewAnimalModal: React.FC<NewAnimalModalProps> = ({ isOpen, onClose 
                   value={formData.originNotes}
                   onChange={(e) => updateField('originNotes', e.target.value)}
                   placeholder="Ex: Animal resgatado pela Guarda Municipal após denúncia de maus-tratos..."
-                  className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                  className="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
                 />
               </div>
             </div>
@@ -456,20 +456,20 @@ export const NewAnimalModal: React.FC<NewAnimalModalProps> = ({ isOpen, onClose 
 
           {/* SEÇÃO 5: INFORMAÇÕES DO RESGATE */}
           <div className="space-y-4 pt-4 border-t border-slate-100 dark:border-slate-800">
-            <h3 className="text-xs font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400 flex items-center gap-2">
+            <h3 className="text-sm font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400 flex items-center gap-2">
               <ShieldAlert className="w-4 h-4" />
               Informações do Resgate
             </h3>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div className="sm:col-span-2">
-                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+                <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1">
                   Origem do Resgate
                 </label>
                 <select
                   value={formData.rescueOrigin}
                   onChange={(e) => updateField('rescueOrigin', e.target.value)}
-                  className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                  className="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm font-bold focus:outline-none focus:ring-2 focus:ring-emerald-500"
                 >
                   <option value="">Selecione a origem do resgate</option>
                   {RESCUE_ORIGIN_OPTIONS.map((opt) => (
@@ -491,7 +491,7 @@ export const NewAnimalModal: React.FC<NewAnimalModalProps> = ({ isOpen, onClose 
               </div>
 
               <div className="sm:col-span-2">
-                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+                <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1">
                   Observação de Entrada
                 </label>
                 <textarea
@@ -499,7 +499,7 @@ export const NewAnimalModal: React.FC<NewAnimalModalProps> = ({ isOpen, onClose 
                   value={formData.entryNotes}
                   onChange={(e) => updateField('entryNotes', e.target.value)}
                   placeholder="Descreva as condições em que o animal foi encontrado..."
-                  className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                  className="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
                 />
               </div>
             </div>
@@ -507,7 +507,7 @@ export const NewAnimalModal: React.FC<NewAnimalModalProps> = ({ isOpen, onClose 
 
           {/* SEÇÃO 6: LOCALIZAÇÃO INICIAL */}
           <div className="space-y-3 pt-4 border-t border-slate-100 dark:border-slate-800">
-            <h3 className="text-xs font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400 flex items-center gap-2">
+            <h3 className="text-sm font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400 flex items-center gap-2">
               <MapPin className="w-4 h-4" />
               Localização Inicial no Abrigo <span className="text-rose-500">*</span>
             </h3>
@@ -517,10 +517,10 @@ export const NewAnimalModal: React.FC<NewAnimalModalProps> = ({ isOpen, onClose 
                 <ClipboardList className="w-4 h-4" />
               </div>
               <div>
-                <p className="text-xs font-extrabold text-slate-900 dark:text-white">
+                <p className="text-sm font-extrabold text-slate-900 dark:text-white">
                   Triagem <span className="text-sky-700 dark:text-sky-300 font-bold">(EM TRIAGEM)</span>
                 </p>
-                <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed">
+                <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
                   Todo animal cadastrado entra automaticamente em triagem. A localização definitiva será definida após o término da triagem.
                 </p>
               </div>
@@ -529,7 +529,7 @@ export const NewAnimalModal: React.FC<NewAnimalModalProps> = ({ isOpen, onClose 
 
           {/* SEÇÃO 7: CASTRAÇÃO E VACINAÇÃO */}
           <div className="space-y-4 pt-4 border-t border-slate-100 dark:border-slate-800">
-            <h3 className="text-xs font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400 flex items-center gap-2">
+            <h3 className="text-sm font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400 flex items-center gap-2">
               <ShieldAlert className="w-4 h-4" />
               Castração e Vacinação
             </h3>
@@ -541,7 +541,7 @@ export const NewAnimalModal: React.FC<NewAnimalModalProps> = ({ isOpen, onClose 
                 onChange={(e) => updateField('castrado', e.target.checked)}
                 className="w-5 h-5 rounded-md accent-emerald-600"
               />
-              <span className="text-xs font-bold text-slate-800 dark:text-slate-200">
+              <span className="text-sm font-bold text-slate-800 dark:text-slate-200">
                 Animal castrado
               </span>
             </label>
@@ -585,7 +585,7 @@ export const NewAnimalModal: React.FC<NewAnimalModalProps> = ({ isOpen, onClose 
 
           {/* SEÇÃO 8: OBSERVAÇÕES ATUAIS */}
           <div className="space-y-3 pt-4 border-t border-slate-100 dark:border-slate-800">
-            <h3 className="text-xs font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400 flex items-center gap-2">
+            <h3 className="text-sm font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400 flex items-center gap-2">
               <FileText className="w-4 h-4" />
               Observações Atuais / Estado de Saúde
             </h3>
@@ -595,7 +595,7 @@ export const NewAnimalModal: React.FC<NewAnimalModalProps> = ({ isOpen, onClose 
               value={formData.currentObservation}
               onChange={(e) => updateField('currentObservation', e.target.value)}
               placeholder="Ex: Animal tranquilo e alimentando-se normalmente. Aguardando triagem..."
-              className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500"
+              className="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
             />
           </div>
 
@@ -604,14 +604,14 @@ export const NewAnimalModal: React.FC<NewAnimalModalProps> = ({ isOpen, onClose 
             <button
               type="button"
               onClick={handleClose}
-              className="px-5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 font-bold text-xs transition-colors"
+              className="px-5 py-3 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 font-bold text-sm transition-colors"
             >
               Cancelar
             </button>
             <button
               type="submit"
               disabled={submitting}
-              className="px-6 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-md transition-all active:scale-95 flex items-center gap-2 disabled:opacity-50 disabled:pointer-events-none"
+              className="px-6 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm shadow-md transition-all active:scale-95 flex items-center gap-2 disabled:opacity-50 disabled:pointer-events-none"
             >
               {submitting ? (
                 <>

@@ -114,7 +114,7 @@ export const HeaderSearch: React.FC = () => {
           onFocus={() => setFocused(true)}
           onKeyDown={handleKeyDown}
           placeholder="Buscar: nome, microchip, tutor, raça, cor, espécie, status..."
-          className="w-full pl-9 pr-9 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 focus:bg-white dark:focus:bg-slate-900 shadow-sm font-medium transition-all"
+          className="w-full pl-9 pr-9 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 focus:bg-white dark:focus:bg-slate-900 shadow-sm font-medium transition-all"
         />
         {query && (
           <button
@@ -162,7 +162,7 @@ export const HeaderSearch: React.FC = () => {
                       <p className="text-sm font-bold text-slate-900 dark:text-white truncate">
                         {highlightMatch(a.name, query)}
                       </p>
-                      <div className="flex items-center gap-1.5 flex-wrap text-[10px] text-slate-500 dark:text-slate-400 mt-0.5">
+                      <div className="flex items-center gap-1.5 flex-wrap text-xs text-slate-500 dark:text-slate-400 mt-0.5">
                         {a.microchip && (
                           <span className="inline-flex items-center gap-0.5">
                             <span className="font-semibold text-slate-600 dark:text-slate-300">MC:</span> {highlightMatch(a.microchip, query)}
@@ -183,11 +183,11 @@ export const HeaderSearch: React.FC = () => {
                       </div>
                     </div>
                     <div className="shrink-0 text-right space-y-1">
-                      <span className={`inline-flex items-center px-1.5 py-0.5 rounded-full text-[9px] font-bold border ${STATUS_BADGES[a.status] || STATUS_BADGES.no_abrigo}`}>
+                      <span className={`inline-flex items-center px-1.5 py-0.5 rounded-full text-[10px] font-bold border ${STATUS_BADGES[a.status] || STATUS_BADGES.no_abrigo}`}>
                         {getStatusLabel(a.status)}
                       </span>
                       <div>
-                        <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold border ${loc.badge}`}>
+                        <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-bold border ${loc.badge}`}>
                           {loc.label}
                         </span>
                       </div>
@@ -200,12 +200,12 @@ export const HeaderSearch: React.FC = () => {
               })}
             </div>
           )}
-          <div className="px-4 py-2 bg-slate-50 dark:bg-slate-800/60 text-[10px] text-slate-400 flex items-center justify-between">
+          <div className="px-4 py-2 bg-slate-50 dark:bg-slate-800/60 text-xs text-slate-400 flex items-center justify-between">
             <span>{totalMatches} resultado(s) encontrado(s)</span>
             <div className="flex items-center gap-1.5">
-              <kbd className="px-1 py-0.5 bg-slate-200 dark:bg-slate-700 rounded text-[9px] font-bold">↑↓</kbd>
+              <kbd className="px-1.5 py-0.5 bg-slate-200 dark:bg-slate-700 rounded text-[10px] font-bold">↑↓</kbd>
               <span>navegar</span>
-              <kbd className="px-1 py-0.5 bg-slate-200 dark:bg-slate-700 rounded text-[9px] font-bold">Enter</kbd>
+              <kbd className="px-1.5 py-0.5 bg-slate-200 dark:bg-slate-700 rounded text-[10px] font-bold">Enter</kbd>
               <span>abrir</span>
             </div>
           </div>

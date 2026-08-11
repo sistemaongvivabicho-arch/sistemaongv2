@@ -48,7 +48,7 @@ export const CadastroEntradaView: React.FC<CadastroEntradaViewProps> = ({ onOpen
               <PawPrint className="w-6 h-6 text-emerald-600 dark:text-emerald-400" />
               Cadastro de Entrada
             </h1>
-            <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
+            <p className="text-base text-slate-500 dark:text-slate-400 mt-1">
               Pesquise animais ou cadastre uma nova entrada
             </p>
           </div>
@@ -69,7 +69,7 @@ export const CadastroEntradaView: React.FC<CadastroEntradaViewProps> = ({ onOpen
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             placeholder="Pesquisar por nome, microchip ou tutor..."
-            className="w-full pl-11 pr-10 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-sm font-medium transition-all"
+              className="w-full pl-11 pr-10 py-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-base font-semibold transition-all"
           />
           {searchTerm && (
             <button
@@ -100,7 +100,7 @@ export const CadastroEntradaView: React.FC<CadastroEntradaViewProps> = ({ onOpen
                 <button
                   key={animal.id}
                   onClick={() => navigateToAnimal(animal.id)}
-                  className="w-full flex items-center justify-between p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 text-left hover:border-emerald-500 hover:shadow-sm transition-all"
+                  className="w-full flex items-center justify-between p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 text-left hover:border-emerald-500 hover:shadow-sm transition-all"
                 >
                   <div className="flex items-center gap-3 min-w-0">
                     <div className="w-9 h-9 rounded-full bg-slate-200 dark:bg-slate-700 flex items-center justify-center shrink-0 overflow-hidden">
@@ -113,10 +113,10 @@ export const CadastroEntradaView: React.FC<CadastroEntradaViewProps> = ({ onOpen
                       )}
                     </div>
                     <div className="min-w-0">
-                      <p className="text-sm font-bold text-slate-900 dark:text-white truncate">
+                      <p className="text-base font-bold text-slate-900 dark:text-white truncate">
                         {animal.name}
                       </p>
-                      <p className="text-xs text-slate-500 truncate">
+                      <p className="text-sm text-slate-500 truncate">
                         {SPECIES_LABELS[animal.species]} · {animal.microchip || 'Sem microchip'} · Entrada: {animal.entryDate}
                       </p>
                     </div>
@@ -142,7 +142,7 @@ export const CadastroEntradaView: React.FC<CadastroEntradaViewProps> = ({ onOpen
               </p>
             </div>
             {recentEntries.length > 0 && (
-              <span className="text-xs font-bold text-slate-400">
+              <span className="text-sm font-bold text-slate-400">
                 {animals.length} total
               </span>
             )}
@@ -164,7 +164,7 @@ export const CadastroEntradaView: React.FC<CadastroEntradaViewProps> = ({ onOpen
                 <button
                   key={animal.id}
                   onClick={() => navigateToAnimal(animal.id)}
-                  className="w-full flex items-center justify-between p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 text-left hover:border-emerald-500 hover:shadow-sm transition-all"
+                  className="w-full flex items-center justify-between p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 text-left hover:border-emerald-500 hover:shadow-sm transition-all"
                 >
                   <div className="flex items-center gap-3 min-w-0">
                     <div className="w-9 h-9 rounded-full bg-slate-200 dark:bg-slate-700 flex items-center justify-center shrink-0 overflow-hidden">
@@ -177,17 +177,17 @@ export const CadastroEntradaView: React.FC<CadastroEntradaViewProps> = ({ onOpen
                       )}
                     </div>
                     <div className="min-w-0">
-                      <p className="text-sm font-bold text-slate-900 dark:text-white truncate">
+                      <p className="text-base font-bold text-slate-900 dark:text-white truncate">
                         {animal.name}
                       </p>
-                      <p className="text-xs text-slate-500 truncate">
+                      <p className="text-sm text-slate-500 truncate">
                         {SPECIES_LABELS[animal.species]} · {animal.sex === 'macho' ? 'Macho' : 'Fêmea'} · {formatWeight(animal.weight)}
                       </p>
                     </div>
                   </div>
                   <div className="text-right shrink-0">
-                    <p className="text-xs text-slate-400">{animal.entryDate}</p>
-                    <span className={`inline-block text-xs font-bold px-1.5 py-0.5 rounded-full mt-0.5 ${LOCATION_LABELS[animal.currentLocation]?.badge || ''}`}>
+                    <p className="text-sm text-slate-400">{animal.entryDate}</p>
+                    <span className={`inline-block text-sm font-bold px-1.5 py-0.5 rounded-full mt-0.5 ${LOCATION_LABELS[animal.currentLocation]?.badge || ''}`}>
                       {LOCATION_LABELS[animal.currentLocation]?.label || animal.currentLocation}
                     </span>
                   </div>

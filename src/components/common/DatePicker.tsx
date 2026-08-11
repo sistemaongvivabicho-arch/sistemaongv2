@@ -151,7 +151,7 @@ export const DatePicker: React.FC<DatePickerProps> = ({
   return (
     <div className="space-y-1.5" ref={containerRef}>
       {label && (
-        <label className="text-xs font-bold text-slate-700 dark:text-slate-300">
+        <label className="text-sm font-bold text-slate-700 dark:text-slate-300">
           {label}{required && ' *'}
         </label>
       )}
@@ -236,7 +236,7 @@ export const DatePicker: React.FC<DatePickerProps> = ({
 
           <div className="grid grid-cols-7 gap-0.5 text-center">
             {WEEK_DAYS.map((d, i) => (
-              <div key={i} className="text-[10px] font-black text-slate-400 uppercase py-1">
+              <div key={i} className="text-xs font-black text-slate-400 uppercase py-1">
                 {d}
               </div>
             ))}
@@ -257,7 +257,7 @@ export const DatePicker: React.FC<DatePickerProps> = ({
                   key={day}
                   type="button"
                   onClick={() => handleSelectDay(day)}
-                  className={`aspect-square rounded-lg text-[11px] font-bold flex items-center justify-center transition-all ${
+                  className={`aspect-square rounded-lg text-xs font-bold flex items-center justify-center transition-all ${
                     isSelected
                       ? 'bg-emerald-600 text-white shadow-sm'
                       : isToday
@@ -275,7 +275,7 @@ export const DatePicker: React.FC<DatePickerProps> = ({
             <button
               type="button"
               onClick={handleToday}
-              className="text-[11px] font-bold text-emerald-600 dark:text-emerald-400 hover:underline"
+              className="text-xs font-bold text-emerald-600 dark:text-emerald-400 hover:underline"
             >
               Hoje
             </button>
@@ -283,7 +283,7 @@ export const DatePicker: React.FC<DatePickerProps> = ({
               <button
                 type="button"
                 onClick={handleClear}
-                className="text-[11px] font-bold text-slate-400 hover:text-rose-500 transition-colors"
+                className="text-xs font-bold text-slate-400 hover:text-rose-500 transition-colors"
               >
                 Limpar
               </button>

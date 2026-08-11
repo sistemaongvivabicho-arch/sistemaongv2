@@ -243,7 +243,7 @@ export const AnimalDocumentsModal: React.FC<AnimalDocumentsModalProps> = ({
             <div className="flex items-center gap-2">
               <button
                 onClick={() => { setEditDoc(null); setShowUpload(true); }}
-                className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-sm shadow-emerald-600/25 transition-colors"
+                className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-bold shadow-sm shadow-emerald-600/25 transition-colors"
               >
                 <Plus className="w-4 h-4" />
                 Novo Documento
@@ -276,7 +276,7 @@ export const AnimalDocumentsModal: React.FC<AnimalDocumentsModalProps> = ({
                 </p>
                 <button
                   onClick={() => { setEditDoc(null); setShowUpload(true); }}
-                  className="mt-4 flex items-center gap-1.5 px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-sm shadow-emerald-600/25 transition-colors"
+                  className="mt-4 flex items-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-bold shadow-sm shadow-emerald-600/25 transition-colors"
                 >
                   <Plus className="w-4 h-4" />
                   Cadastrar primeiro documento
@@ -302,15 +302,15 @@ export const AnimalDocumentsModal: React.FC<AnimalDocumentsModalProps> = ({
 
                       {/* Info */}
                       <div className="px-3 pb-3 flex-1 flex flex-col">
-                        <p className="text-xs font-bold text-slate-800 dark:text-slate-200 truncate" title={label}>
+                        <p className="text-sm font-bold text-slate-800 dark:text-slate-200 truncate" title={label}>
                           {label}
                         </p>
                         {doc.documentDate && (
-                          <p className="text-[10px] text-slate-500 dark:text-slate-400 mt-0.5">
+                          <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
                             {new Date(doc.documentDate + 'T00:00:00').toLocaleDateString('pt-BR')}
                           </p>
                         )}
-                        <p className="text-[10px] text-slate-400 dark:text-slate-500 mt-0.5">
+                        <p className="text-xs text-slate-400 dark:text-slate-500 mt-0.5">
                           {formatFileSize(doc.fileSize)}
                         </p>
                       </div>
@@ -319,7 +319,7 @@ export const AnimalDocumentsModal: React.FC<AnimalDocumentsModalProps> = ({
                       <div className="flex border-t border-slate-200 dark:border-slate-700">
                         <button
                           onClick={() => setViewDoc(doc)}
-                          className="flex-1 flex items-center justify-center gap-1 py-2 text-[11px] font-bold text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-950/30 transition-colors"
+                          className="flex-1 flex items-center justify-center gap-1 py-2.5 text-xs font-bold text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-950/30 transition-colors"
                         >
                           <Eye className="w-3.5 h-3.5" />
                           Visualizar
@@ -327,7 +327,7 @@ export const AnimalDocumentsModal: React.FC<AnimalDocumentsModalProps> = ({
                         <div className="w-px bg-slate-200 dark:bg-slate-700" />
                         <button
                           onClick={() => { setEditDoc(doc); setShowUpload(true); }}
-                          className="flex-1 flex items-center justify-center gap-1 py-2 text-[11px] font-bold text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                          className="flex-1 flex items-center justify-center gap-1 py-2.5 text-xs font-bold text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
                         >
                           <Edit3 className="w-3.5 h-3.5" />
                           Editar
@@ -335,7 +335,7 @@ export const AnimalDocumentsModal: React.FC<AnimalDocumentsModalProps> = ({
                         <div className="w-px bg-slate-200 dark:bg-slate-700" />
                         <button
                           onClick={() => handleOpenDelete(doc)}
-                          className="flex-1 flex items-center justify-center gap-1 py-2 text-[11px] font-bold text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/30 transition-colors"
+                          className="flex-1 flex items-center justify-center gap-1 py-2.5 text-xs font-bold text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/30 transition-colors"
                         >
                           <Trash2 className="w-3.5 h-3.5" />
                           Excluir
@@ -395,14 +395,14 @@ export const AnimalDocumentsModal: React.FC<AnimalDocumentsModalProps> = ({
                     <button
                       type="button"
                       onClick={closeDeleteModal}
-                      className="flex-1 px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 font-bold text-xs"
+                      className="flex-1 px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 font-bold text-sm"
                     >
                       Cancelar
                     </button>
                     <button
                       type="button"
                       onClick={() => { setDeleteStep('password'); setDeleteError(''); }}
-                      className="flex-1 flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs transition-colors"
+                      className="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-bold text-sm transition-colors"
                     >
                       <Trash2 className="w-4 h-4" />
                       Sim, excluir
@@ -416,7 +416,7 @@ export const AnimalDocumentsModal: React.FC<AnimalDocumentsModalProps> = ({
                   <button
                     type="button"
                     onClick={() => { setDeleteStep('confirm'); setDeleteError(''); setDeletePassword(''); }}
-                    className="flex items-center gap-1 text-xs font-bold text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 transition-colors"
+                    className="flex items-center gap-1 text-sm font-bold text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 transition-colors"
                   >
                     <ArrowLeft className="w-3.5 h-3.5" />
                     Voltar
@@ -437,7 +437,7 @@ export const AnimalDocumentsModal: React.FC<AnimalDocumentsModalProps> = ({
                         type="email"
                         value={deleteEmail}
                         onChange={(e) => setDeleteEmail(e.target.value)}
-                        className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-xs font-bold"
+                        className="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm font-bold"
                         placeholder="seu@email.com"
                       />
                     </div>
@@ -451,7 +451,7 @@ export const AnimalDocumentsModal: React.FC<AnimalDocumentsModalProps> = ({
                         value={deletePassword}
                         onChange={(e) => setDeletePassword(e.target.value)}
                         onKeyDown={(e) => { if (e.key === 'Enter' && !deleteLoading) handleDeleteAuth(); }}
-                        className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-xs font-bold"
+                        className="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm font-bold"
                         placeholder="Sua senha"
                         autoFocus
                       />
@@ -474,7 +474,7 @@ export const AnimalDocumentsModal: React.FC<AnimalDocumentsModalProps> = ({
                       type="button"
                       onClick={handleDeleteAuth}
                       disabled={deleteLoading || !deleteEmail.trim() || !deletePassword.trim()}
-                      className="flex-1 flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs transition-colors disabled:opacity-50 disabled:pointer-events-none"
+                      className="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-bold text-sm transition-colors disabled:opacity-50 disabled:pointer-events-none"
                     >
                       {deleteLoading ? (
                         <>

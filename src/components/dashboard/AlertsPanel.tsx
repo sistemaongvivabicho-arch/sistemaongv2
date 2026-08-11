@@ -49,7 +49,7 @@ export const AlertsPanel: React.FC<AlertsPanelProps> = ({ groups }) => {
         </div>
         <div>
           <h2 className="text-sm font-bold text-slate-900 dark:text-white">Alertas</h2>
-          <p className="text-[11px] text-slate-500 dark:text-slate-400">
+          <p className="text-xs text-slate-500 dark:text-slate-400">
             Nenhum alerta pendente para os filtros atuais.
           </p>
         </div>
@@ -64,7 +64,7 @@ export const AlertsPanel: React.FC<AlertsPanelProps> = ({ groups }) => {
           <AlertTriangle className="w-4 h-4 text-amber-500" />
           Alertas
         </h2>
-        <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
+        <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
           Pontos de atenção automáticos gerados pelos dados
         </p>
       </div>
@@ -85,12 +85,12 @@ export const AlertsPanel: React.FC<AlertsPanelProps> = ({ groups }) => {
                     <p className="text-xs font-bold text-slate-900 dark:text-white leading-tight">
                       {group.title}
                     </p>
-                    <p className="text-[10px] text-slate-500 dark:text-slate-400">
+                    <p className="text-xs text-slate-500 dark:text-slate-400">
                       {group.description}
                     </p>
                   </div>
                 </div>
-                <span className={`shrink-0 px-2 py-1 rounded-full text-[11px] font-black text-white ${style.badge}`}>
+                <span className={`shrink-0 px-2 py-1 rounded-full text-xs font-black text-white ${style.badge}`}>
                   {group.animals.length}
                 </span>
               </div>
@@ -99,14 +99,14 @@ export const AlertsPanel: React.FC<AlertsPanelProps> = ({ groups }) => {
                 {preview.map((a: Animal) => (
                   <span
                     key={a.id}
-                    className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-white/70 dark:bg-slate-900/60 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700`}
+                    className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-bold bg-white/70 dark:bg-slate-900/60 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700`}
                   >
                     <span className={`w-1.5 h-1.5 rounded-full ${style.dot}`} />
                     {a.name}
                   </span>
                 ))}
                 {group.animals.length > 3 && (
-                  <span className="text-[10px] font-semibold text-slate-400">
+                  <span className="text-xs font-semibold text-slate-400">
                     +{group.animals.length - 3} outros
                   </span>
                 )}
@@ -114,7 +114,7 @@ export const AlertsPanel: React.FC<AlertsPanelProps> = ({ groups }) => {
 
               <button
                 onClick={() => openResultsList(group.animals, group.title)}
-                className="inline-flex items-center gap-1 text-[11px] font-bold text-slate-700 dark:text-slate-200 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors"
+                className="inline-flex items-center gap-1 text-xs font-bold text-slate-700 dark:text-slate-200 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors"
               >
                 Ver listagem completa
                 <ArrowRight className="w-3.5 h-3.5" />

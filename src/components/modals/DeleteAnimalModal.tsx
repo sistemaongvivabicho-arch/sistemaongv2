@@ -98,7 +98,7 @@ export const DeleteAnimalModal: React.FC<DeleteAnimalModalProps> = ({
               <h2 className="text-base font-bold text-slate-900 dark:text-white">
                 {step === 'confirm' ? 'Confirmar Exclusão' : 'Autenticar Exclusão'}
               </h2>
-              <p className="text-xs text-slate-500">
+              <p className="text-sm text-slate-500">
                 {step === 'confirm' ? 'Esta ação é irreversível' : 'Digite sua senha para confirmar'}
               </p>
             </div>
@@ -119,10 +119,10 @@ export const DeleteAnimalModal: React.FC<DeleteAnimalModalProps> = ({
                 <p className="text-sm font-bold text-rose-800 dark:text-rose-200">
                   Tem certeza que deseja excluir o animal <span className="underline">"{animal.name}"</span>?
                 </p>
-                <p className="text-xs text-rose-600 dark:text-rose-400 mt-2">
+                <p className="text-sm text-rose-600 dark:text-rose-400 mt-2">
                   Todos os dados serão removidos permanentemente:
                 </p>
-                <ul className="text-xs text-rose-600 dark:text-rose-400 mt-1 ml-4 list-disc space-y-0.5">
+                <ul className="text-sm text-rose-600 dark:text-rose-400 mt-1 ml-4 list-disc space-y-0.5">
                   <li>Fotos do animal</li>
                   <li>Histórico de movimentações</li>
                   <li>Registros de castração e vacinação</li>
@@ -135,14 +135,14 @@ export const DeleteAnimalModal: React.FC<DeleteAnimalModalProps> = ({
                 <button
                   type="button"
                   onClick={handleClose}
-                  className="flex-1 px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 font-bold text-xs"
+                  className="flex-1 px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 font-bold text-sm"
                 >
                   Cancelar
                 </button>
                 <button
                   type="button"
                   onClick={handleConfirmStep}
-                  className="flex-1 flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs transition-colors"
+                  className="flex-1 flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-bold text-sm transition-colors"
                 >
                   <Trash2 className="w-4 h-4" />
                   Sim, excluir
@@ -156,34 +156,34 @@ export const DeleteAnimalModal: React.FC<DeleteAnimalModalProps> = ({
               <button
                 type="button"
                 onClick={() => { setStep('confirm'); setError(''); setPassword(''); }}
-                className="flex items-center gap-1 text-xs font-bold text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 transition-colors"
+                className="flex items-center gap-1 text-sm font-bold text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 transition-colors"
               >
                 <ArrowLeft className="w-3.5 h-3.5" />
                 Voltar
               </button>
 
               <div className="p-4 rounded-2xl bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-900">
-                <p className="text-xs text-amber-700 dark:text-amber-300 font-medium">
+                <p className="text-sm text-amber-700 dark:text-amber-300 font-semibold">
                   Para excluir <span className="font-bold">"{animal.name}"</span>, confirme sua identidade com email e senha.
                 </p>
               </div>
 
               <div className="space-y-3">
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+                  <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1">
                     Email
                   </label>
                   <input
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-xs font-bold"
+                    className="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm font-bold"
                     placeholder="seu@email.com"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+                  <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1">
                     Senha
                   </label>
                   <input
@@ -191,7 +191,7 @@ export const DeleteAnimalModal: React.FC<DeleteAnimalModalProps> = ({
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     onKeyDown={(e) => { if (e.key === 'Enter' && !loading) handleAuthenticateAndDelete(); }}
-                    className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-xs font-bold"
+                    className="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm font-bold"
                     placeholder="Sua senha"
                     autoFocus
                   />
@@ -199,14 +199,14 @@ export const DeleteAnimalModal: React.FC<DeleteAnimalModalProps> = ({
               </div>
 
               {error && (
-                <p className="text-xs text-rose-600 dark:text-rose-400 font-medium">{error}</p>
+                <p className="text-sm text-rose-600 dark:text-rose-400 font-semibold">{error}</p>
               )}
 
               <div className="flex items-center gap-3 pt-2">
                 <button
                   type="button"
                   onClick={handleClose}
-                  className="flex-1 px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 font-bold text-xs"
+                  className="flex-1 px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 font-bold text-sm"
                 >
                   Cancelar
                 </button>
@@ -214,7 +214,7 @@ export const DeleteAnimalModal: React.FC<DeleteAnimalModalProps> = ({
                   type="button"
                   onClick={handleAuthenticateAndDelete}
                   disabled={loading || !email.trim() || !password.trim()}
-                  className="flex-1 flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs transition-colors disabled:opacity-50 disabled:pointer-events-none"
+                  className="flex-1 flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-bold text-sm transition-colors disabled:opacity-50 disabled:pointer-events-none"
                 >
                   {loading ? (
                     <>

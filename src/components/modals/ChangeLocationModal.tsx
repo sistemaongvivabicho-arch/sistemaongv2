@@ -71,8 +71,8 @@ export const ChangeLocationModal: React.FC<ChangeLocationModalProps> = ({
 
         {/* Form */}
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
-          <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/60 text-xs space-y-1">
-            <p className="text-slate-500 font-medium">
+          <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/60 text-sm space-y-1">
+            <p className="text-slate-500 font-semibold">
               Animal: <span className="font-extrabold text-slate-900 dark:text-white text-sm">{animal.name}</span>
             </p>
             <p className="text-slate-500 font-medium">
@@ -81,13 +81,13 @@ export const ChangeLocationModal: React.FC<ChangeLocationModalProps> = ({
           </div>
 
           <div>
-            <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+            <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1">
               Nova Localização <span className="text-rose-500">*</span>
             </label>
             <select
               value={newLocation}
               onChange={(e) => setNewLocation(e.target.value as LocationType)}
-              className="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-xs font-bold focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm font-bold focus:outline-none focus:ring-2 focus:ring-indigo-500"
             >
               {FINAL_LOCATIONS.map((loc) => (
                 <option key={loc} value={loc}>
@@ -98,7 +98,7 @@ export const ChangeLocationModal: React.FC<ChangeLocationModalProps> = ({
           </div>
 
           <div>
-            <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+            <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1">
               Observação da Movimentação
             </label>
             <textarea
@@ -106,7 +106,7 @@ export const ChangeLocationModal: React.FC<ChangeLocationModalProps> = ({
               value={observation}
               onChange={(e) => setObservation(e.target.value)}
               placeholder="Ex: Animal encaminhado para internação após avaliação veterinária."
-              className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
             />
           </div>
 
@@ -114,14 +114,14 @@ export const ChangeLocationModal: React.FC<ChangeLocationModalProps> = ({
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 font-bold text-xs"
+              className="px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 font-bold text-sm"
             >
               Cancelar
             </button>
             <button
               type="submit"
               disabled={submitting}
-              className="px-5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs shadow-md transition-all flex items-center gap-2 disabled:opacity-50 disabled:pointer-events-none"
+              className="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm shadow-md transition-all flex items-center gap-2 disabled:opacity-50 disabled:pointer-events-none"
             >
               {submitting ? (
                 <>

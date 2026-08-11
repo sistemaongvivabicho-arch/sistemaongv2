@@ -29,7 +29,7 @@ export const AdoptedAnimalsView: React.FC = () => {
             <Heart className="w-6 h-6 text-rose-600 dark:text-rose-400 fill-rose-600/20" />
             Animais Adotados
           </h1>
-          <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
+          <p className="text-base text-slate-500 dark:text-slate-400 mt-1">
             Registro de finais felizes e histórico de tutores responsáveis.
           </p>
         </div>
@@ -42,7 +42,7 @@ export const AdoptedAnimalsView: React.FC = () => {
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             placeholder="Pesquisar por nome, microchip ou novo tutor..."
-            className="w-full pl-11 pr-4 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-sm font-medium transition-all"
+            className="w-full pl-11 pr-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-base font-semibold transition-all"
           />
           {searchTerm && (
             <button
@@ -69,9 +69,9 @@ export const AdoptedAnimalsView: React.FC = () => {
           </div>
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full text-left text-sm">
+            <table className="w-full text-left text-base">
               <thead>
-                <tr className="bg-slate-50 dark:bg-slate-800/60 border-b border-slate-200 dark:border-slate-800 text-xs font-bold uppercase text-slate-500 dark:text-slate-400 tracking-wider">
+                <tr className="bg-slate-50 dark:bg-slate-800/60 border-b border-slate-200 dark:border-slate-800 text-sm font-bold uppercase text-slate-500 dark:text-slate-400 tracking-wider">
                   <th className="py-3 px-4">Nome</th>
                   <th className="py-3 px-4">Microchip</th>
                   <th className="py-3 px-4">Espécie</th>
@@ -96,29 +96,29 @@ export const AdoptedAnimalsView: React.FC = () => {
                         {animal.name}
                       </button>
                     </td>
-                    <td className="py-3 px-4 text-xs font-mono text-slate-600 dark:text-slate-400">
+                    <td className="py-3 px-4 text-sm font-mono text-slate-600 dark:text-slate-400">
                       {animal.microchip || 'Não informado'}
                     </td>
-                    <td className="py-3 px-4 text-slate-700 dark:text-slate-300 font-medium">
+                    <td className="py-3 px-4 text-slate-700 dark:text-slate-300 font-semibold">
                       {SPECIES_LABELS[animal.species]}
                     </td>
-                    <td className="py-3 px-4 text-xs text-slate-500">
+                    <td className="py-3 px-4 text-sm text-slate-500">
                       {animal.entryDate}
                     </td>
-                    <td className="py-3 px-4 text-xs font-bold text-rose-600 dark:text-rose-400">
+                    <td className="py-3 px-4 text-sm font-bold text-rose-600 dark:text-rose-400">
                       {animal.adoptionDetails?.adoptionDate || '-'}
                     </td>
-                    <td className="py-3 px-4 text-xs text-slate-500">
+                    <td className="py-3 px-4 text-sm text-slate-500">
                       {animal.adoptionDetails?.exitDate || '-'}
                     </td>
                     <td className="py-3 px-4">
                       <div className="flex items-center gap-2">
                         <UserCheck className="w-4 h-4 text-emerald-600" />
                         <div>
-                          <p className="font-bold text-xs text-slate-900 dark:text-white">
+                          <p className="font-bold text-sm text-slate-900 dark:text-white">
                             {animal.adoptionDetails?.adopterName || 'Não informado'}
                           </p>
-                          <p className="text-[11px] text-slate-500">
+                          <p className="text-xs text-slate-500">
                             {animal.adoptionDetails?.adopterContact || ''}
                           </p>
                         </div>
@@ -127,7 +127,7 @@ export const AdoptedAnimalsView: React.FC = () => {
                     <td className="py-3 px-4 text-right">
                       <button
                         onClick={() => navigateToAnimal(animal.id)}
-                        className="p-2 rounded-lg text-slate-600 hover:text-rose-600 hover:bg-rose-50 dark:text-slate-300 transition-colors"
+                        className="p-2.5 rounded-lg text-slate-600 hover:text-rose-600 hover:bg-rose-50 dark:text-slate-300 transition-colors"
                         title="Ver Ficha Completa"
                       >
                         <Eye className="w-4 h-4" />

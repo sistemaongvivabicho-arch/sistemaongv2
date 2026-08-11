@@ -68,12 +68,12 @@ export const DocumentViewModal: React.FC<DocumentViewModalProps> = ({
       {/* Header */}
       <div className="absolute top-0 left-0 right-0 flex items-center justify-between p-4 bg-gradient-to-b from-black/60 to-transparent z-10">
         <div className="flex items-center gap-3">
-          <button onClick={onClose} className="p-2 rounded-xl bg-white/10 hover:bg-white/20 text-white transition-colors">
+          <button onClick={onClose} className="p-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white transition-colors">
             <X className="w-5 h-5" />
           </button>
           <div>
             <p className="text-sm font-bold text-white">{currentDoc.fileName}</p>
-            <p className="text-[11px] text-white/60">
+            <p className="text-xs text-white/60">
               {currentIndex + 1} de {documents.length}
             </p>
           </div>
@@ -81,15 +81,15 @@ export const DocumentViewModal: React.FC<DocumentViewModalProps> = ({
         <div className="flex items-center gap-2">
           {isImageMime(currentDoc.mimeType) && (
             <>
-              <button onClick={() => setZoom(z => Math.max(0.25, z - 0.25))} className="p-2 rounded-xl bg-white/10 hover:bg-white/20 text-white transition-colors">
+              <button onClick={() => setZoom(z => Math.max(0.25, z - 0.25))} className="p-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white transition-colors">
                 <ZoomOut className="w-4 h-4" />
               </button>
-              <button onClick={() => setZoom(z => Math.min(3, z + 0.25))} className="p-2 rounded-xl bg-white/10 hover:bg-white/20 text-white transition-colors">
+              <button onClick={() => setZoom(z => Math.min(3, z + 0.25))} className="p-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white transition-colors">
                 <ZoomIn className="w-4 h-4" />
               </button>
             </>
           )}
-          <button onClick={handleDownload} className="p-2 rounded-xl bg-white/10 hover:bg-white/20 text-white transition-colors">
+          <button onClick={handleDownload} className="p-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white transition-colors">
             <Download className="w-4 h-4" />
           </button>
         </div>
@@ -99,7 +99,7 @@ export const DocumentViewModal: React.FC<DocumentViewModalProps> = ({
       {currentIndex > 0 && (
         <button
           onClick={navigatePrev}
-          className="absolute left-4 top-1/2 -translate-y-1/2 p-3 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors z-10"
+          className="absolute left-4 top-1/2 -translate-y-1/2 p-3.5 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors z-10"
         >
           <ChevronLeft className="w-6 h-6" />
         </button>
@@ -107,7 +107,7 @@ export const DocumentViewModal: React.FC<DocumentViewModalProps> = ({
       {currentIndex < documents.length - 1 && (
         <button
           onClick={navigateNext}
-          className="absolute right-4 top-1/2 -translate-y-1/2 p-3 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors z-10"
+          className="absolute right-4 top-1/2 -translate-y-1/2 p-3.5 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors z-10"
         >
           <ChevronRight className="w-6 h-6" />
         </button>
@@ -133,7 +133,7 @@ export const DocumentViewModal: React.FC<DocumentViewModalProps> = ({
         ) : (
           <div className="text-center text-white/60">
             <FileText className="w-16 h-16 mx-auto mb-4 opacity-40" />
-            <p className="text-sm font-bold">Não foi possível carregar o documento</p>
+            <p className="text-base font-bold">Não foi possível carregar o documento</p>
           </div>
         )}
       </div>

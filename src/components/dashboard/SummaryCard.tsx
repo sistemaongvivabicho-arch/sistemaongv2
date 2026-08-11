@@ -29,7 +29,7 @@ export const SummaryCard: React.FC = () => {
         </div>
         <div>
           <h3 className="text-sm font-bold text-slate-900 dark:text-white">Resumo Geral</h3>
-          <p className="text-[10px] text-slate-500 dark:text-slate-400">Visão consolidada do sistema</p>
+          <p className="text-[13px] text-slate-500 dark:text-slate-400">Visão consolidada do sistema</p>
         </div>
       </div>
 
@@ -43,10 +43,10 @@ export const SummaryCard: React.FC = () => {
               <Icon className="w-3.5 h-3.5" />
             </div>
             <div className="min-w-0">
-              <p className="text-lg font-black tracking-tight text-slate-900 dark:text-white leading-none">
+              <p className="text-xl font-black tracking-tight text-slate-900 dark:text-white leading-none">
                 {value}
               </p>
-              <p className="text-[10px] font-medium text-slate-500 dark:text-slate-400 truncate">
+              <p className="text-[13px] font-medium text-slate-500 dark:text-slate-400 truncate">
                 {label}
               </p>
             </div>

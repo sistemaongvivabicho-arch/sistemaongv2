@@ -77,7 +77,7 @@ export const ShelterAnimalsView: React.FC<ShelterAnimalsViewProps> = ({
             <Dog className="w-6 h-6 text-emerald-600 dark:text-emerald-400" />
             Animais no Abrigo
           </h1>
-          <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
+          <p className="text-base text-slate-500 dark:text-slate-400 mt-1">
             Exibindo <span className="font-bold text-slate-800 dark:text-slate-200">{filteredAnimals.length}</span> de{' '}
             <span className="font-bold text-slate-800 dark:text-slate-200">{shelterAnimals.length}</span> animais atualmente sob custódia
           </p>
@@ -94,7 +94,7 @@ export const ShelterAnimalsView: React.FC<ShelterAnimalsViewProps> = ({
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             placeholder="Pesquisar por nome ou microchip..."
-            className="w-full pl-11 pr-4 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-sm font-medium transition-all"
+              className="w-full pl-11 pr-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-base font-semibold transition-all"
           />
           {searchTerm && (
             <button
@@ -110,13 +110,13 @@ export const ShelterAnimalsView: React.FC<ShelterAnimalsViewProps> = ({
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
           {/* Species */}
           <div>
-            <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">
+            <label className="block text-sm font-bold text-slate-500 uppercase tracking-wider mb-1">
               Espécie
             </label>
             <select
               value={selectedSpecies}
               onChange={(e) => setSelectedSpecies(e.target.value)}
-              className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm font-medium focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all"
+              className="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-base font-semibold focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all"
             >
               <option value="all">Todas as espécies</option>
               <option value="cachorro">Cachorro</option>
@@ -127,13 +127,13 @@ export const ShelterAnimalsView: React.FC<ShelterAnimalsViewProps> = ({
 
           {/* Location */}
           <div>
-            <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">
+            <label className="block text-sm font-bold text-slate-500 uppercase tracking-wider mb-1">
               Localização
             </label>
             <select
               value={selectedLocation}
               onChange={(e) => setSelectedLocation(e.target.value)}
-              className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm font-medium focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all"
+              className="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-base font-semibold focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all"
             >
               <option value="all">Todas as localizações</option>
               {ALL_LOCATIONS.map((loc) => (
@@ -146,13 +146,13 @@ export const ShelterAnimalsView: React.FC<ShelterAnimalsViewProps> = ({
 
           {/* Sex */}
           <div>
-            <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">
+            <label className="block text-sm font-bold text-slate-500 uppercase tracking-wider mb-1">
               Sexo
             </label>
             <select
               value={selectedSex}
               onChange={(e) => setSelectedSex(e.target.value)}
-              className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm font-medium focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all"
+              className="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-base font-semibold focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all"
             >
               <option value="all">Todos os sexos</option>
               <option value="macho">Macho</option>
@@ -162,13 +162,13 @@ export const ShelterAnimalsView: React.FC<ShelterAnimalsViewProps> = ({
 
           {/* Entry Origin */}
           <div>
-            <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">
+            <label className="block text-sm font-bold text-slate-500 uppercase tracking-wider mb-1">
               Origem da Entrada
             </label>
             <select
               value={selectedOrigin}
               onChange={(e) => setSelectedOrigin(e.target.value)}
-              className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm font-medium focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all"
+              className="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-base font-semibold focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all"
             >
               <option value="all">Todas as origens</option>
               <option value="guarda_municipal">Guarda Municipal</option>
@@ -187,7 +187,7 @@ export const ShelterAnimalsView: React.FC<ShelterAnimalsViewProps> = ({
             <span className="text-slate-500">Filtros ativos aplicados</span>
             <button
               onClick={clearFilters}
-              className="inline-flex items-center gap-1.5 font-semibold text-rose-600 hover:text-rose-700 dark:text-rose-400 transition-colors"
+              className="inline-flex items-center gap-2 font-semibold text-rose-600 hover:text-rose-700 dark:text-rose-400 transition-colors"
             >
               <RotateCcw className="w-3.5 h-3.5" />
               Limpar filtros
@@ -210,7 +210,7 @@ export const ShelterAnimalsView: React.FC<ShelterAnimalsViewProps> = ({
             {hasActiveFilters && (
               <button
                 onClick={clearFilters}
-                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-xs font-bold text-slate-700 dark:text-slate-200 hover:bg-slate-200 transition-colors"
+                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-sm font-bold text-slate-700 dark:text-slate-200 hover:bg-slate-200 transition-colors"
               >
                 Limpar filtros
               </button>

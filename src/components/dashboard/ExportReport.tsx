@@ -199,7 +199,7 @@ export const ExportReport: React.FC<ExportReportProps> = ({ animals, filters }) 
           />
           <div className="absolute right-0 top-full mt-2 z-40 w-56 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xl overflow-hidden">
             <div className="px-4 py-2.5 border-b border-slate-100 dark:border-slate-800">
-              <p className="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+              <p className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
                 Exportar ({animals.length} animais)
               </p>
             </div>
@@ -210,7 +210,7 @@ export const ExportReport: React.FC<ExportReportProps> = ({ animals, filters }) 
               <FileText className="w-4 h-4 text-rose-500" />
               <div>
                 <p className="text-xs font-bold text-slate-900 dark:text-white">PDF</p>
-                <p className="text-[10px] text-slate-400">Imprimir / salvar como PDF</p>
+                <p className="text-xs text-slate-400">Imprimir / salvar como PDF</p>
               </div>
             </button>
             <button
@@ -220,7 +220,7 @@ export const ExportReport: React.FC<ExportReportProps> = ({ animals, filters }) 
               <FileType className="w-4 h-4 text-emerald-500" />
               <div>
                 <p className="text-xs font-bold text-slate-900 dark:text-white">CSV</p>
-                <p className="text-[10px] text-slate-400">Planilha (separado por ;)</p>
+                <p className="text-xs text-slate-400">Planilha (separado por ;)</p>
               </div>
             </button>
             <button
@@ -230,7 +230,7 @@ export const ExportReport: React.FC<ExportReportProps> = ({ animals, filters }) 
               <FileSpreadsheet className="w-4 h-4 text-emerald-600" />
               <div>
                 <p className="text-xs font-bold text-slate-900 dark:text-white">Excel</p>
-                <p className="text-[10px] text-slate-400">Arquivo .xls compatível</p>
+                <p className="text-xs text-slate-400">Arquivo .xls compatível</p>
               </div>
             </button>
           </div>

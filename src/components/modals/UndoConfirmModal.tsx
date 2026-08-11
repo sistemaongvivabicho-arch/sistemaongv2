@@ -47,26 +47,26 @@ export const UndoConfirmModal: React.FC<UndoConfirmModalProps> = ({
           </h2>
         </div>
 
-        <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
+        <p className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
           Tem certeza que deseja desfazer a última alteração registrada para o animal{' '}
           <strong className="text-slate-900 dark:text-white">{animal.name}</strong>?
         </p>
 
-        <p className="text-[11px] text-slate-400 bg-slate-50 dark:bg-slate-800 p-3 rounded-xl border border-slate-200 dark:border-slate-700">
+        <p className="text-xs text-slate-400 bg-slate-50 dark:bg-slate-800 p-3 rounded-xl border border-slate-200 dark:border-slate-700">
           Esta ação restaurará a localização, estado ou dados cadastrais imediatamente anteriores na ficha visual.
         </p>
 
         <div className="pt-2 flex items-center justify-end gap-3">
           <button
             onClick={onClose}
-            className="px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 font-bold text-xs"
+            className="px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 font-bold text-sm"
           >
             Cancelar
           </button>
           <button
             disabled={submitting}
             onClick={handleConfirm}
-            className="px-5 py-2 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs shadow-md transition-all flex items-center gap-1.5 disabled:opacity-50 disabled:pointer-events-none"
+            className="px-5 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-bold text-sm shadow-md transition-all flex items-center gap-1.5 disabled:opacity-50 disabled:pointer-events-none"
           >
             {submitting ? (
               <>

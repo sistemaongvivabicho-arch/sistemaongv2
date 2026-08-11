@@ -217,7 +217,7 @@ export const DashboardView: React.FC = () => {
         <p className="text-base font-bold text-slate-800 dark:text-slate-200">
           Nenhum animal cadastrado ainda
         </p>
-        <p className="text-xs text-slate-500 max-w-md mx-auto">
+        <p className="text-sm text-slate-500 max-w-md mx-auto">
           Cadastre a primeira entrada de animal para liberar todos os indicadores e gráficos do dashboard gerencial.
         </p>
       </div>
@@ -237,7 +237,7 @@ export const DashboardView: React.FC = () => {
             <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
               Central de gestão da ONG · Período: <span className="font-bold text-emerald-600 dark:text-emerald-400">{period}</span>
               {activeFilterCount > 0 && (
-                <span className="ml-2 px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-700 dark:text-emerald-300 text-[10px] font-bold">
+                <span className="ml-2 px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-700 dark:text-emerald-300 text-xs font-bold">
                   {activeFilterCount} filtro(s) ativo(s)
                 </span>
               )}
@@ -292,7 +292,7 @@ export const DashboardView: React.FC = () => {
           {/* Registro de Alterações — somente administradores */}
           {isAdmin && (
             <div>
-              <h2 className="text-xs font-bold tracking-wider text-slate-500 dark:text-slate-400 uppercase mb-3">
+              <h2 className="text-sm font-bold tracking-wider text-slate-500 dark:text-slate-400 uppercase mb-3">
                 Relatórios
               </h2>
               <button
@@ -304,10 +304,10 @@ export const DashboardView: React.FC = () => {
                     <History className="w-5 h-5" />
                   </div>
                   <div>
-                    <p className="text-sm font-bold text-slate-900 dark:text-white">
+                    <p className="text-base font-bold text-slate-900 dark:text-white">
                       Registro de Alterações
                     </p>
-                    <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
+                    <p className="text-sm text-slate-500 dark:text-slate-400 mt-0.5">
                       Histórico permanente de todas as ações do sistema
                     </p>
                   </div>

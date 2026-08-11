@@ -288,7 +288,7 @@ export const SettingsView: React.FC = () => {
                 <h1 className="text-lg font-black text-slate-950 dark:text-white leading-tight">
                   {profile.name}
                 </h1>
-                <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1 flex items-center gap-1 font-semibold">
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 flex items-center gap-1 font-semibold">
                   <Shield className="w-3.5 h-3.5 text-emerald-600" />
                   {profile.role === 'admin' ? 'Administrador Geral' : 'Colaborador'}
                 </p>
@@ -299,14 +299,14 @@ export const SettingsView: React.FC = () => {
           {profile && (
             <div className="space-y-3.5 text-xs">
               <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700/60">
-                <span className="text-[10px] text-slate-400 font-bold uppercase block tracking-wider">CPF Registrado</span>
-                <p className="font-mono font-bold text-slate-950 dark:text-white mt-1 text-sm">
+                <span className="text-xs text-slate-400 font-bold uppercase block tracking-wider">CPF Registrado</span>
+                <p className="font-mono font-bold text-slate-950 dark:text-white mt-1 text-base">
                   {handleCpfFormatter(profile.cpf)}
                 </p>
               </div>
 
               <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700/60">
-                <span className="text-[10px] text-slate-400 font-bold uppercase block tracking-wider">E-mail Cadastrado</span>
+                <span className="text-xs text-slate-400 font-bold uppercase block tracking-wider">E-mail Cadastrado</span>
                 <p className="font-semibold text-slate-800 dark:text-slate-200 mt-1">
                   {profile.email || 'Não informado'}
                 </p>
@@ -327,20 +327,20 @@ export const SettingsView: React.FC = () => {
 
         {/* Change Password Card */}
         <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
-          <h2 className="text-sm font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 flex items-center gap-2 pb-1 border-b border-slate-100 dark:border-slate-800">
+          <h2 className="text-base font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 flex items-center gap-2 pb-1 border-b border-slate-100 dark:border-slate-800">
             <KeyRound className="w-4 h-4 text-emerald-600" />
             Alterar Senha
           </h2>
 
           {passwordSuccess && (
-            <div className="p-3 bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 rounded-xl text-xs font-semibold flex items-center gap-2">
+            <div className="p-3 bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 rounded-xl text-sm font-semibold flex items-center gap-2">
               <Check className="w-4 h-4" />
               Senha alterada com sucesso!
             </div>
           )}
 
           {passwordError && (
-            <div className="p-3 bg-rose-500/10 border border-rose-500/20 text-rose-600 dark:text-rose-400 rounded-xl text-xs font-semibold flex items-center gap-2">
+            <div className="p-3 bg-rose-500/10 border border-rose-500/20 text-rose-600 dark:text-rose-400 rounded-xl text-sm font-semibold flex items-center gap-2">
               <AlertCircle className="w-4 h-4" />
               {passwordError}
             </div>
@@ -348,7 +348,7 @@ export const SettingsView: React.FC = () => {
 
           <form onSubmit={handleChangePassword} className="space-y-4">
             <div className="space-y-1">
-              <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">
+              <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block">
                 Nova Senha
               </label>
               <input
@@ -357,12 +357,12 @@ export const SettingsView: React.FC = () => {
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
                 placeholder="Mínimo 6 caracteres"
-                className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-950 dark:text-white text-xs font-semibold focus:ring-2 focus:ring-emerald-500 focus:outline-none"
+                className="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-950 dark:text-white text-sm font-semibold focus:ring-2 focus:ring-emerald-500 focus:outline-none"
               />
             </div>
 
             <div className="space-y-1">
-              <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">
+              <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block">
                 Confirmar Nova Senha
               </label>
               <input
@@ -371,14 +371,14 @@ export const SettingsView: React.FC = () => {
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 placeholder="Repita a nova senha"
-                className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-950 dark:text-white text-xs font-semibold focus:ring-2 focus:ring-emerald-500 focus:outline-none"
+                className="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-950 dark:text-white text-sm font-semibold focus:ring-2 focus:ring-emerald-500 focus:outline-none"
               />
             </div>
 
             <button
               type="submit"
               disabled={passwordLoading}
-              className="w-full py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-sm transition-all"
+              className="w-full py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm shadow-sm transition-all"
             >
               {passwordLoading ? 'Alterando...' : 'Atualizar Senha'}
             </button>
@@ -390,25 +390,25 @@ export const SettingsView: React.FC = () => {
       <div className="lg:col-span-2 space-y-6">
         {/* ONG Data Section - visible to all users */}
         <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
-          <h2 className="text-sm font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 flex items-center gap-2 pb-1 border-b border-slate-100 dark:border-slate-800">
+          <h2 className="text-base font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 flex items-center gap-2 pb-1 border-b border-slate-100 dark:border-slate-800">
             <Building2 className="w-4.5 h-4.5 text-emerald-600" />
             Dados da ONG
           </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
             <div className="p-3 bg-slate-50 dark:bg-slate-800 rounded-xl">
-              <span className="text-[10px] text-slate-400 font-bold block">Razao Social</span>
+              <span className="text-xs text-slate-400 font-bold block">Razao Social</span>
               <p className="font-semibold text-slate-800 dark:text-slate-200 mt-1">ONG Associacao Viva Bicho</p>
             </div>
             <div className="p-3 bg-slate-50 dark:bg-slate-800 rounded-xl">
-              <span className="text-[10px] text-slate-400 font-bold block">CNPJ</span>
+              <span className="text-xs text-slate-400 font-bold block">CNPJ</span>
               <p className="font-semibold text-slate-800 dark:text-slate-200 mt-1">12.345.678/0001-90</p>
             </div>
           </div>
           <div className="p-4 rounded-2xl bg-slate-900 text-slate-300 border border-slate-800 flex items-start gap-3">
             <Database className="w-5 h-5 text-emerald-400 shrink-0 mt-0.5" />
             <div className="space-y-1">
-              <span className="font-bold text-xs text-white block">Persistencia Ativa (Supabase)</span>
-              <p className="text-[10px] leading-relaxed">
+              <span className="font-bold text-sm text-white block">Persistencia Ativa (Supabase)</span>
+              <p className="text-xs leading-relaxed">
                 O sistema esta totalmente conectado ao banco de dados relacional Supabase. Todas as operacoes de cadastros de animais, movimentacoes de setores e alteracoes de fichas estao sendo salvas de forma segura e compartilhadas em tempo real.
               </p>
             </div>
@@ -419,20 +419,20 @@ export const SettingsView: React.FC = () => {
           <>
             {/* Create User Section */}
             <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
-              <h2 className="text-sm font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 flex items-center gap-2 pb-1 border-b border-slate-100 dark:border-slate-800">
+              <h2 className="text-base font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 flex items-center gap-2 pb-1 border-b border-slate-100 dark:border-slate-800">
                 <UserPlus className="w-4.5 h-4.5 text-emerald-600" />
                 Cadastrar Colaborador (Admin Only)
               </h2>
 
               {createSuccess && (
-                <div className="p-3.5 bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 rounded-xl text-xs font-semibold flex items-center gap-2">
+                <div className="p-3.5 bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 rounded-xl text-sm font-semibold flex items-center gap-2">
                   <Check className="w-4 h-4" />
                   Usuário cadastrado com sucesso! Senha inicial padrão: "1234".
                 </div>
               )}
 
               {createError && (
-                <div className="p-3.5 bg-rose-500/10 border border-rose-500/20 text-rose-600 dark:text-rose-400 rounded-xl text-xs font-semibold flex items-center gap-2">
+                <div className="p-3.5 bg-rose-500/10 border border-rose-500/20 text-rose-600 dark:text-rose-400 rounded-xl text-sm font-semibold flex items-center gap-2">
                   <AlertCircle className="w-4 h-4" />
                   {createError}
                 </div>
@@ -440,7 +440,7 @@ export const SettingsView: React.FC = () => {
 
               <form onSubmit={handleCreateUser} className="grid grid-cols-1 sm:grid-cols-4 gap-4 items-end">
                 <div className="space-y-1">
-                  <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">
+                  <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block">
                     Nome do Colaborador
                   </label>
                   <input
@@ -449,12 +449,12 @@ export const SettingsView: React.FC = () => {
                     value={newUserName}
                     onChange={(e) => setNewUserName(e.target.value)}
                     placeholder="Ex: Carlos Andrade"
-                    className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-950 dark:text-white text-xs font-semibold"
+                    className="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-950 dark:text-white text-sm font-semibold"
                   />
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">
+                  <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block">
                     E-mail do Colaborador
                   </label>
                   <input
@@ -463,12 +463,12 @@ export const SettingsView: React.FC = () => {
                     value={newUserEmail}
                     onChange={(e) => setNewUserEmail(e.target.value)}
                     placeholder="carlos@ong.org"
-                    className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-950 dark:text-white text-xs font-semibold"
+                    className="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-950 dark:text-white text-sm font-semibold"
                   />
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">
+                  <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block">
                     CPF
                   </label>
                   <input
@@ -477,18 +477,18 @@ export const SettingsView: React.FC = () => {
                     value={newUserCpf}
                     onChange={(e) => setNewUserCpf(handleCpfFormatter(e.target.value))}
                     placeholder="000.000.000-00"
-                    className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-950 dark:text-white text-xs font-semibold"
+                    className="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-950 dark:text-white text-sm font-semibold"
                   />
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">
+                  <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block">
                     Função no Sistema
                   </label>
                   <select
                     value={newUserRole}
                     onChange={(e) => setNewUserRole(e.target.value as 'admin' | 'common')}
-                    className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-950 dark:text-white text-xs font-bold"
+                    className="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-950 dark:text-white text-sm font-bold"
                   >
                     <option value="common">Colaborador Comum</option>
                     <option value="admin">Administrador</option>
@@ -498,7 +498,7 @@ export const SettingsView: React.FC = () => {
                 <button
                   type="submit"
                   disabled={createLoading}
-                  className="sm:col-span-4 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-sm transition-all"
+                  className="sm:col-span-4 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm shadow-sm transition-all"
                 >
                   {createLoading ? 'Cadastrando no Supabase...' : 'Registrar Novo Usuário'}
                 </button>
@@ -508,7 +508,7 @@ export const SettingsView: React.FC = () => {
             {/* Users List Section */}
             <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 dark:border-slate-800 pb-3">
-                <h2 className="text-sm font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 flex items-center gap-2">
+                <h2 className="text-base font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 flex items-center gap-2">
                   <Users className="w-4.5 h-4.5 text-emerald-600" />
                   Lista de Colaboradores ({filteredUsers.length})
                 </h2>
@@ -521,7 +521,7 @@ export const SettingsView: React.FC = () => {
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     placeholder="Buscar por nome ou CPF..."
-                    className="w-full pl-9 pr-3 py-1.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs text-slate-950 dark:text-white placeholder-slate-400 focus:outline-none"
+                    className="w-full pl-9 pr-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm text-slate-950 dark:text-white placeholder-slate-400 focus:outline-none"
                   />
                 </div>
               </div>
@@ -534,7 +534,7 @@ export const SettingsView: React.FC = () => {
                 <div className="overflow-x-auto">
                   <table className="w-full text-left text-xs">
                     <thead>
-                      <tr className="bg-slate-50 dark:bg-slate-800/60 border-b border-slate-200 dark:border-slate-800 text-[10px] font-bold uppercase text-slate-500 tracking-wider">
+                      <tr className="bg-slate-50 dark:bg-slate-800/60 border-b border-slate-200 dark:border-slate-800 text-xs font-bold uppercase text-slate-500 tracking-wider">
                         <th className="py-3 px-3">Nome</th>
                         <th className="py-3 px-3">E-mail</th>
                         <th className="py-3 px-3">CPF</th>
@@ -547,7 +547,7 @@ export const SettingsView: React.FC = () => {
                       {filteredUsers.map((u) => (
                         <tr key={u.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-850 transition-colors">
                           <td className="py-3.5 px-3 font-bold text-slate-900 dark:text-white">
-                            {u.name} {u.id === profile?.id && <span className="text-[9px] text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded font-normal">(Você)</span>}
+                            {u.name} {u.id === profile?.id && <span className="text-[10px] text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded font-normal">(Você)</span>}
                           </td>
                           <td className="py-3.5 px-3 text-slate-600 dark:text-slate-400">
                             {u.email || '-'}
@@ -556,7 +556,7 @@ export const SettingsView: React.FC = () => {
                             {handleCpfFormatter(u.cpf)}
                           </td>
                           <td className="py-3.5 px-3">
-                            <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${u.role === 'admin' ? 'bg-indigo-50 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300' : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300'}`}>
+                            <span className={`px-2 py-0.5 rounded text-xs font-bold ${u.role === 'admin' ? 'bg-indigo-50 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300' : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300'}`}>
                               {u.role === 'admin' ? 'Admin' : 'Colaborador'}
                             </span>
                           </td>
@@ -565,7 +565,7 @@ export const SettingsView: React.FC = () => {
                               onClick={() => handleToggleStatus(u)}
                               disabled={u.id === profile?.id}
                               title={u.status === 'active' ? 'Clique para desativar' : 'Clique para ativar'}
-                              className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold border transition-colors disabled:opacity-50 ${u.status === 'active' ? 'bg-emerald-50 dark:bg-emerald-950/20 text-emerald-700 dark:text-emerald-400 border-emerald-200' : 'bg-rose-50 dark:bg-rose-950/20 text-rose-700 dark:text-rose-400 border-rose-200'}`}
+                              className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold border transition-colors disabled:opacity-50 ${u.status === 'active' ? 'bg-emerald-50 dark:bg-emerald-950/20 text-emerald-700 dark:text-emerald-400 border-emerald-200' : 'bg-rose-50 dark:bg-rose-950/20 text-rose-700 dark:text-rose-400 border-rose-200'}`}
                             >
                               {u.status === 'active' ? (
                                 <>
@@ -584,7 +584,7 @@ export const SettingsView: React.FC = () => {
                             <button
                               onClick={() => handleResetPassword(u)}
                               title="Resetar senha para 1234"
-                              className="p-1.5 rounded-lg text-slate-600 hover:text-indigo-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800 transition-colors font-bold text-[10px]"
+                              className="p-1.5 rounded-lg text-slate-600 hover:text-indigo-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800 transition-colors font-bold text-xs"
                             >
                               Resetar Senha
                             </button>

@@ -69,8 +69,8 @@ export const Sidebar: React.FC<SidebarProps> = ({ isMobileOpen, setIsMobileOpen 
             />
           </div>
           <div>
-            <h1 className="font-bold text-base tracking-tight text-white leading-snug">ONG Viva Bicho</h1>
-            <p className="text-xs text-emerald-400 font-medium">Controle de Animais</p>
+            <h1 className="font-bold text-lg tracking-tight text-white leading-snug">ONG Viva Bicho</h1>
+            <p className="text-sm text-emerald-400 font-semibold">Controle de Animais</p>
           </div>
         </div>
         <button
@@ -84,7 +84,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isMobileOpen, setIsMobileOpen 
 
       {/* Nav Menu */}
       <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
-        <div className="px-3 pb-2 text-[11px] font-semibold tracking-wider text-slate-400 uppercase">
+        <div className="px-3 pb-2 text-[13px] font-bold tracking-wider text-slate-400 uppercase">
           Menu Principal
         </div>
         {navItems.map((item, index) => {
@@ -94,16 +94,16 @@ export const Sidebar: React.FC<SidebarProps> = ({ isMobileOpen, setIsMobileOpen 
             <React.Fragment key={item.id}>
               <button
                 onClick={() => handleNavClick(item.id)}
-                className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all duration-150 ${
+                className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-[14px] font-medium transition-all duration-150 ${
                   isActive
-                    ? 'bg-emerald-600/20 text-emerald-300 font-semibold border border-emerald-500/30'
+                    ? 'bg-emerald-600/20 text-emerald-300 font-bold border border-emerald-500/30'
                     : 'text-slate-300 hover:bg-slate-800/70 hover:text-white'
                 }`}
               >
-                <Icon className={`w-4.5 h-4.5 shrink-0 ${isActive ? 'text-emerald-400' : 'text-slate-400'}`} />
+                <Icon className={`w-5 h-5 shrink-0 ${isActive ? 'text-emerald-400' : 'text-slate-400'}`} />
                 <span>{item.label}</span>
                 {item.id === 'avisos' && unreadCount > 0 && (
-                  <span className="ml-auto inline-flex items-center justify-center min-w-[18px] h-[18px] px-1 rounded-full bg-rose-500 text-white text-[10px] font-bold">
+                  <span className="ml-auto inline-flex items-center justify-center min-w-[20px] h-[20px] px-1 rounded-full bg-rose-500 text-white text-[11px] font-bold">
                     {unreadCount > 99 ? '99+' : unreadCount}
                   </span>
                 )}
@@ -129,8 +129,8 @@ export const Sidebar: React.FC<SidebarProps> = ({ isMobileOpen, setIsMobileOpen 
               />
             </div>
             <div className="min-w-0">
-              <p className="text-xs font-semibold text-white truncate">{userName}</p>
-              <p className="text-[11px] text-slate-400 truncate">{userRole}</p>
+              <p className="text-sm font-semibold text-white truncate">{userName}</p>
+              <p className="text-[13px] text-slate-400 truncate">{userRole}</p>
             </div>
           </div>
           <button

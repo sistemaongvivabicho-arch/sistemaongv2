@@ -1100,3 +1100,113 @@ Reorganização dos botões de ação da tela Animais em Triagem com nova ordem 
 - Fluxo de movimentação do animal mantido
 - Auditoria automática preservada
 - Login, Cadastro, Castrações, Avisos, Relatórios permanecem inalterados
+
+---
+
+## Auditoria — v2.11.3 (Ajustes Visuais Pontuais)
+
+**Data da alteração:** 11/08/2026
+
+### 1. Arquivos alterados
+| Arquivo | Alteração |
+|---------|-----------|
+| `src/components/layout/Sidebar.tsx` | Ajuste de tamanho de fonte do "Menu Principal" e do cargo do usuário |
+| `src/components/dashboard/DashboardCards.tsx` | Ajuste de tamanho de fonte dos textos auxiliares dos cards (título, "animais", subtítulo) |
+| `src/components/dashboard/SummaryCard.tsx` | Ajuste de tamanho de fonte do subtítulo e rótulo |
+| `src/components/dashboard/MonthlySummary.tsx` | Ajuste de tamanho de fonte da descrição e cabeçalhos de coluna |
+| `src/components/alerts/OngeSummaryCard.tsx` | Remoção dos cards "Vacinas" e "Internações" da exibição + remoção de imports não utilizados |
+
+### 2. Alterações feitas na Sidebar
+- `text-xs font-bold` → `text-[13px] font-bold` no label "Menu Principal"
+- `text-xs text-slate-400` → `text-[13px] text-slate-400` no cargo/função do usuário
+- Itens do menu mantidos em `text-[15px] font-semibold` (já proporcionais)
+- Nome do usuário mantido em `text-sm font-semibold`
+- Nenhuma alteração de cor, ícone, estrutura ou largura da Sidebar
+
+### 3. Alterações feitas nos cards do Dashboard
+- Título do card: `text-xs font-bold` → `text-[13px] font-bold`
+- Texto "animais": `text-xs font-medium` → `text-[13px] font-medium`
+- Subtítulo do card: `text-xs` → `text-[13px]`
+- Cabeçalho "Indicadores": `text-xs font-bold` → `text-[13px] font-bold`
+- Números principais (`text-3xl font-black`) mantidos sem alteração
+- Hierarquia visual preservada
+
+### 4. Confirmação: cards "Vacinas" e "Internações" removidos SOMENTE da exibição
+- Os cards "Vacinas" e "Internações" foram removidos do array `stats` no componente `OngeSummaryCard.tsx`
+- As variáveis `vacinasVencidas` e `internacoesAcima30d` foram removidas (não utilizadas)
+- O import de `Syringe` e `AlertTriangle` foi removido (não mais necessário)
+- O campo `internacaoLocs` foi removido (não mais necessário)
+
+### 5. Confirmação: nenhuma tabela, campo, serviço, migration ou funcionalidade de vacinação/internação foi removida
+- Tabela `animals` com colunas `vaccination_date`, `vaccination_due_date` mantidas
+- Coluna `castration_date`, `castration_scheduled_date` mantidas
+- Coluna `castrado` mantida
+- Serviços de vacinação e internação preservados
+- Migrations mantidas intactas
+- Central de Avisos com alertas de vacinação e internação mantida
+- AlertContext com lógica de "Vacinas vencidas" e "Internação prolongada" mantida
+- Modal de cadastro/edição com campos de vacinação mantidos
+- Relatório do animal com seção de vacinação mantida
+
+### 6. Confirmação: documentos e relatório do animal intactos
+- `AnimalDocumentsModal.tsx` — NENHUMA alteração
+- `AnimalReportModal.tsx` — NENHUMA alteração
+- `DocumentUploadModal.tsx` — NENHUMA alteração
+- `DocumentViewModal.tsx` — NENHUMA alteração
+- `animalDocumentService.ts` — NENHUMA alteração
+- `animalDocument.ts` (tipo) — NENHUMA alteração
+
+### 7. Confirmação: não houve alteração no banco Supabase
+- Nenhuma migration criada ou modificada
+- Nenhum campo adicionado ou removido
+- Nenhuma tabela alterada
+- Nenhuma alteração em `supabase/`
+
+### 8. Confirmação: não houve alterações fora do escopo
+- Header: NENHUMA alteração
+- Central de Avisos: NENHUMA alteração
+- Castrações: NENHUMA alteração
+- Adoções: NENHUMA alteração
+- Óbitos: NENHUMA alteração
+- Localizações: NENHUMA alteração
+- Autenticação/Permissões: NENHUMA alteração
+- Configurações: NENHUMA alteração
+- Backup: NENHUMA alteração
+- App.tsx: NENHUMA alteração
+
+### 9. Resultado dos testes
+- **Lint (tsc --noEmit):** ✅ SUCESSO — sem erros
+- **Build (vite build):** ✅ SUCESSO — build concluído em 15.93s
+  - Warning pré-existente: chunk `index-1n7OFBgr.js` com 1.515,97 kB (code-splitting sugerido)
+  - Warning pré-existente: dynamic import duplicado em `animalDocumentService.ts`
+  - Nenhum warning novo introduzido por esta alteração
+
+---
+
+## Correção Visual Pontual — v2.11.4
+
+**Data da alteração:** 11/08/2026
+
+### 1. Arquivos alterados (2 arquivos)
+| Arquivo | Linha | Alteração |
+|---------|-------|-----------|
+| `src/components/layout/Sidebar.tsx` | 97 | `text-[15px] font-semibold` → `text-[14px] font-medium` |
+| `src/components/alerts/OngeSummaryCard.tsx` | 76 | `text-[9px] font-medium` → `text-[12px] font-medium` |
+
+### 2. Sidebar — Itens do menu
+- **Antes:** `text-[15px] font-semibold` (15px, peso semibold)
+- **Depois:** `text-[14px] font-medium` (14px, peso medium)
+- **Motivo:** Usuário solicitou diminuir o tamanho dos itens do menu para ficar proporcional
+- **NÃO alterado:** Logo, "Menu Principal", nome/cargo do usuário, ícones, espaçamentos
+
+### 3. OngeSummaryCard — Labels dos cards
+- **Antes:** `text-[9px] font-medium` (9px)
+- **Depois:** `text-[12px] font-medium` (12px)
+- **Motivo:** Usuário solicitou aumentar os textos pequenos abaixo dos números (Registrados, No Abrigo, etc.)
+- **NÃO alterado:** Números, ícones, cores, tamanho dos cards, layout
+
+### 4. Resultado dos testes
+- **Lint (tsc --noEmit):** ✅ SUCESSO — sem erros
+- **Build (vite build):** ✅ SUCESSO — build concluído em 16.59s
+  - Warnings pré-existentes mantidos (chunk grande, dynamic import)
+  - Nenhum warning novo

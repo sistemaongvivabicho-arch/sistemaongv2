@@ -28,7 +28,7 @@ export const DeceasedAnimalsView: React.FC = () => {
             <Bird className="w-6 h-6 text-slate-600 dark:text-slate-400" />
             Óbitos
           </h1>
-          <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
+          <p className="text-base text-slate-500 dark:text-slate-400 mt-1">
             Registro respeitoso dos animais acolhidos pela ONG que vieram a falecer.
           </p>
         </div>
@@ -41,7 +41,7 @@ export const DeceasedAnimalsView: React.FC = () => {
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             placeholder="Pesquisar por nome ou microchip..."
-            className="w-full pl-11 pr-4 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-sm font-medium transition-all"
+            className="w-full pl-11 pr-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-base font-semibold transition-all"
           />
           {searchTerm && (
             <button
@@ -68,9 +68,9 @@ export const DeceasedAnimalsView: React.FC = () => {
           </div>
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full text-left text-sm">
+            <table className="w-full text-left text-base">
               <thead>
-                <tr className="bg-slate-50 dark:bg-slate-800/60 border-b border-slate-200 dark:border-slate-800 text-xs font-bold uppercase text-slate-500 dark:text-slate-400 tracking-wider">
+                <tr className="bg-slate-50 dark:bg-slate-800/60 border-b border-slate-200 dark:border-slate-800 text-sm font-bold uppercase text-slate-500 dark:text-slate-400 tracking-wider">
                   <th className="py-3 px-4">Nome</th>
                   <th className="py-3 px-4">Microchip</th>
                   <th className="py-3 px-4">Espécie</th>
@@ -94,25 +94,25 @@ export const DeceasedAnimalsView: React.FC = () => {
                         {animal.name}
                       </button>
                     </td>
-                    <td className="py-3 px-4 text-xs font-mono text-slate-600 dark:text-slate-400">
+                    <td className="py-3 px-4 text-sm font-mono text-slate-600 dark:text-slate-400">
                       {animal.microchip || 'Não informado'}
                     </td>
-                    <td className="py-3 px-4 text-slate-700 dark:text-slate-300 font-medium">
+                    <td className="py-3 px-4 text-slate-700 dark:text-slate-300 font-semibold">
                       {SPECIES_LABELS[animal.species]}
                     </td>
-                    <td className="py-3 px-4 text-xs text-slate-500">
+                    <td className="py-3 px-4 text-sm text-slate-500">
                       {animal.entryDate}
                     </td>
-                    <td className="py-3 px-4 text-xs font-bold text-slate-700 dark:text-slate-300">
+                    <td className="py-3 px-4 text-sm font-bold text-slate-700 dark:text-slate-300">
                       {animal.deathDetails?.deathDate || '-'}
                     </td>
-                    <td className="py-3 px-4 text-xs text-slate-500">
+                    <td className="py-3 px-4 text-sm text-slate-500">
                       {animal.deathDetails?.exitDate || '-'}
                     </td>
                     <td className="py-3 px-4 text-right">
                       <button
                         onClick={() => navigateToAnimal(animal.id)}
-                        className="p-2 rounded-lg text-slate-600 hover:text-slate-900 hover:bg-slate-100 dark:text-slate-300 transition-colors"
+                        className="p-2.5 rounded-lg text-slate-600 hover:text-slate-900 hover:bg-slate-100 dark:text-slate-300 transition-colors"
                         title="Ver Ficha Completa"
                       >
                         <Eye className="w-4 h-4" />

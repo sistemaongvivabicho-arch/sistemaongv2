@@ -72,7 +72,7 @@ export const RegisterAdoptionModal: React.FC<RegisterAdoptionModalProps> = ({
               <h2 className="text-base font-bold text-slate-900 dark:text-white">
                 Registrar Adoção de {animal.name}
               </h2>
-              <p className="text-xs text-rose-600 dark:text-rose-400 font-medium">
+              <p className="text-sm text-rose-600 dark:text-rose-400 font-semibold">
                 Final feliz e acolhimento em novo lar
               </p>
             </div>
@@ -131,7 +131,7 @@ export const RegisterAdoptionModal: React.FC<RegisterAdoptionModalProps> = ({
             </div>
 
             <div className="sm:col-span-2">
-              <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+              <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1">
                 Observações da Adoção
               </label>
               <textarea
@@ -139,7 +139,7 @@ export const RegisterAdoptionModal: React.FC<RegisterAdoptionModalProps> = ({
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
                 placeholder="Ex: Termo de responsabilidade assinado. Acompanhamento de adaptação agendado."
-                className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-xs focus:outline-none focus:ring-2 focus:ring-rose-500"
+                className="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-rose-500"
               />
             </div>
           </div>
@@ -148,14 +148,14 @@ export const RegisterAdoptionModal: React.FC<RegisterAdoptionModalProps> = ({
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 font-bold text-xs"
+              className="px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 font-bold text-sm"
             >
               Cancelar
             </button>
             <button
               type="submit"
               disabled={submitting}
-              className="px-5 py-2 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs shadow-md transition-all flex items-center gap-2 disabled:opacity-50 disabled:pointer-events-none"
+              className="px-5 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-bold text-sm shadow-md transition-all flex items-center gap-2 disabled:opacity-50 disabled:pointer-events-none"
             >
               {submitting ? (
                 <>

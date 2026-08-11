@@ -58,7 +58,7 @@ export const ResultsListView: React.FC<ResultsListViewProps> = ({
                 <ListFilter className="w-7 h-7 text-emerald-600 dark:text-emerald-400" />
                 {resultsTitle}
               </h1>
-              <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">
+              <p className="text-sm sm:text-base text-slate-500 dark:text-slate-400 mt-1">
                 Exibindo{' '}
                 <span className="font-bold text-slate-800 dark:text-slate-200">{filtered.length}</span> de{' '}
                 <span className="font-bold text-slate-800 dark:text-slate-200">{resultsList.length}</span> animais

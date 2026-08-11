@@ -184,7 +184,7 @@ export const BackupView: React.FC = () => {
           </div>
           <div>
             <h2 className="text-lg font-bold text-slate-900 dark:text-white">Acesso Restrito</h2>
-            <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
+            <p className="text-base text-slate-500 dark:text-slate-400 mt-1">
               Apenas administradores podem acessar o módulo de Backup.
             </p>
           </div>
@@ -203,7 +203,7 @@ export const BackupView: React.FC = () => {
               : 'bg-rose-50 dark:bg-rose-950/50 border-rose-200 dark:border-rose-800 text-rose-700 dark:text-rose-300'
           }`}>
             {toast.type === 'success' ? <CheckCircle2 className="w-4 h-4 shrink-0" /> : <XCircle className="w-4 h-4 shrink-0" />}
-            <p className="text-sm font-medium flex-1">{toast.message}</p>
+            <p className="text-base font-medium flex-1">{toast.message}</p>
             <button onClick={() => setToast(null)} className="shrink-0 p-0.5 rounded-lg hover:bg-black/5 dark:hover:bg-white/5 transition-colors">
               <XCircle className="w-4 h-4" />
             </button>
@@ -219,7 +219,7 @@ export const BackupView: React.FC = () => {
               <Package className="w-6 h-6 text-emerald-600 dark:text-emerald-400" />
               Backup do Sistema
             </h1>
-            <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
+            <p className="text-base text-slate-500 dark:text-slate-400 mt-1">
               Gere uma cópia completa do sistema para manter seus dados protegidos.
             </p>
           </div>
@@ -232,30 +232,30 @@ export const BackupView: React.FC = () => {
         <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm p-5 sm:p-6 space-y-3">
           <div className="flex items-center gap-2">
             <HardDrive className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
-            <h3 className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Último Backup</h3>
+            <h3 className="text-sm font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Último Backup</h3>
           </div>
           {lastBackup ? (
             <div className="space-y-2">
               {(() => { const dt = formatDateTimeBR(lastBackup.date); return (
                 <>
                   <div className="flex items-center justify-between">
-                    <p className="text-xs text-slate-500 dark:text-slate-400">Arquivo</p>
-                    <p className="text-xs font-mono font-bold text-slate-700 dark:text-slate-300 text-right max-w-[200px] truncate">{lastBackup.fileName}</p>
+                    <p className="text-sm text-slate-500 dark:text-slate-400">Arquivo</p>
+                    <p className="text-sm font-mono font-bold text-slate-700 dark:text-slate-300 text-right max-w-[200px] truncate">{lastBackup.fileName}</p>
                   </div>
                   <div className="flex items-center justify-between">
-                    <p className="text-xs text-slate-500 dark:text-slate-400">Data</p>
-                    <p className="text-sm font-bold text-slate-900 dark:text-white">{dt.date}</p>
+                    <p className="text-sm text-slate-500 dark:text-slate-400">Data</p>
+                    <p className="text-base font-bold text-slate-900 dark:text-white">{dt.date}</p>
                   </div>
                   <div className="flex items-center justify-between">
-                    <p className="text-xs text-slate-500 dark:text-slate-400">Hora</p>
-                    <p className="text-sm font-bold text-slate-900 dark:text-white">{dt.time}</p>
+                    <p className="text-sm text-slate-500 dark:text-slate-400">Hora</p>
+                    <p className="text-base font-bold text-slate-900 dark:text-white">{dt.time}</p>
                   </div>
                   <div className="flex items-center justify-between">
-                    <p className="text-xs text-slate-500 dark:text-slate-400">Tamanho</p>
-                    <p className="text-sm font-bold text-slate-900 dark:text-white">{formatBytes(lastBackup.sizeBytes)}</p>
+                    <p className="text-sm text-slate-500 dark:text-slate-400">Tamanho</p>
+                    <p className="text-base font-bold text-slate-900 dark:text-white">{formatBytes(lastBackup.sizeBytes)}</p>
                   </div>
                   <div className="flex items-center justify-between">
-                    <p className="text-xs text-slate-500 dark:text-slate-400">Status</p>
+                    <p className="text-sm text-slate-500 dark:text-slate-400">Status</p>
                     <span className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-bold border ${BACKUP_STATUS_COLORS[lastBackup.status].bg} ${BACKUP_STATUS_COLORS[lastBackup.status].text} ${BACKUP_STATUS_COLORS[lastBackup.status].border}`}>
                       {lastBackup.status === 'success' && <CheckCircle2 className="w-3 h-3" />}
                       {lastBackup.status === 'error' && <XCircle className="w-3 h-3" />}
@@ -268,7 +268,7 @@ export const BackupView: React.FC = () => {
           ) : (
             <div className="py-4 text-center">
               <Clock className="w-8 h-8 text-slate-300 dark:text-slate-600 mx-auto mb-2" />
-              <p className="text-xs text-slate-500">Nenhum backup registrado</p>
+                    <span className="text-sm text-slate-500">Nenhum backup registrado</span>
             </div>
           )}
         </div>
@@ -277,26 +277,26 @@ export const BackupView: React.FC = () => {
         <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm p-5 sm:p-6 space-y-3">
           <div className="flex items-center gap-2">
             <Clock className="w-4 h-4 text-amber-600 dark:text-amber-400" />
-            <h3 className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Backup Recomendado</h3>
+            <h3 className="text-sm font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Backup Recomendado</h3>
           </div>
           <div className="space-y-3">
             {lastBackup ? (
               <>
                 <div className="flex items-center justify-between">
-                  <p className="text-xs text-slate-500 dark:text-slate-400">Último backup</p>
-                  <p className="text-sm font-bold text-slate-900 dark:text-white">{formatDateTimeBR(lastBackup.date).date}</p>
+                  <p className="text-sm text-slate-500 dark:text-slate-400">Último backup</p>
+                  <p className="text-base font-bold text-slate-900 dark:text-white">{formatDateTimeBR(lastBackup.date).date}</p>
                 </div>
                 <div className="flex items-center justify-between">
-                  <p className="text-xs text-slate-500 dark:text-slate-400">Próximo recomendado</p>
-                  <p className={`text-sm font-bold ${nextBackupText === 'Atrasado' ? 'text-rose-600 dark:text-rose-400' : 'text-emerald-600 dark:text-emerald-400'}`}>
+                  <p className="text-sm text-slate-500 dark:text-slate-400">Próximo recomendado</p>
+                  <p className={`text-base font-bold ${nextBackupText === 'Atrasado' ? 'text-rose-600 dark:text-rose-400' : 'text-emerald-600 dark:text-emerald-400'}`}>
                     {nextBackupText}
                   </p>
                 </div>
               </>
             ) : (
               <div className="py-3 text-center">
-                <p className="text-sm font-bold text-slate-900 dark:text-white">Nenhum backup</p>
-                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Execute o primeiro backup para iniciar o acompanhamento.</p>
+                <p className="text-base font-bold text-slate-900 dark:text-white">Nenhum backup</p>
+                <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">Execute o primeiro backup para iniciar o acompanhamento.</p>
               </div>
             )}
           </div>
@@ -311,10 +311,10 @@ export const BackupView: React.FC = () => {
             {isBackingUp ? <Loader2 className="w-6 h-6 text-emerald-600 dark:text-emerald-400 animate-spin" /> : <Package className="w-6 h-6 text-emerald-600 dark:text-emerald-400" />}
           </div>
           <div className="text-left">
-            <p className="text-sm font-bold text-slate-900 dark:text-white">
+            <p className="text-base font-bold text-slate-900 dark:text-white">
               {isBackingUp ? 'Gerando...' : 'Gerar Backup'}
             </p>
-            <p className="text-xs text-slate-500 dark:text-slate-400">
+            <p className="text-sm text-slate-500 dark:text-slate-400">
               {isBackingUp ? 'Compactando dados...' : 'Download do arquivo ZIP'}
             </p>
           </div>
@@ -326,8 +326,8 @@ export const BackupView: React.FC = () => {
             <ExternalLink className="w-6 h-6 text-blue-600 dark:text-blue-400" />
           </div>
           <div className="text-left">
-            <p className="text-sm font-bold text-slate-900 dark:text-white">Abrir Google Drive</p>
-            <p className="text-xs text-slate-500 dark:text-slate-400">Acesse sua conta</p>
+            <p className="text-base font-bold text-slate-900 dark:text-white">Abrir Google Drive</p>
+            <p className="text-sm text-slate-500 dark:text-slate-400">Acesse sua conta</p>
           </div>
         </button>
 
@@ -337,8 +337,8 @@ export const BackupView: React.FC = () => {
             <FolderOpen className="w-6 h-6 text-violet-600 dark:text-violet-400" />
           </div>
           <div className="text-left">
-            <p className="text-sm font-bold text-slate-900 dark:text-white">Abrir Pasta de Downloads</p>
-            <p className="text-xs text-slate-500 dark:text-slate-400">Acesse seus arquivos</p>
+            <p className="text-base font-bold text-slate-900 dark:text-white">Abrir Pasta de Downloads</p>
+            <p className="text-sm text-slate-500 dark:text-slate-400">Acesse seus arquivos</p>
           </div>
         </button>
       </div>
@@ -346,7 +346,7 @@ export const BackupView: React.FC = () => {
       {/* Info message */}
       <div className="bg-amber-50 dark:bg-amber-950/20 rounded-2xl border border-amber-200 dark:border-amber-800 p-4 flex items-start gap-3">
         <AlertTriangle className="w-5 h-5 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
-        <p className="text-xs text-amber-700 dark:text-amber-300">
+        <p className="text-sm text-amber-700 dark:text-amber-300">
           Após baixar o arquivo, arraste-o para sua pasta de <strong>Backups</strong> no Google Drive.
         </p>
       </div>
@@ -359,8 +359,8 @@ export const BackupView: React.FC = () => {
               <Info className="w-5 h-5 text-slate-400" />
             </div>
             <div>
-              <p className="text-sm font-bold text-slate-900 dark:text-white">Restaurar Backup</p>
-              <p className="text-xs text-slate-500 dark:text-slate-400">Disponível em versão futura.</p>
+              <p className="text-base font-bold text-slate-900 dark:text-white">Restaurar Backup</p>
+              <p className="text-sm text-slate-500 dark:text-slate-400">Disponível em versão futura.</p>
             </div>
           </div>
           <span className="px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-xs font-bold text-slate-400 cursor-not-allowed">
@@ -374,8 +374,8 @@ export const BackupView: React.FC = () => {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Clock className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
-            <h2 className="text-sm font-bold text-slate-900 dark:text-white">Histórico de Backups</h2>
-            <span className="text-[10px] font-bold text-slate-400 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded-full">
+            <h2 className="text-base font-bold text-slate-900 dark:text-white">Histórico de Backups</h2>
+            <span className="text-xs font-bold text-slate-400 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded-full">
               {history.length}
             </span>
           </div>
@@ -384,19 +384,19 @@ export const BackupView: React.FC = () => {
         {history.length === 0 ? (
           <div className="py-8 text-center space-y-2">
             <Package className="w-10 h-10 text-slate-300 dark:text-slate-600 mx-auto" />
-            <p className="text-sm font-bold text-slate-800 dark:text-slate-200">Nenhum backup registrado</p>
-            <p className="text-xs text-slate-500">Execute o primeiro backup para iniciar o histórico.</p>
+            <p className="text-base font-bold text-slate-800 dark:text-slate-200">Nenhum backup registrado</p>
+            <p className="text-sm text-slate-500">Execute o primeiro backup para iniciar o histórico.</p>
           </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-left">
               <thead>
                 <tr className="border-b border-slate-100 dark:border-slate-800">
-                  <th className="pb-2 text-[10px] font-black uppercase tracking-wider text-slate-400">Data/Hora</th>
-                  <th className="pb-2 text-[10px] font-black uppercase tracking-wider text-slate-400">Nome do Arquivo</th>
-                  <th className="pb-2 text-[10px] font-black uppercase tracking-wider text-slate-400 hidden sm:table-cell">Tamanho</th>
-                  <th className="pb-2 text-[10px] font-black uppercase tracking-wider text-slate-400">Status</th>
-                  <th className="pb-2 text-[10px] font-black uppercase tracking-wider text-slate-400 text-right">Ações</th>
+                  <th className="pb-2 text-xs font-black uppercase tracking-wider text-slate-400">Data/Hora</th>
+                  <th className="pb-2 text-xs font-black uppercase tracking-wider text-slate-400">Nome do Arquivo</th>
+                  <th className="pb-2 text-xs font-black uppercase tracking-wider text-slate-400 hidden sm:table-cell">Tamanho</th>
+                  <th className="pb-2 text-xs font-black uppercase tracking-wider text-slate-400">Status</th>
+                  <th className="pb-2 text-xs font-black uppercase tracking-wider text-slate-400 text-right">Ações</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-50 dark:divide-slate-800/50">
@@ -411,7 +411,7 @@ export const BackupView: React.FC = () => {
                       </td>
                       <td className="py-3">
                         <p className="text-sm font-bold text-slate-900 dark:text-white font-mono">{record.fileName}</p>
-                        {record.error && <p className="text-[10px] text-rose-500 mt-0.5">{record.error}</p>}
+                        {record.error &&                         <p className="text-xs text-slate-500 dark:text-slate-400">{record.error}</p>}
                       </td>
                       <td className="py-3 text-xs text-slate-500 dark:text-slate-400 hidden sm:table-cell font-mono">
                         {record.sizeBytes > 0 ? formatBytes(record.sizeBytes) : '-'}

@@ -58,7 +58,7 @@ export const RegisterDeathModal: React.FC<RegisterDeathModalProps> = ({
               <h2 className="text-base font-bold text-slate-900 dark:text-white">
                 Registrar Óbito de {animal.name}
               </h2>
-              <p className="text-xs text-slate-500 font-medium">
+              <p className="text-sm text-slate-500 font-semibold">
                 Registro de falecimento no acervo histórico
               </p>
             </div>
@@ -84,7 +84,7 @@ export const RegisterDeathModal: React.FC<RegisterDeathModalProps> = ({
           </div>
 
           <div>
-            <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+            <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1">
               Observações do Óbito
             </label>
             <textarea
@@ -92,7 +92,7 @@ export const RegisterDeathModal: React.FC<RegisterDeathModalProps> = ({
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               placeholder="Ex: Óbito em decorrência de complicações graves e falência renal. Laudo veterinário registrado."
-              className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-xs focus:outline-none focus:ring-2 focus:ring-slate-500"
+              className="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-slate-500"
             />
           </div>
 
@@ -100,14 +100,14 @@ export const RegisterDeathModal: React.FC<RegisterDeathModalProps> = ({
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 font-bold text-xs"
+              className="px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 font-bold text-sm"
             >
               Cancelar
             </button>
             <button
               type="submit"
               disabled={submitting}
-              className="px-5 py-2 rounded-xl bg-slate-800 hover:bg-slate-900 text-white font-bold text-xs shadow-md transition-all flex items-center gap-2 disabled:opacity-50 disabled:pointer-events-none"
+              className="px-5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-900 text-white font-bold text-sm shadow-md transition-all flex items-center gap-2 disabled:opacity-50 disabled:pointer-events-none"
             >
               {submitting ? (
                 <>

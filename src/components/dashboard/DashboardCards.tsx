@@ -23,7 +23,7 @@ export const DashboardCards: React.FC<DashboardCardsProps> = ({ cards }) => {
 
   return (
     <div>
-      <h2 className="text-xs font-bold tracking-wider text-slate-500 dark:text-slate-400 uppercase mb-3">
+      <h2 className="text-[13px] font-bold tracking-wider text-slate-500 dark:text-slate-400 uppercase mb-3">
         Indicadores
       </h2>
       <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-3">
@@ -43,7 +43,7 @@ export const DashboardCards: React.FC<DashboardCardsProps> = ({ cards }) => {
             >
               <div className={`absolute -top-8 -right-8 w-20 h-20 rounded-full blur-2xl opacity-20 ${card.gradient}`} />
               <div className="flex items-start justify-between w-full mb-2">
-                <span className="text-[10px] font-bold tracking-wider text-slate-500 dark:text-slate-400 uppercase leading-tight pr-1">
+                <span className="text-[13px] font-bold tracking-wider text-slate-500 dark:text-slate-400 uppercase leading-tight pr-1">
                   {card.title}
                 </span>
                 <div className={`p-2 rounded-xl text-white shadow-sm shrink-0 bg-gradient-to-br ${card.gradient}`}>
@@ -52,10 +52,10 @@ export const DashboardCards: React.FC<DashboardCardsProps> = ({ cards }) => {
               </div>
               <div className="flex items-end justify-between">
                 <div>
-                  <span className="text-2xl font-black tracking-tight text-slate-900 dark:text-white">
+                  <span className="text-3xl font-black tracking-tight text-slate-900 dark:text-white">
                     {card.count}
                   </span>
-                  <span className="text-[10px] font-medium text-slate-500 dark:text-slate-400 ml-1.5">
+                    <span className="text-[13px] font-medium text-slate-500 dark:text-slate-400 ml-1.5">
                     {card.count === 1 ? 'animal' : 'animais'}
                   </span>
                 </div>
@@ -64,7 +64,7 @@ export const DashboardCards: React.FC<DashboardCardsProps> = ({ cards }) => {
                 )}
               </div>
               {card.subtitle && (
-                <p className="text-[10px] text-slate-400 dark:text-slate-500 mt-1.5 truncate">
+                <p className="text-[13px] text-slate-400 dark:text-slate-500 mt-1.5 truncate">
                   {card.subtitle}
                 </p>
               )}

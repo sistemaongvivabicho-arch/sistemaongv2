@@ -119,7 +119,7 @@ export const CastrationAgenda: React.FC<CastrationAgendaProps> = ({
             <Scissors className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
             Agenda de Castração
           </h2>
-          <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
+          <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
             Mini calendário, agendamentos e castrações do mês
           </p>
         </div>
@@ -172,7 +172,7 @@ export const CastrationAgenda: React.FC<CastrationAgendaProps> = ({
                 setViewMonth(currentMonth);
                 setViewYear(currentYear);
               }}
-              className="inline-flex items-center gap-1 px-2 py-1.5 rounded-lg bg-rose-50 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400 text-[11px] font-bold hover:bg-rose-100 transition-colors"
+              className="inline-flex items-center gap-1 px-2 py-1.5 rounded-lg bg-rose-50 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400 text-xs font-bold hover:bg-rose-100 transition-colors"
               title="Remover filtro de mês do dashboard"
             >
               <X className="w-3.5 h-3.5" />
@@ -186,21 +186,21 @@ export const CastrationAgenda: React.FC<CastrationAgendaProps> = ({
         {/* Agendamentos do mês */}
         <div className="space-y-2">
           <div className="flex items-center justify-between">
-            <p className="text-xs font-bold text-slate-700 dark:text-slate-300">
+            <p className="text-sm font-bold text-slate-700 dark:text-slate-300">
               {MONTH_NAMES[viewMonth - 1]} {viewYear}
             </p>
-            <p className="text-[10px] font-semibold text-slate-400">
+            <p className="text-xs font-semibold text-slate-400">
               {scheduledInMonth.length} agendamento{scheduledInMonth.length === 1 ? '' : 's'}
             </p>
           </div>
 
           <div className="pt-2 space-y-1.5">
-            <p className="text-[10px] font-black uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
+            <p className="text-xs font-black uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
               <CalendarCheck className="w-3.5 h-3.5" />
               Agendados em {MONTH_NAMES[viewMonth - 1]}
             </p>
             {scheduledInMonth.length === 0 ? (
-              <p className="text-[11px] text-slate-400 italic">Nenhum agendamento neste período.</p>
+              <p className="text-xs text-slate-400 italic">Nenhum agendamento neste período.</p>
             ) : (
               <div className="space-y-1 max-h-60 overflow-y-auto pr-1">
                 {scheduledInMonth.map((a) => (
@@ -212,7 +212,7 @@ export const CastrationAgenda: React.FC<CastrationAgendaProps> = ({
                     <span className="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">
                       {a.name}
                     </span>
-                    <span className="text-[10px] font-mono font-bold text-amber-700 dark:text-amber-300 shrink-0">
+                    <span className="text-xs font-mono font-bold text-amber-700 dark:text-amber-300 shrink-0">
                       {a.castrationScheduledDate}
                     </span>
                   </button>
@@ -225,12 +225,12 @@ export const CastrationAgenda: React.FC<CastrationAgendaProps> = ({
         {/* Listas laterais */}
         <div className="space-y-4">
           <div>
-            <p className="text-[10px] font-black uppercase tracking-wider text-slate-400 flex items-center gap-1.5 mb-1.5">
+            <p className="text-xs font-black uppercase tracking-wider text-slate-400 flex items-center gap-1.5 mb-1.5">
               <Scissors className="w-3.5 h-3.5 text-emerald-500" />
               Castrações realizadas no mês ({performedInMonth.length})
             </p>
             {performedInMonth.length === 0 ? (
-              <p className="text-[11px] text-slate-400 italic">Nenhuma castração registrada neste mês.</p>
+              <p className="text-xs text-slate-400 italic">Nenhuma castração registrada neste mês.</p>
             ) : (
               <div className="space-y-1">
                 {performedInMonth.map((a) => (
@@ -242,7 +242,7 @@ export const CastrationAgenda: React.FC<CastrationAgendaProps> = ({
                     <span className="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">
                       {a.name}
                     </span>
-                    <span className="text-[10px] font-mono font-bold text-emerald-700 dark:text-emerald-300 shrink-0">
+                    <span className="text-xs font-mono font-bold text-emerald-700 dark:text-emerald-300 shrink-0">
                       {a.castrationDate}
                     </span>
                   </button>
@@ -252,12 +252,12 @@ export const CastrationAgenda: React.FC<CastrationAgendaProps> = ({
           </div>
 
           <div>
-            <p className="text-[10px] font-black uppercase tracking-wider text-slate-400 flex items-center gap-1.5 mb-1.5">
+            <p className="text-xs font-black uppercase tracking-wider text-slate-400 flex items-center gap-1.5 mb-1.5">
               <CalendarClock className="w-3.5 h-3.5 text-indigo-500" />
               Próximas castrações
             </p>
             {upcoming.length === 0 ? (
-              <p className="text-[11px] text-slate-400 italic">Nenhuma castração futura agendada.</p>
+              <p className="text-xs text-slate-400 italic">Nenhuma castração futura agendada.</p>
             ) : (
               <div className="space-y-1">
                 {upcoming.map((a) => (
@@ -269,7 +269,7 @@ export const CastrationAgenda: React.FC<CastrationAgendaProps> = ({
                     <span className="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">
                       {a.name}
                     </span>
-                    <span className="text-[10px] font-mono font-bold text-indigo-600 dark:text-indigo-400 shrink-0">
+                    <span className="text-xs font-mono font-bold text-indigo-600 dark:text-indigo-400 shrink-0">
                       {a.castrationScheduledDate}
                     </span>
                   </button>
@@ -280,7 +280,7 @@ export const CastrationAgenda: React.FC<CastrationAgendaProps> = ({
 
           {overdue.length > 0 && (
             <div className="p-3 rounded-xl bg-rose-50 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-900 space-y-1.5">
-              <p className="text-[10px] font-black uppercase tracking-wider text-rose-600 dark:text-rose-400 flex items-center gap-1.5">
+              <p className="text-xs font-black uppercase tracking-wider text-rose-600 dark:text-rose-400 flex items-center gap-1.5">
                 <AlertTriangle className="w-3.5 h-3.5" />
                 Castrações atrasadas ({overdue.length})
               </p>
@@ -293,7 +293,7 @@ export const CastrationAgenda: React.FC<CastrationAgendaProps> = ({
                   <span className="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">
                     {a.name}
                   </span>
-                  <span className="text-[10px] font-mono font-bold text-rose-600 dark:text-rose-400 shrink-0">
+                    <span className="text-xs font-mono font-bold text-rose-600 dark:text-rose-400 shrink-0">
                     {a.castrationScheduledDate}
                   </span>
                 </button>

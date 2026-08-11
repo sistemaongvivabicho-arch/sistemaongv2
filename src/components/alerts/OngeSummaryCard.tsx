@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import {
-  PawPrint, Home, Stethoscope, Heart, Skull, Scissors, Syringe, AlertTriangle
+  PawPrint, Home, Stethoscope, Heart, Skull, Scissors
 } from 'lucide-react';
 import { useAnimalContext } from '../../context/AnimalContext';
 
@@ -25,8 +25,6 @@ export const OngeSummaryCard: React.FC = () => {
   const { animals, setActiveTab } = useAnimalContext();
 
   const stats = useMemo(() => {
-    const internacaoLocs = ['internacao_gatos', 'internacao_caes'];
-
     const total = animals.length;
     const noAbrigo = animals.filter((a) => a.status === 'no_abrigo').length;
     const triagem = animals.filter((a) => a.currentLocation === 'triagem').length;
@@ -37,26 +35,13 @@ export const OngeSummaryCard: React.FC = () => {
       (a) => a.castrationStatus === 'agendada' || a.castrationStatus === 'confirmada'
     ).length;
 
-    const vacinasVencidas = animals.filter((a) => {
-      if (!a.vaccinationDueDate) return false;
-      return daysDiffFromNow(a.vaccinationDueDate) > 0;
-    }).length;
-
-    const internacoesAcima30d = animals.filter((a) => {
-      if (!internacaoLocs.includes(a.currentLocation)) return false;
-      if (!a.entryDate) return false;
-      return daysDiffFromNow(a.entryDate) > 30;
-    }).length;
-
     return [
       { label: 'Registrados', value: total, icon: PawPrint, gradient: 'from-emerald-500 to-teal-600', navigate: 'entrada' },
       { label: 'No Abrigo', value: noAbrigo, icon: Home, gradient: 'from-blue-500 to-blue-600', navigate: 'no_abrigo' },
       { label: 'Triagem', value: triagem, icon: Stethoscope, gradient: 'from-orange-400 to-orange-500', navigate: 'triagem' },
       { label: 'Adotados', value: adotados, icon: Heart, gradient: 'from-green-500 to-emerald-600', navigate: 'adotados' },
       { label: 'Óbitos', value: obitos, icon: Skull, gradient: 'from-slate-600 to-slate-800', navigate: 'obito' },
-      { label: 'Castrações', value: castAgendadas, icon: Scissors, gradient: 'from-violet-500 to-purple-600', navigate: 'castracoes' },
-      { label: 'Vacinas', value: vacinasVencidas, icon: Syringe, gradient: 'from-yellow-400 to-amber-500', navigate: 'entrada' },
-      { label: 'Internações', value: internacoesAcima30d, icon: AlertTriangle, gradient: 'from-red-500 to-rose-600', navigate: 'entrada' }
+      { label: 'Castrações', value: castAgendadas, icon: Scissors, gradient: 'from-violet-500 to-purple-600', navigate: 'castracoes' }
     ];
   }, [animals]);
 
@@ -88,7 +73,7 @@ export const OngeSummaryCard: React.FC = () => {
             <p className="text-xl font-black tracking-tight text-slate-900 dark:text-white leading-none">
               {value}
             </p>
-            <p className="text-[9px] font-medium text-slate-500 dark:text-slate-400 text-center leading-tight">
+            <p className="text-[12px] font-medium text-slate-500 dark:text-slate-400 text-center leading-tight">
               {label}
             </p>
           </button>

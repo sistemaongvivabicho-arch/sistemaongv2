@@ -333,7 +333,7 @@ export const CastracoesView: React.FC = () => {
 
   const renderStatusBadge = useCallback((status: CastrationStatus, size: 'sm' | 'xs' = 'sm') => {
     const colors = CASTRATION_STATUS_COLORS[status];
-    const sizeClasses = size === 'sm' ? 'text-[11px] font-bold px-2.5 py-1' : 'text-[10px] font-bold px-2 py-0.5';
+    const sizeClasses = size === 'sm' ? 'text-xs font-bold px-2.5 py-1.5' : 'text-xs font-bold px-2 py-0.5';
     return (
       <span className={`inline-flex items-center gap-1.5 rounded-full ${colors.bg} ${colors.text} border ${colors.border} ${sizeClasses}`}>
         <span className={`w-1.5 h-1.5 rounded-full ${colors.dot}`} />
@@ -479,7 +479,7 @@ export const CastracoesView: React.FC = () => {
           { label: 'Reagendadas', value: monthStats.reagendada, bg: 'bg-violet-50 dark:bg-violet-950/30', border: 'border-violet-200 dark:border-violet-800', text: 'text-violet-700 dark:text-violet-300', labelCls: 'text-violet-600 dark:text-violet-400' }
         ].map(({ label, value, bg, border, text, labelCls }) => (
           <div key={label} className={`p-4 rounded-xl border space-y-1 ${bg} ${border}`}>
-            <p className={`text-[10px] font-bold uppercase tracking-wider ${labelCls}`}>{label}</p>
+            <p className={`text-xs font-bold uppercase tracking-wider ${labelCls}`}>{label}</p>
             <p className={`text-2xl font-black ${text}`}>{value}</p>
           </div>
         ))}
@@ -491,7 +491,7 @@ export const CastracoesView: React.FC = () => {
           <div className="flex items-center gap-2">
             <Clock className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
             <h2 className="text-sm font-bold text-slate-900 dark:text-white">Lista de Agendamentos</h2>
-            <span className="text-[10px] font-bold text-slate-400 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded-full">{filteredSchedules.length}</span>
+            <span className="text-xs font-bold text-slate-400 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded-full">{filteredSchedules.length}</span>
           </div>
         </div>
         {loading ? (
@@ -510,12 +510,12 @@ export const CastracoesView: React.FC = () => {
             <table className="w-full text-left">
               <thead>
                 <tr className="border-b border-slate-100 dark:border-slate-800">
-                  <th className="pb-2 text-[10px] font-black uppercase tracking-wider text-slate-400">Animal</th>
-                  <th className="pb-2 text-[10px] font-black uppercase tracking-wider text-slate-400 hidden sm:table-cell">Espécie</th>
-                  <th className="pb-2 text-[10px] font-black uppercase tracking-wider text-slate-400 hidden md:table-cell">Veterinário</th>
-                  <th className="pb-2 text-[10px] font-black uppercase tracking-wider text-slate-400 hidden md:table-cell">Data</th>
-                  <th className="pb-2 text-[10px] font-black uppercase tracking-wider text-slate-400">Status</th>
-                  <th className="pb-2 text-[10px] font-black uppercase tracking-wider text-slate-400 text-right">Ações</th>
+              <th className="pb-2 text-xs font-black uppercase tracking-wider text-slate-400">Animal</th>
+              <th className="pb-2 text-xs font-black uppercase tracking-wider text-slate-400 hidden sm:table-cell">Espécie</th>
+              <th className="pb-2 text-xs font-black uppercase tracking-wider text-slate-400 hidden md:table-cell">Veterinário</th>
+              <th className="pb-2 text-xs font-black uppercase tracking-wider text-slate-400 hidden md:table-cell">Data</th>
+              <th className="pb-2 text-xs font-black uppercase tracking-wider text-slate-400">Status</th>
+              <th className="pb-2 text-xs font-black uppercase tracking-wider text-slate-400 text-right">Ações</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-50 dark:divide-slate-800/50">

@@ -78,7 +78,7 @@ export const CentralDeAvisos: React.FC = () => {
         <h2 className="text-sm font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
           Central de Avisos
         </h2>
-        <span className="text-[10px] font-bold text-slate-400 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded-full">
+        <span className="text-[11px] font-bold text-slate-400 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded-full">
           Hoje
         </span>
       </div>
@@ -91,17 +91,17 @@ export const CentralDeAvisos: React.FC = () => {
               <ClipboardCheck className="w-4 h-4 text-sky-600 dark:text-sky-400" />
             </div>
             <div>
-              <p className="text-xs font-bold text-slate-900 dark:text-white">
+              <p className="text-sm font-bold text-slate-900 dark:text-white">
                 Animais em Triagem
               </p>
-              <p className="text-[10px] text-slate-500 dark:text-slate-400">
+              <p className="text-xs text-slate-500 dark:text-slate-400">
                 {triagemAnimals.length} animal(is)
               </p>
             </div>
           </div>
 
           {triagemAnimals.length === 0 ? (
-            <p className="text-[11px] text-slate-400 italic py-2">
+            <p className="text-xs text-slate-400 italic py-2">
               Nenhum animal na triagem.
             </p>
           ) : (
@@ -111,7 +111,7 @@ export const CentralDeAvisos: React.FC = () => {
                   key={animal.id}
                   className="flex items-center gap-2.5 p-2 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-700/50"
                 >
-                  <div className="w-7 h-7 rounded-full bg-slate-200 dark:bg-slate-700 flex items-center justify-center shrink-0 overflow-hidden">
+                  <div className="w-8 h-8 rounded-full bg-slate-200 dark:bg-slate-700 flex items-center justify-center shrink-0 overflow-hidden">
                     {animal.photoUrl ? (
                       <img
                         src={getPublicPhotoUrl(animal.photoUrl)}
@@ -119,16 +119,16 @@ export const CentralDeAvisos: React.FC = () => {
                         className="w-full h-full object-cover"
                       />
                     ) : (
-                      <span className="text-[10px] font-bold text-slate-500">
+                      <span className="text-xs font-bold text-slate-500">
                         {animal.name.charAt(0)}
                       </span>
                     )}
                   </div>
                   <div className="min-w-0 flex-1">
-                    <p className="text-[11px] font-bold text-slate-900 dark:text-white truncate">
+                    <p className="text-sm font-bold text-slate-900 dark:text-white truncate">
                       {animal.name}
                     </p>
-                    <p className="text-[9px] text-slate-500 dark:text-slate-400">
+                    <p className="text-xs text-slate-500 dark:text-slate-400">
                       {daysSinceEntry(animal.entryDate)} dia(s) na triagem
                     </p>
                   </div>
@@ -139,10 +139,10 @@ export const CentralDeAvisos: React.FC = () => {
 
           <button
             onClick={() => setActiveTab('triagem')}
-            className="w-full flex items-center justify-center gap-1.5 py-2 rounded-xl bg-sky-50 dark:bg-sky-950/30 text-sky-700 dark:text-sky-300 text-[11px] font-bold hover:bg-sky-100 dark:hover:bg-sky-900/50 transition-colors"
+            className="w-full flex items-center justify-center gap-1.5 py-2.5 rounded-xl bg-sky-50 dark:bg-sky-950/30 text-sky-700 dark:text-sky-300 text-xs font-bold hover:bg-sky-100 dark:hover:bg-sky-900/50 transition-colors"
           >
             Abrir Animais em Triagem
-            <ArrowRight className="w-3 h-3" />
+            <ArrowRight className="w-3.5 h-3.5" />
           </button>
         </div>
 
@@ -153,17 +153,17 @@ export const CentralDeAvisos: React.FC = () => {
               <Bell className="w-4 h-4 text-amber-600 dark:text-amber-400" />
             </div>
             <div>
-              <p className="text-xs font-bold text-slate-900 dark:text-white">
+              <p className="text-sm font-bold text-slate-900 dark:text-white">
                 Avisos Internos
               </p>
-              <p className="text-[10px] text-slate-500 dark:text-slate-400">
+              <p className="text-xs text-slate-500 dark:text-slate-400">
                 {internalAlerts.length} aviso(s)
               </p>
             </div>
           </div>
 
           {internalAlerts.length === 0 ? (
-            <p className="text-[11px] text-slate-400 italic py-2">
+            <p className="text-xs text-slate-400 italic py-2">
               Nenhum aviso interno no momento.
             </p>
           ) : (
@@ -173,18 +173,18 @@ export const CentralDeAvisos: React.FC = () => {
                   key={alert.id}
                   className="p-2 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-700/50"
                 >
-                  <p className="text-[11px] font-bold text-slate-900 dark:text-white truncate">
+                  <p className="text-sm font-bold text-slate-900 dark:text-white truncate">
                     {alert.title}
                   </p>
-                  <p className="text-[9px] text-slate-500 dark:text-slate-400 line-clamp-2 mt-0.5">
+                  <p className="text-xs text-slate-500 dark:text-slate-400 line-clamp-2 mt-0.5">
                     {alert.message}
                   </p>
                   <div className="flex items-center gap-2 mt-1">
-                    <span className="text-[8px] text-slate-400">
+                    <span className="text-[11px] text-slate-400">
                       {alert.author_name}
                     </span>
-                    <span className="text-[8px] text-slate-300">·</span>
-                    <span className="text-[8px] text-slate-400">
+                    <span className="text-[11px] text-slate-300">·</span>
+                    <span className="text-[11px] text-slate-400">
                       {new Date(alert.created_at).toLocaleDateString('pt-BR')}
                     </span>
                   </div>
@@ -195,10 +195,10 @@ export const CentralDeAvisos: React.FC = () => {
 
           <button
             onClick={() => setActiveTab('avisos')}
-            className="w-full flex items-center justify-center gap-1.5 py-2 rounded-xl bg-amber-50 dark:bg-amber-950/30 text-amber-700 dark:text-amber-300 text-[11px] font-bold hover:bg-amber-100 dark:hover:bg-amber-900/50 transition-colors"
+            className="w-full flex items-center justify-center gap-1.5 py-2.5 rounded-xl bg-amber-50 dark:bg-amber-950/30 text-amber-700 dark:text-amber-300 text-xs font-bold hover:bg-amber-100 dark:hover:bg-amber-900/50 transition-colors"
           >
             Ver Todos os Avisos
-            <ArrowRight className="w-3 h-3" />
+            <ArrowRight className="w-3.5 h-3.5" />
           </button>
         </div>
 
@@ -209,60 +209,60 @@ export const CentralDeAvisos: React.FC = () => {
               <ClipboardList className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
             </div>
             <div>
-              <p className="text-xs font-bold text-slate-900 dark:text-white">
+              <p className="text-sm font-bold text-slate-900 dark:text-white">
                 Resumo do Dia
               </p>
-              <p className="text-[10px] text-slate-500 dark:text-slate-400">
+              <p className="text-xs text-slate-500 dark:text-slate-400">
                 {todayStr}
               </p>
             </div>
           </div>
 
           <div className="space-y-2">
-            <div className="flex items-center justify-between p-2 rounded-xl bg-sky-50 dark:bg-sky-950/20 border border-sky-100 dark:border-sky-900/30">
+            <div className="flex items-center justify-between p-2.5 rounded-xl bg-sky-50 dark:bg-sky-950/20 border border-sky-100 dark:border-sky-900/30">
               <div className="flex items-center gap-2">
-                <ClipboardCheck className="w-3.5 h-3.5 text-sky-600 dark:text-sky-400" />
-                <span className="text-[11px] font-semibold text-slate-700 dark:text-slate-300">
+                <ClipboardCheck className="w-4 h-4 text-sky-600 dark:text-sky-400" />
+                <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">
                   Em triagem
                 </span>
               </div>
-              <span className="text-[11px] font-bold text-sky-700 dark:text-sky-300">
+              <span className="text-sm font-bold text-sky-700 dark:text-sky-300">
                 {triagemAnimals.length}
               </span>
             </div>
 
-            <div className="flex items-center justify-between p-2 rounded-xl bg-rose-50 dark:bg-rose-950/20 border border-rose-100 dark:border-rose-900/30">
+            <div className="flex items-center justify-between p-2.5 rounded-xl bg-rose-50 dark:bg-rose-950/20 border border-rose-100 dark:border-rose-900/30">
               <div className="flex items-center gap-2">
-                <Scissors className="w-3.5 h-3.5 text-rose-600 dark:text-rose-400" />
-                <span className="text-[11px] font-semibold text-slate-700 dark:text-slate-300">
+                <Scissors className="w-4 h-4 text-rose-600 dark:text-rose-400" />
+                <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">
                   Castrações hoje
                 </span>
               </div>
-              <span className="text-[11px] font-bold text-rose-700 dark:text-rose-300">
+              <span className="text-sm font-bold text-rose-700 dark:text-rose-300">
                 {castrationsToday.length}
               </span>
             </div>
 
-            <div className="flex items-center justify-between p-2 rounded-xl bg-indigo-50 dark:bg-indigo-950/20 border border-indigo-100 dark:border-indigo-900/30">
+            <div className="flex items-center justify-between p-2.5 rounded-xl bg-indigo-50 dark:bg-indigo-950/20 border border-indigo-100 dark:border-indigo-900/30">
               <div className="flex items-center gap-2">
-                <Syringe className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400" />
-                <span className="text-[11px] font-semibold text-slate-700 dark:text-slate-300">
+                <Syringe className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
+                <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">
                   Vacinas hoje
                 </span>
               </div>
-              <span className="text-[11px] font-bold text-indigo-700 dark:text-indigo-300">
+              <span className="text-sm font-bold text-indigo-700 dark:text-indigo-300">
                 {todayVaccinations.length}
               </span>
             </div>
 
-            <div className="flex items-center justify-between p-2 rounded-xl bg-emerald-50 dark:bg-emerald-950/20 border border-emerald-100 dark:border-emerald-900/30">
+            <div className="flex items-center justify-between p-2.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/20 border border-emerald-100 dark:border-emerald-900/30">
               <div className="flex items-center gap-2">
-                <Heart className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
-                <span className="text-[11px] font-semibold text-slate-700 dark:text-slate-300">
+                <Heart className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+                <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">
                   Adoções hoje
                 </span>
               </div>
-              <span className="text-[11px] font-bold text-emerald-700 dark:text-emerald-300">
+              <span className="text-sm font-bold text-emerald-700 dark:text-emerald-300">
                 {todayAdoptions.length}
               </span>
             </div>

@@ -27,14 +27,14 @@ export const MonthlySummary: React.FC<MonthlySummaryProps> = ({
             <CalendarRange className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
             Resumo Mensal
           </h2>
-          <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
+          <p className="text-[13px] text-slate-500 dark:text-slate-400 mt-0.5">
             {year ? `Ano de ${year}` : 'Todos os anos'} — clique num mês para recalcular o dashboard
           </p>
         </div>
         {selectedMonth != null && (
           <button
             onClick={() => onSelectMonth(null)}
-            className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-rose-50 dark:hover:bg-rose-950/40 hover:text-rose-600 text-[11px] font-bold transition-colors"
+            className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-rose-50 dark:hover:bg-rose-950/40 hover:text-rose-600 text-xs font-bold transition-colors"
             title="Remover seleção de mês"
           >
             <X className="w-3.5 h-3.5" />
@@ -44,7 +44,7 @@ export const MonthlySummary: React.FC<MonthlySummaryProps> = ({
       </div>
 
       <div className="space-y-1">
-        <div className="grid grid-cols-[1fr_auto] gap-2 text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 px-2 pb-1">
+        <div className="grid grid-cols-[1fr_auto] gap-2 text-[13px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 px-2 pb-1">
           <span>Mês</span>
           <span className="flex gap-4 text-right">
             <span className="w-12 text-emerald-600 dark:text-emerald-400">Entradas</span>
@@ -59,7 +59,7 @@ export const MonthlySummary: React.FC<MonthlySummaryProps> = ({
             <button
               key={row.month}
               onClick={() => onSelectMonth(active ? null : row.month)}
-              className={`w-full grid grid-cols-[1fr_auto] gap-2 items-center px-2 py-1.5 rounded-xl text-left text-xs font-semibold transition-colors ${
+              className={`w-full grid grid-cols-[1fr_auto] gap-2 items-center px-2 py-1.5 rounded-xl text-left text-sm font-semibold transition-colors ${
                 active
                   ? 'bg-emerald-500/10 border border-emerald-500/30 text-emerald-700 dark:text-emerald-300'
                   : 'hover:bg-slate-50 dark:hover:bg-slate-800/60 border border-transparent text-slate-700 dark:text-slate-300'
@@ -68,7 +68,7 @@ export const MonthlySummary: React.FC<MonthlySummaryProps> = ({
               <span className="font-bold">
                 {MONTH_NAMES[row.month - 1]}
                 {active && (
-                  <span className="ml-2 text-[9px] font-black text-emerald-600 dark:text-emerald-400 uppercase">
+                  <span className="ml-2 text-[11px] font-black text-emerald-600 dark:text-emerald-400 uppercase">
                     selecionado
                   </span>
                 )}

@@ -89,7 +89,7 @@ export const LoginView: React.FC = () => {
           <div className="space-y-1.5">
             <label 
               htmlFor="login-email-input" 
-              className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider"
+              className="block text-sm font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider"
             >
               E-mail
             </label>
@@ -105,7 +105,7 @@ export const LoginView: React.FC = () => {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="colaborador@vivabicho.org"
-                className="w-full pl-11 pr-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-950 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-sm font-medium transition-all"
+                className="w-full pl-11 pr-4 py-3.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-950 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-base font-medium transition-all"
               />
             </div>
           </div>
@@ -114,7 +114,7 @@ export const LoginView: React.FC = () => {
           <div className="space-y-1.5">
             <label 
               htmlFor="login-password-input" 
-              className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider"
+              className="block text-sm font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider"
             >
               Senha
             </label>
@@ -130,7 +130,7 @@ export const LoginView: React.FC = () => {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
-                className="w-full pl-11 pr-12 py-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-950 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-sm font-medium transition-all"
+                className="w-full pl-11 pr-12 py-3.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-950 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-base font-medium transition-all"
               />
               <button
                 id="login-toggle-password-btn"
@@ -148,7 +148,7 @@ export const LoginView: React.FC = () => {
             id="login-submit-button"
             type="submit"
             disabled={loading}
-            className="w-full py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm shadow-md shadow-emerald-600/25 hover:shadow-lg hover:shadow-emerald-600/30 transition-all duration-150 active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none flex items-center justify-center gap-2"
+            className="w-full py-3.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-base shadow-md shadow-emerald-600/25 hover:shadow-lg hover:shadow-emerald-600/30 transition-all duration-150 active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none flex items-center justify-center gap-2"
           >
             {loading ? (
               <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>

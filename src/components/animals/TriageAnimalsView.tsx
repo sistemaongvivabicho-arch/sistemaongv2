@@ -113,13 +113,13 @@ export const TriageAnimalsView: React.FC<TriageAnimalsViewProps> = ({
             <ClipboardList className="w-7 h-7 text-sky-600 dark:text-sky-400" />
             Animais em Triagem
           </h1>
-          <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">
+          <p className="text-sm sm:text-base text-slate-500 dark:text-slate-400 mt-1">
             Exibindo <span className="font-bold text-slate-800 dark:text-slate-200">{filteredAnimals.length}</span> de{' '}
             <span className="font-bold text-slate-800 dark:text-slate-200">{triageAnimals.length}</span> animais aguardando avaliação
           </p>
         </div>
 
-        <span className={`inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-extrabold border shrink-0 ${triageLabel.badge}`}>
+        <span className={`inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-extrabold border shrink-0 ${triageLabel.badge}`}>
           <MapPin className="w-4 h-4" />
           Local: Triagem
         </span>
@@ -151,13 +151,13 @@ export const TriageAnimalsView: React.FC<TriageAnimalsViewProps> = ({
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
           {/* Species */}
           <div>
-            <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">
+            <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">
               Espécie
             </label>
             <select
               value={selectedSpecies}
               onChange={(e) => setSelectedSpecies(e.target.value)}
-              className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-sky-500"
+              className="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-sky-500"
             >
               <option value="all">Todas as espécies</option>
               <option value="cachorro">Cachorro</option>
@@ -168,13 +168,13 @@ export const TriageAnimalsView: React.FC<TriageAnimalsViewProps> = ({
 
           {/* Sex */}
           <div>
-            <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">
+            <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">
               Sexo
             </label>
             <select
               value={selectedSex}
               onChange={(e) => setSelectedSex(e.target.value)}
-              className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-sky-500"
+              className="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-sky-500"
             >
               <option value="all">Todos os sexos</option>
               <option value="macho">Macho</option>
@@ -184,13 +184,13 @@ export const TriageAnimalsView: React.FC<TriageAnimalsViewProps> = ({
 
           {/* Entry Origin */}
           <div>
-            <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">
+            <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">
               Origem da Entrada
             </label>
             <select
               value={selectedOrigin}
               onChange={(e) => setSelectedOrigin(e.target.value)}
-              className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-sky-500"
+              className="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-sky-500"
             >
               <option value="all">Todas as origens</option>
               <option value="guarda_municipal">Guarda Municipal</option>
@@ -205,7 +205,7 @@ export const TriageAnimalsView: React.FC<TriageAnimalsViewProps> = ({
 
           {/* Entry Date */}
           <div>
-            <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">
+            <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">
               Data de Entrada
             </label>
             <input
@@ -213,7 +213,7 @@ export const TriageAnimalsView: React.FC<TriageAnimalsViewProps> = ({
               value={selectedEntryDate}
               onChange={(e) => setSelectedEntryDate(e.target.value)}
               placeholder="DD/MM/AAAA"
-              className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-sky-500"
+              className="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-sky-500"
             />
           </div>
         </div>
@@ -254,9 +254,9 @@ export const TriageAnimalsView: React.FC<TriageAnimalsViewProps> = ({
           </div>
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full text-left text-sm">
+            <table className="w-full text-left text-base">
               <thead>
-                <tr className="bg-slate-50 dark:bg-slate-800/60 border-b border-slate-200 dark:border-slate-800 text-xs font-bold uppercase text-slate-500 dark:text-slate-400 tracking-wider">
+                <tr className="bg-slate-50 dark:bg-slate-800/60 border-b border-slate-200 dark:border-slate-800 text-sm font-bold uppercase text-slate-500 dark:text-slate-400 tracking-wider">
                   <th className="py-4 px-4">Nome</th>
                   <th className="py-4 px-4">Microchip</th>
                   <th className="py-4 px-4">Espécie</th>
@@ -284,7 +284,7 @@ export const TriageAnimalsView: React.FC<TriageAnimalsViewProps> = ({
                     </td>
 
                     {/* Microchip */}
-                    <td className="py-4 px-4 text-xs font-mono">
+                    <td className="py-4 px-4 text-sm font-mono">
                       {animal.microchip ? (
                         <span className="px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold border border-slate-200 dark:border-slate-700">
                           {animal.microchip}
@@ -305,7 +305,7 @@ export const TriageAnimalsView: React.FC<TriageAnimalsViewProps> = ({
                     </td>
 
                     {/* Entry Date */}
-                    <td className="py-4 px-4 text-xs text-slate-500 dark:text-slate-400">
+                    <td className="py-4 px-4 text-sm text-slate-500 dark:text-slate-400">
                       <span className="inline-flex items-center gap-1.5">
                         <Calendar className="w-3.5 h-3.5 text-slate-400" />
                         {animal.entryDate}
@@ -313,24 +313,24 @@ export const TriageAnimalsView: React.FC<TriageAnimalsViewProps> = ({
                     </td>
 
                     {/* Origin */}
-                    <td className="py-4 px-4 text-xs text-slate-600 dark:text-slate-300">
+                    <td className="py-4 px-4 text-sm text-slate-600 dark:text-slate-300">
                       {ORIGIN_LABELS[animal.origin]}
                     </td>
 
                     {/* Actions */}
                     <td className="py-4 px-4 text-right whitespace-nowrap">
-                      <div className="flex items-center justify-end gap-1.5">
+                      <div className="flex items-center justify-end gap-2">
                         <button
                           onClick={() => navigateToAnimal(animal.id)}
                           title="Ver Ficha"
-                          className="p-2 rounded-lg text-slate-600 hover:text-sky-600 hover:bg-sky-50 dark:text-slate-300 dark:hover:bg-sky-950/40 transition-colors"
+                          className="p-2.5 rounded-lg text-slate-600 hover:text-sky-600 hover:bg-sky-50 dark:text-slate-300 dark:hover:bg-sky-950/40 transition-colors"
                         >
                           <Eye className="w-4 h-4" />
                         </button>
                         <button
                           onClick={() => onOpenEditModal(animal.id)}
                           title="Editar Cadastro"
-                          className="p-2 rounded-lg text-slate-600 hover:text-blue-600 hover:bg-blue-50 dark:text-slate-300 dark:hover:bg-blue-950/40 transition-colors"
+                          className="p-2.5 rounded-lg text-slate-600 hover:text-blue-600 hover:bg-blue-50 dark:text-slate-300 dark:hover:bg-blue-950/40 transition-colors"
                         >
                           <Edit3 className="w-4 h-4" />
                         </button>
@@ -341,7 +341,7 @@ export const TriageAnimalsView: React.FC<TriageAnimalsViewProps> = ({
                             setFinalizeModalOpen(true);
                           }}
                           title="Finalizar Triagem"
-                          className="p-2 rounded-lg text-slate-600 hover:text-emerald-600 hover:bg-emerald-50 dark:text-slate-300 dark:hover:bg-emerald-950/40 transition-colors"
+                          className="p-2.5 rounded-lg text-slate-600 hover:text-emerald-600 hover:bg-emerald-50 dark:text-slate-300 dark:hover:bg-emerald-950/40 transition-colors"
                         >
                           <CheckCircle className="w-4 h-4" />
                         </button>
@@ -365,28 +365,28 @@ export const TriageAnimalsView: React.FC<TriageAnimalsViewProps> = ({
                   <CheckCircle className="w-5 h-5 text-emerald-600" />
                   Finalizar Triagem
                 </h3>
-                <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                <p className="text-sm text-slate-500 dark:text-slate-400 mt-0.5">
                   {finalizeAnimal.name}
                 </p>
               </div>
-              <button onClick={() => setFinalizeModalOpen(false)} className="p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+              <button onClick={() => setFinalizeModalOpen(false)} className="p-2.5 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
                 <X className="w-5 h-5 text-slate-500" />
               </button>
             </div>
 
             <div className="p-5 space-y-4">
-              <p className="text-sm text-slate-700 dark:text-slate-300">
+              <p className="text-base text-slate-700 dark:text-slate-300">
                 Deseja finalizar a triagem deste animal?
               </p>
 
               <div>
-                <label className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase mb-1.5 block">
+                <label className="text-sm font-bold text-slate-500 dark:text-slate-400 uppercase mb-1.5 block">
                   Destino
                 </label>
                 <select
                   value={finalizeDestino}
                   onChange={(e) => setFinalizeDestino(e.target.value as LocationType)}
-                  className="w-full px-3 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm font-medium text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                  className="w-full px-3 py-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-base font-semibold text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
                 >
                   {DESTINO_OPTIONS.map(opt => (
                     <option key={opt.value} value={opt.value}>{opt.label}</option>
@@ -398,14 +398,14 @@ export const TriageAnimalsView: React.FC<TriageAnimalsViewProps> = ({
             <div className="flex items-center justify-end gap-2 p-5 border-t border-slate-100 dark:border-slate-800">
               <button
                 onClick={() => setFinalizeModalOpen(false)}
-                className="px-4 py-2 rounded-xl text-xs font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                className="px-4 py-2.5 rounded-xl text-sm font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
               >
                 Cancelar
               </button>
               <button
                 onClick={handleFinalize}
                 disabled={finalizeLoading}
-                className="px-5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-sm shadow-emerald-600/25 transition-colors disabled:opacity-50"
+                className="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-bold shadow-sm shadow-emerald-600/25 transition-colors disabled:opacity-50"
               >
                 {finalizeLoading ? 'Finalizando...' : 'Confirmar'}
               </button>

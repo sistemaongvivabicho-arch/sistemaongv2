@@ -73,7 +73,7 @@ export const GlobalSearch: React.FC = () => {
                       <p className="text-sm font-bold text-slate-900 dark:text-white truncate">
                         {a.name}
                       </p>
-                      <p className="text-[10px] text-slate-500 dark:text-slate-400 truncate">
+                      <p className="text-xs text-slate-500 dark:text-slate-400 truncate">
                         {a.microchip
                           ? `Microchip: ${a.microchip}`
                           : a.originProtocol
@@ -82,10 +82,10 @@ export const GlobalSearch: React.FC = () => {
                       </p>
                     </div>
                     <div className="shrink-0 text-right">
-                      <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold border ${loc.badge}`}>
+                      <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-bold border ${loc.badge}`}>
                         {loc.label}
                       </span>
-                      <p className="text-[10px] text-slate-400 mt-0.5">
+                      <p className="text-xs text-slate-400 mt-0.5">
                         {SPECIES_LABELS[a.species]} · {a.status === 'adotado' ? 'Adotado' : a.status === 'obito' ? 'Óbito' : 'No abrigo'}
                       </p>
                     </div>
@@ -95,7 +95,7 @@ export const GlobalSearch: React.FC = () => {
               })}
             </div>
           )}
-          <div className="px-4 py-2 bg-slate-50 dark:bg-slate-800/60 text-[10px] text-slate-400 flex items-center justify-between">
+          <div className="px-4 py-2 bg-slate-50 dark:bg-slate-800/60 text-xs text-slate-400 flex items-center justify-between">
             <span>
               A busca filtra todos os indicadores do dashboard
             </span>

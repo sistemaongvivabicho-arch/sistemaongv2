@@ -38,10 +38,10 @@ const STATUS_OPTIONS: { value: AnimalStatus | 'all'; label: string }[] = [
 ];
 
 const selectClass =
-  'w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-emerald-500';
+  'w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-emerald-500';
 
 const labelClass =
-  'block text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1';
+  'block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1';
 
 export const FiltersPanel: React.FC<FiltersPanelProps> = ({ open, onToggle }) => {
   const { animals, dashboardFilters: f, setDashboardFilters } = useAnimalContext();
@@ -77,7 +77,7 @@ export const FiltersPanel: React.FC<FiltersPanelProps> = ({ open, onToggle }) =>
         >
           <SlidersHorizontal className="w-5 h-5" />
           <span
-            className="text-[10px] font-bold tracking-widest"
+            className="text-xs font-bold tracking-widest"
             style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)' }}
           >
             FILTROS
@@ -96,7 +96,7 @@ export const FiltersPanel: React.FC<FiltersPanelProps> = ({ open, onToggle }) =>
             <Filter className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
             Filtros
             {activeCount > 0 && (
-              <span className="px-1.5 py-0.5 rounded-full bg-emerald-500 text-white text-[10px] font-bold">
+              <span className="px-1.5 py-0.5 rounded-full bg-emerald-500 text-white text-xs font-bold">
                 {activeCount}
               </span>
             )}
@@ -263,7 +263,7 @@ export const FiltersPanel: React.FC<FiltersPanelProps> = ({ open, onToggle }) =>
         {activeCount > 0 && (
           <button
             onClick={clearAll}
-            className="w-full inline-flex items-center justify-center gap-2 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-bold transition-colors"
+            className="w-full inline-flex items-center justify-center gap-2 py-3 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-bold transition-colors"
           >
             <RotateCcw className="w-3.5 h-3.5" />
             Limpar todos os filtros

@@ -154,7 +154,7 @@ export const DocumentUploadModal: React.FC<DocumentUploadModalProps> = ({
                 <button
                   type="button"
                   onClick={() => fileInputRef.current?.click()}
-                  className="text-[11px] font-bold text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 transition-colors"
+                  className="text-xs font-bold text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 transition-colors"
                 >
                   Substituir Arquivo
                 </button>
@@ -190,7 +190,7 @@ export const DocumentUploadModal: React.FC<DocumentUploadModalProps> = ({
                 <button
                   type="button"
                   onClick={() => fileInputRef.current?.click()}
-                  className="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-xl border-2 border-dashed border-slate-200 dark:border-slate-700 hover:border-emerald-500 dark:hover:border-emerald-500 text-slate-500 dark:text-slate-400 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors text-xs font-bold"
+                  className="flex-1 flex items-center justify-center gap-2 px-4 py-3.5 rounded-xl border-2 border-dashed border-slate-200 dark:border-slate-700 hover:border-emerald-500 dark:hover:border-emerald-500 text-slate-500 dark:text-slate-400 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors text-sm font-bold"
                 >
                   <Upload className="w-4 h-4" />
                   Selecionar Arquivo
@@ -198,7 +198,7 @@ export const DocumentUploadModal: React.FC<DocumentUploadModalProps> = ({
                 <button
                   type="button"
                   onClick={() => cameraInputRef.current?.click()}
-                  className="flex items-center justify-center gap-2 px-4 py-3 rounded-xl border-2 border-dashed border-slate-200 dark:border-slate-700 hover:border-emerald-500 dark:hover:border-emerald-500 text-slate-500 dark:text-slate-400 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors text-xs font-bold"
+                  className="flex items-center justify-center gap-2 px-4 py-3.5 rounded-xl border-2 border-dashed border-slate-200 dark:border-slate-700 hover:border-emerald-500 dark:hover:border-emerald-500 text-slate-500 dark:text-slate-400 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors text-sm font-bold"
                 >
                   <Camera className="w-4 h-4" />
                   Tirar Foto
@@ -238,7 +238,7 @@ export const DocumentUploadModal: React.FC<DocumentUploadModalProps> = ({
             <div className="p-2 rounded-lg bg-slate-50 dark:bg-slate-800/50 flex items-center gap-2">
               <FileText className="w-4 h-4 text-slate-500" />
               <span className="text-xs text-slate-600 dark:text-slate-300">{initialData.fileName}</span>
-              <span className="text-[10px] text-slate-400 ml-auto">Arquivo atual</span>
+              <span className="text-xs text-slate-400 ml-auto">Arquivo atual</span>
             </div>
           )}
 
@@ -301,14 +301,14 @@ export const DocumentUploadModal: React.FC<DocumentUploadModalProps> = ({
         <div className="flex items-center justify-end gap-2 p-5 border-t border-slate-100 dark:border-slate-800">
           <button
             onClick={onClose}
-            className="px-4 py-2 rounded-xl text-xs font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+            className="px-4 py-2.5 rounded-xl text-sm font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
           >
             Cancelar
           </button>
           <button
             onClick={handleSubmit}
             disabled={loading}
-            className="px-5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-sm shadow-emerald-600/25 transition-colors disabled:opacity-50"
+            className="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-bold shadow-sm shadow-emerald-600/25 transition-colors disabled:opacity-50"
           >
             {loading ? 'Salvando...' : 'Salvar Documento'}
           </button>

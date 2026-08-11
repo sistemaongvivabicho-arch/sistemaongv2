@@ -31,7 +31,7 @@ export const ToastContainer: React.FC = () => {
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: -10, scale: 0.9 }}
               transition={{ duration: 0.2 }}
-              className={`pointer-events-auto flex items-center justify-between gap-3 p-4 rounded-xl border shadow-lg text-sm font-medium ${bg}`}
+              className={`pointer-events-auto flex items-center justify-between gap-3 p-4 rounded-xl border shadow-lg text-sm font-semibold ${bg}`}
             >
               <div className="flex items-center gap-3">
                 <Icon className="w-5 h-5 shrink-0" />

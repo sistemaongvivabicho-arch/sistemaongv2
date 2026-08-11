@@ -138,7 +138,7 @@ if (!isOpen || !animal) return null;
               <h2 className="text-base font-bold text-slate-900 dark:text-white">
                 Editar Cadastro - {animal.name}
               </h2>
-              <p className="text-xs text-slate-500">
+              <p className="text-sm text-slate-500">
                 Atualize as informações cadastrais do animal
               </p>
             </div>
@@ -155,7 +155,7 @@ if (!isOpen || !animal) return null;
         <form onSubmit={handleSubmit} className="p-6 space-y-4 max-h-[75vh] overflow-y-auto">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="sm:col-span-2">
-              <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+              <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1">
                 Fotos do Animal
               </label>
               <PhotoGallery
@@ -168,7 +168,7 @@ if (!isOpen || !animal) return null;
             </div>
 
             <div className="sm:col-span-2">
-              <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+              <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1">
                 Nome do Animal <span className="text-rose-500">*</span>
               </label>
               <input
@@ -176,12 +176,12 @@ if (!isOpen || !animal) return null;
                 required
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-xs font-bold"
+                className="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm font-bold"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+              <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1">
                 Microchip
               </label>
               <input
@@ -189,18 +189,18 @@ if (!isOpen || !animal) return null;
                 value={microchip}
                 onChange={(e) => setMicrochip(e.target.value)}
                 placeholder="Não informado se em branco"
-                className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-xs font-mono"
+                className="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm font-mono"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+              <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1">
                 Espécie
               </label>
               <select
                 value={species}
                 onChange={(e) => setSpecies(e.target.value as SpeciesType)}
-                className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-xs font-bold"
+                className="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm font-bold"
               >
                 <option value="cachorro">Cachorro</option>
                 <option value="gato">Gato</option>
@@ -209,13 +209,13 @@ if (!isOpen || !animal) return null;
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+              <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1">
                 Sexo
               </label>
               <select
                 value={sex}
                 onChange={(e) => setSex(e.target.value as SexType)}
-                className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-xs font-bold"
+                className="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm font-bold"
               >
                 <option value="macho">Macho</option>
                 <option value="femea">Fêmea</option>
@@ -223,13 +223,13 @@ if (!isOpen || !animal) return null;
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+              <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1">
                 Porte
               </label>
               <select
                 value={porte}
                 onChange={(e) => setPorte(e.target.value as PorteType | '')}
-                className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-xs font-bold"
+                className="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm font-bold"
               >
                 <option value="">Não informado</option>
                 <option value="pequeno">Pequeno</option>
@@ -259,7 +259,7 @@ if (!isOpen || !animal) return null;
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+              <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1">
                 Idade
               </label>
               <input
@@ -267,12 +267,12 @@ if (!isOpen || !animal) return null;
                 value={age}
                 onChange={(e) => setAge(e.target.value)}
                 placeholder="Ex: 3 anos"
-                className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-xs"
+                className="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+              <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1">
                 Peso <span className="text-emerald-600 dark:text-emerald-400 font-bold">(em kg)</span>
               </label>
               <div className="relative">
@@ -281,9 +281,9 @@ if (!isOpen || !animal) return null;
                   value={weight}
                   onChange={(e) => setWeight(e.target.value)}
                   placeholder="Ex: 25"
-                  className="w-full p-2.5 pr-12 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                  className="w-full p-3 pr-12 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm font-bold focus:outline-none focus:ring-2 focus:ring-emerald-500"
                 />
-                <span className="absolute right-3.5 top-1/2 -translate-y-1/2 text-xs font-bold text-slate-400 pointer-events-none">
+                <span className="absolute right-3.5 top-1/2 -translate-y-1/2 text-sm font-bold text-slate-400 pointer-events-none">
                   kg
                 </span>
               </div>
@@ -310,20 +310,20 @@ if (!isOpen || !animal) return null;
             </div>
 
             <div className="sm:col-span-2 pt-3 border-t border-slate-100 dark:border-slate-800">
-              <h3 className="text-xs font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400 flex items-center gap-2 mb-3">
+              <h3 className="text-sm font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400 flex items-center gap-2 mb-3">
                 <ShieldAlert className="w-4 h-4" />
                 Informações do Resgate
               </h3>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="sm:col-span-2">
-                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+                  <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1">
                     Origem do Resgate
                   </label>
                   <select
                     value={rescueOrigin}
                     onChange={(e) => setRescueOrigin(e.target.value)}
-                    className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-xs font-bold"
+                    className="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm font-bold"
                   >
                     <option value="">Não informado</option>
                     {RESCUE_ORIGIN_OPTIONS.map((opt) => (
@@ -345,7 +345,7 @@ if (!isOpen || !animal) return null;
                 </div>
 
                 <div className="sm:col-span-2">
-                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+                  <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1">
                     Observação de Entrada
                   </label>
                   <textarea
@@ -353,14 +353,14 @@ if (!isOpen || !animal) return null;
                     value={entryNotes}
                     onChange={(e) => setEntryNotes(e.target.value)}
                     placeholder="Descreva as condições em que o animal foi encontrado..."
-                    className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-xs"
+                    className="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm"
                   />
                 </div>
               </div>
             </div>
 
             <div className="sm:col-span-2 pt-3 border-t border-slate-100 dark:border-slate-800">
-              <h3 className="text-xs font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400 flex items-center gap-2 mb-3">
+              <h3 className="text-sm font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400 flex items-center gap-2 mb-3">
                 <ShieldAlert className="w-4 h-4" />
                 Castração e Vacinação
               </h3>
@@ -372,7 +372,7 @@ if (!isOpen || !animal) return null;
                   onChange={(e) => setCastrado(e.target.checked)}
                   className="w-5 h-5 rounded-md accent-emerald-600"
                 />
-                <span className="text-xs font-bold text-slate-800 dark:text-slate-200">
+                <span className="text-sm font-bold text-slate-800 dark:text-slate-200">
                   Animal castrado
                 </span>
               </label>
@@ -415,14 +415,14 @@ if (!isOpen || !animal) return null;
             </div>
 
             <div className="sm:col-span-2">
-              <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+              <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1">
                 Observações Atuais
               </label>
               <textarea
                 rows={2}
                 value={currentObservation}
                 onChange={(e) => setCurrentObservation(e.target.value)}
-                className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-xs"
+                className="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm"
               />
             </div>
           </div>
@@ -431,14 +431,14 @@ if (!isOpen || !animal) return null;
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 font-bold text-xs"
+              className="px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 font-bold text-sm"
             >
               Cancelar
             </button>
             <button
               type="submit"
               disabled={submitting}
-              className="px-5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-md transition-all flex items-center gap-2 disabled:opacity-50 disabled:pointer-events-none"
+              className="px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm shadow-md transition-all flex items-center gap-2 disabled:opacity-50 disabled:pointer-events-none"
             >
               {submitting ? (
                 <>
