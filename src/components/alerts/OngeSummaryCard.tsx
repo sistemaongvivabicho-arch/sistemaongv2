@@ -27,7 +27,7 @@ export const OngeSummaryCard: React.FC = () => {
   const stats = useMemo(() => {
     const total = animals.length;
     const noAbrigo = animals.filter((a) => a.status === 'no_abrigo').length;
-    const triagem = animals.filter((a) => a.currentLocation === 'triagem').length;
+    const triagem = animals.filter((a) => a.currentLocation === 'triagem' && a.status === 'no_abrigo').length;
     const adotados = animals.filter((a) => a.status === 'adotado').length;
     const obitos = animals.filter((a) => a.status === 'obito').length;
 

@@ -132,11 +132,11 @@ export const DashboardView: React.FC = () => {
       {
         id: 'triagem',
         title: 'Animais em triagem',
-        count: byLocation('triagem').length,
+        count: periodBase.filter((a) => a.currentLocation === 'triagem' && a.status === 'no_abrigo').length,
         icon: ClipboardCheck,
         gradient: 'from-sky-500 to-cyan-600',
         subtitle: 'Local: Triagem',
-        animals: byLocation('triagem')
+        animals: periodBase.filter((a) => a.currentLocation === 'triagem' && a.status === 'no_abrigo')
       },
       {
         id: 'internados',
